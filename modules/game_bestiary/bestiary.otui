@@ -1,0 +1,1125 @@
+
+RoundedButton < Button
+  image-source: /images/ui/button_rounded
+
+LockUI < FlatPanel
+  anchors.fill: parent
+  opacity: 0.45
+  phantom: false
+  visible: false
+
+MessageBase < UIWidget
+  !text: tr('.')
+  text-offset: 0 2
+  text-align: top
+  size: 300 220
+  image-source: /images/ui/window
+  image-border: 6
+  image-border-top: 27
+  anchors.centerIn: parent
+  visible: false
+
+  Button
+    id: ConfirmButton
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottom: parent.bottom
+    margin-bottom: 20
+    !text: tr("OK")
+
+  Label
+    id: Text
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom:  ConfirmButton.top
+    margin-top: 40
+    margin-left: 20
+    margin-right: 20
+    margin-bottom: 10
+    text-align: center
+    text-wrap: true
+
+BestiaryCategoryEntry < UIWidget
+  height: 85
+  image-source: /images/ui/panel_flat
+  image-border: 1
+  image-color: #dfdfdf44
+  $focus:
+    image-color: #dfdfdf
+
+  UIWidget
+    id: card
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 20
+    size: 70 70
+
+  UIWidget
+    id: avatar
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 20
+    image-source: images/Avatar
+    size: 70 70
+
+  UICreature
+    id: creature
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    size: 64 64
+    outfit-center: true
+    visible: false
+
+  Label
+    id: name
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 15
+    margin-left: 15
+    text-auto-resize: true
+    shadow: true
+
+  UIWidget
+    id: progressCircle1
+    image-source: images/Power Circles1
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    margin-bottom: 15
+    margin-left: 15
+    UIWidget
+      id: progressFill
+      image-source: images/inner_fill_color
+      anchors.centerIn: parent
+      margin-right: 1
+
+  UIWidget
+    id: progressCircle2
+    image-source: images/Power Circles1
+    anchors.bottom: progressCircle1.bottom
+    anchors.left: progressCircle1.right
+    margin-left: 3
+    UIWidget
+      id: progressFill
+      image-source: images/inner_fill_color
+      anchors.centerIn: parent
+      margin-right: 1
+
+  UIWidget
+    id: progressCircle3
+    image-source: images/Power Circles1
+    anchors.bottom: progressCircle1.bottom
+    anchors.left: progressCircle2.right
+    margin-left: 3
+    UIWidget
+      id: progressFill
+      image-source: images/inner_fill_color
+      anchors.centerIn: parent
+      margin-right: 1
+
+  UIWidget
+    id: progressCircle4
+    image-source: images/Power Circles1
+    anchors.bottom: progressCircle1.bottom
+    anchors.left: progressCircle3.right
+    margin-left: 3
+    UIWidget
+      id: progressFill
+      image-source: images/inner_fill_color
+      anchors.centerIn: parent
+      margin-right: 1
+
+  UIWidget
+    id: progressCircle5
+    image-source: images/Power Circles1
+    anchors.bottom: progressCircle1.bottom
+    anchors.left: progressCircle4.right
+    margin-left: 3
+    UIWidget
+      id: progressFill
+      image-source: images/inner_fill_color
+      anchors.centerIn: parent
+      margin-right: 1
+
+  Label
+    id: rawProgressValue
+    anchors.bottom: progressCircle3.top
+    anchors.left: progressCircle1.left
+    margin-bottom: 5
+    text-auto-resize: true
+    text: 100 / 520
+    color: #dfdfdf
+    opacity: 0.8
+    shadow: true
+    !tooltip: tr('Total unlocked creatures in this category')
+    phantom: false
+
+BestiaryCreatureEntry < UIWidget
+  height: 70
+  image-source: /images/ui/panel_flat
+  image-border: 1
+  image-color: #dfdfdf44
+  $focus:
+    image-color: #dfdfdf
+
+  UICreature
+    id: creature
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    size: 64 64
+    outfit-center: true
+    animate: true
+    phantom: true
+    visible: false
+
+  Label
+    id: name
+    anchors.top: parent.top
+    anchors.left: creature.right
+    margin-top: 15
+    margin-left: 10
+    text-auto-resize: true
+    shadow: true
+
+  Label
+    id: progress
+    anchors.left: name.left
+    anchors.top: name.bottom
+    margin-top: 5
+    color: #dfdfdf
+    opacity: 0.8
+    shadow: true
+    text-auto-resize: true
+
+  Label
+    id: progressPercent
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-bottom: 7
+    margin-right: 20
+    shadow: true
+    text-auto-resize: true
+
+DefenseProgressBar < ProgressBar
+  anchors.top: parent.top
+  margin-top: 1
+  size: 40 11
+  border-color: black
+  border-width: 1
+
+DefenseProgressBarPanel < Panel
+  size: 175 11
+
+  DefenseProgressBar
+    id: firstBar
+    anchors.left: parent.left
+    margin-left: 15
+  
+  DefenseProgressBar
+    id: secondBar
+    anchors.left: firstBar.right
+  
+  DefenseProgressBar
+    id: thirdBar
+    anchors.left: secondBar.right
+
+  Label
+    id: rawValue
+    anchors.left: thirdBar.right
+    margin-left: 7
+    text: 100%
+    text-auto-resize: true
+
+DefenseIcon < UIWidget
+  id: icon
+  anchors.top: parent.top
+  anchors.left: parent.left
+  anchors.bottom: parent.bottom
+
+PhysicalDefenseProgressPanel < DefenseProgressBarPanel
+  id: physical
+  DefenseIcon
+    image-source: images/physical
+    tooltip: Physical element
+
+EarthDefenseProgressPanel < DefenseProgressBarPanel
+  id: earth
+  DefenseIcon
+    image-source: images/earth
+    tooltip: Earth element
+
+FireDefenseProgressPanel < DefenseProgressBarPanel
+  id: fire
+  DefenseIcon
+    image-source: images/fire
+    tooltip: Fire element
+
+DeathDefenseProgressPanel < DefenseProgressBarPanel
+  id: death
+  DefenseIcon
+    image-source: images/death
+    tooltip: Death element
+
+EnergyDefenseProgressPanel < DefenseProgressBarPanel
+  id: energy
+  DefenseIcon
+    image-source: images/energy
+    tooltip: Energy element
+
+HolyDefenseProgressPanel < DefenseProgressBarPanel
+  id: holy
+  DefenseIcon
+    image-source: images/holy
+    tooltip: Holy element
+
+IceDefenseProgressPanel < DefenseProgressBarPanel
+  id: ice
+  DefenseIcon
+    image-source: images/ice
+    tooltip: Ice element
+
+DefensesBarsPanel < Panel
+  id: defensesBarsPanel
+
+  PhysicalDefenseProgressPanel
+    anchors.top: parent.top
+    anchors.left: parent.left
+  
+  EarthDefenseProgressPanel
+    anchors.top: physical.bottom
+    anchors.left: parent.left
+    margin-top: 6
+
+  FireDefenseProgressPanel
+    anchors.top: earth.bottom
+    anchors.left: parent.left
+    margin-top: 6
+
+  DeathDefenseProgressPanel
+    anchors.top: fire.bottom
+    anchors.left: parent.left
+    margin-top: 6
+    
+  EnergyDefenseProgressPanel
+    anchors.top: death.bottom
+    anchors.left: parent.left
+    margin-top: 6
+
+  HolyDefenseProgressPanel
+    anchors.top: energy.bottom
+    anchors.left: parent.left
+    margin-top: 6
+
+  IceDefenseProgressPanel
+    anchors.top: holy.bottom
+    anchors.left: parent.left
+    margin-top: 6
+
+CreatureStatsPanel < Panel
+  id: creatureStatsPanel
+
+  UIWidget
+    id: hpIcon
+    image-source: images/hp
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-left: 5
+
+  Label
+    id: hpTextLabel
+    text: 1000
+    anchors.top: hpIcon.top
+    anchors.left: hpIcon.right
+    margin-top: -3
+    margin-left: 5
+    text-auto-resize: true
+
+  UIWidget
+    id: expIcon
+    image-source: images/exp
+    anchors.top: hpIcon.bottom
+    anchors.left: parent.left
+    margin-top: 10
+    margin-left: 5
+
+  Label
+    id: expTextLabel
+    text: 1000
+    anchors.top: expIcon.top
+    anchors.left: expIcon.right
+    margin-top: -3
+    margin-left: 5
+    text-auto-resize: true
+
+  UIWidget
+    id: speedIcon
+    image-source: images/speed
+    anchors.top: expIcon.bottom
+    anchors.left: parent.left
+    margin-top: 10
+    margin-left: 5
+
+  Label
+    id: speedTextLabel
+    text: 100
+    anchors.top: speedIcon.top
+    anchors.left: speedIcon.right
+    margin-top: -3
+    margin-left: 5
+    text-auto-resize: true
+
+  UIWidget
+    id: armorIcon
+    image-source: images/armor
+    anchors.top: speedIcon.bottom
+    anchors.left: parent.left
+    margin-top: 10
+    margin-left: 5
+
+  Label
+    id: armorTextLabel
+    text: 200
+    anchors.top: armorIcon.top
+    anchors.left: armorIcon.right
+    margin-top: -3
+    margin-left: 5
+    text-auto-resize: true
+
+  UIWidget
+    id: charmPointsIcon
+    image-source: images/charm_points
+    anchors.top: armorIcon.bottom
+    anchors.left: parent.left
+    margin-top: 10
+    margin-left: 5
+
+  Label
+    id: charmPointsTextLabel
+    text: 10
+    anchors.top: charmPointsIcon.top
+    anchors.left: charmPointsIcon.right
+    margin-top: -3
+    margin-left: 5
+    text-auto-resize: true
+
+LootItemPanel < Panel
+  image-source: /images/ui/panel_flat
+  image-border: 1
+  phantom: false
+  text: 
+  $checked:
+    text: ?
+  
+  UIItem
+    id: item
+    size: 36 36
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    virtual: true
+    margin-top: 3
+  
+  Label
+    id: count
+    anchors.bottom: chance.top
+    anchors.right: parent.right
+    margin-bottom: 5
+    margin-right: 8
+    shadow: true
+    color: #dfdfdf
+    text-auto-resize: true
+
+  FlatPanel
+    id: chance
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    anchors.left: parent.left
+    height: 15
+    margin-bottom: 3
+    margin-right: 3
+    margin-left: 3
+
+CharmPanelEntry < UIWidget
+  text-offset: 0 2
+  text-align: top
+  image-source: /images/ui/window
+  image-border: 6
+  image-border-top: 27
+  padding: 19 9 9 9
+  border-width: 0
+  
+  $focus:
+    border-width: 1
+    border-color: white
+
+  FlatPanel
+    id: costPanel
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    size: 80 20
+    margin-bottom: 15
+    margin-left: 5
+
+    Label
+      id: cost
+      anchors.centerIn: parent
+      margin-right: 7
+      text-auto-resize: true
+      
+    UIWidget
+      id: goldIcon
+      icon: images/gold_coin
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: cost.right
+      margin-left: 6
+      size: 11 11
+      visible: false
+
+    UIWidget
+      id: charmIcon
+      icon: images/charm_points
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: cost.right
+      margin-left: 6
+      margin-bottom: 1
+      size: 11 11
+      visible: false
+
+  FlatPanel
+    id: charmPanel
+    anchors.bottom: costPanel.top
+    anchors.horizontalCenter: costPanel.horizontalCenter
+    size: 35 35
+    margin-bottom: 5
+    
+    UIWidget
+      id: imagePanel
+      anchors.centerIn: parent
+      image-smooth: true
+
+  FlatPanel
+    id: creaturePanel
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-bottom: 5
+    size: 80 80
+    
+    UICreature
+      id: creature
+      margin: 10
+      anchors.centerIn: parent
+      size: 64 64
+      animate: true
+      phantom: true
+      visible: false
+
+CharmMonster < UIWidget
+  image-source: /images/ui/panel_map
+  image-border: 3  
+  height: 18
+  border-width: 0
+  
+  $focus:
+    border-width: 1
+    border-color: white
+  
+  Label
+    id: name
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    text-align: left
+    margin-left: 5
+
+MainWindow
+  size: 890 615
+  text-align: top
+  text: Bestiary
+  text-offset: 0 2
+  shadow: true
+  padding: 2
+
+  UIScrollArea
+    id: categoriesPanel
+    text-offset: 0 2
+    text-align: top
+    shadow: true
+    text: Categories
+    image-source: /images/ui/window
+    image-border: 6
+    image-border-top: 27
+    padding: 19 2 2 2
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    margin-top: 28
+    margin-bottom: 70
+    margin-left: 10
+    width: 220
+    layout:
+      type: verticalBox
+      align-top: true
+    vertical-scrollbar: categoriesPanelScrollBar
+  VerticalScrollBar
+    id: categoriesPanelScrollBar
+    anchors.top: categoriesPanel.top
+    anchors.bottom: categoriesPanel.bottom
+    anchors.right: categoriesPanel.right
+    margin-right: 2
+    margin-top: 17
+    margin-bottom: 4
+    pixels-scroll: true
+    step: 50
+
+  VerticalSeparator
+    anchors.top: categoriesPanel.top
+    anchors.bottom: categoriesPanel.bottom
+    anchors.right: creaturePanel.left
+    margin-right: 10
+
+/// Creature Info Area Start
+  Panel
+    id: creaturePanel
+    text-offset: 0 2
+    text-align: top
+    shadow: true
+    image-source: /images/ui/window
+    image-border: 6
+    image-border-top: 27
+    padding: 19 9 9 9
+    anchors.top: parent.top
+    anchors.bottom: bottomPanel.top
+    anchors.right: creaturesListPanel.left
+    anchors.left: categoriesPanel.right
+    margin-top: 28
+    margin-right: 20
+    margin-left: 20
+    margin-bottom: 15
+
+    Panel
+      id: creatureInfoPanel
+      anchors.top: parent.top
+      anchors.right: parent.right
+      anchors.left: parent.left
+      height: 290
+      margin-top: 10
+      padding: 10
+
+      UICreature
+        id: focusedCreatureDisplay
+        outfit-center: true
+        anchors.top: parent.top
+        anchors.right: defensesBarsPanel.left
+        margin-top: 0
+        margin-right: 30
+        size: 96 96
+        old-scaling: false
+        animate: true
+        opacity: 1
+        visible: false
+
+      CreatureStatsPanel
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin-top: -5
+        margin-left: 0
+        size: 110 80
+
+      DefensesBarsPanel
+        anchors.top: parent.top
+        anchors.right: parent.right
+        margin-top: -5
+        margin-right: -5
+        width: 175
+        height: 110
+
+      CheckBox
+        id: trackerCheckBox
+        text: Track kills
+        text-auto-resize: true
+        anchors.left: creatureStatsPanel.left
+        anchors.top: creatureStatsPanel.bottom
+        margin-top: 20
+
+      HorizontalSeparator
+        id: HorizontalSeparator1
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: defensesBarsPanel.bottom
+        margin-top: 15
+        margin-right: 5
+        margin-left: 5
+
+      Label
+        id: bonusesLabel
+        anchors.top: HorizontalSeparator1.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 5
+        text: Bonuses
+
+      UIScrollArea
+        id: bonusesScrollArea
+        anchors.top: bonusesLabel.bottom
+        anchors.right: parent.right
+        anchors.left: parent.left
+        image-source: /images/ui/panel_flat
+        image-border: 1
+        margin-top: 10
+        padding: 5
+        height: 40
+        margin-left: -10
+        margin-right: 4
+        vertical-scrollbar: bonusesPanelScrollBar
+        layout:
+          type: verticalBox
+          align-top: true
+          spacing: 1
+      VerticalScrollBar
+        id: bonusesPanelScrollBar
+        anchors.top: bonusesScrollArea.top
+        anchors.bottom: bonusesScrollArea.bottom
+        anchors.right: bonusesScrollArea.right
+        margin-right: -14
+        pixels-scroll: true
+        step: 50
+
+      UIWidget
+        image-source: images/tooltip
+        size: 16 16
+        anchors.top: HorizontalSeparator1.bottom
+        anchors.right: HorizontalSeparator1.right
+        !tooltip: tr('Bonuses gained by fully unlocking this creature bestiary')
+        margin-top: 7
+
+      Panel
+        id: progressBarBG
+        background-color: #1F191D
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.left: parent.left
+        height: 20
+        width: 20
+        padding: 2
+        border: 1 black
+        margin-bottom: 30
+        UIProgressBar
+          id: creatureProgressBar
+          anchors.fill: parent
+          background-color: #4A2F39
+          border: 1 #866748
+        Label
+          id: progressPercent
+          anchors.centerIn: parent
+          text-auto-resize: true
+
+      Label
+        id: creatureRawKillsValue
+        anchors.bottom: progressBarBG.top
+        anchors.right: parent.right
+        anchors.left: parent.left
+        margin-bottom: 2
+        text-align: center
+        text-auto-resize: true
+
+      HorizontalSeparator
+        id: HorizontalSeparator2
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: progressBarBG.bottom
+        margin-top: 15
+        margin-right: 5
+        margin-left: 5
+
+      Label
+        id: lootLabel
+        anchors.top: HorizontalSeparator2.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 10
+        text: Loot
+
+    UIScrollArea
+      id: lootPanel
+      anchors.top: creatureInfoPanel.bottom
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      anchors.left: parent.left
+      image-source: /images/ui/panel_flat
+      image-border: 1
+      margin-top: 5
+      margin-right: 14
+      margin-left: 0
+      margin-bottom: 0
+      padding: 8
+      layout:
+        type: grid
+        cell-size: 80 80
+        cell-spacing: 5
+        flow: true
+      vertical-scrollbar: lootPanelScrollBar
+    VerticalScrollBar
+      id: lootPanelScrollBar
+      anchors.top: lootPanel.top
+      anchors.bottom: lootPanel.bottom
+      anchors.right: lootPanel.right
+      margin-right: -14
+      pixels-scroll: true
+      step: 50
+/// Creature Info Area End
+
+  VerticalSeparator
+    anchors.top: creaturesListPanel.top
+    anchors.bottom: creaturesSearch.bottom
+    anchors.right: creaturesListPanel.left
+    margin-right: 10
+
+  UIScrollArea
+    id: creaturesListPanel
+    text-offset: 0 2
+    text-align: top
+    shadow: true
+    text: Creatures List
+    image-source: /images/ui/window
+    image-border: 6
+    image-border-top: 27
+    padding: 19 2 2 2
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-top: 28
+    margin-bottom: 100
+    margin-right: 15
+    width: 220
+    layout:
+      type: verticalBox
+      align-top: true
+    vertical-scrollbar: creaturesListScrollBar
+  VerticalScrollBar
+    id: creaturesListScrollBar
+    anchors.top: creaturesListPanel.top
+    anchors.bottom: creaturesListPanel.bottom
+    anchors.right: creaturesListPanel.right
+    margin-right: 2
+    margin-top: 17
+    margin-bottom: 4
+    pixels-scroll: true
+    step: 50
+
+  TextEdit
+    id: creaturesSearch
+    anchors.top: creaturesListPanel.bottom
+    anchors.left: creaturesListPanel.left
+    anchors.right: creaturesListPanel.right
+    margin-top: 8
+    margin-right: 3
+    placeholder: Search Creatures
+    width: 220
+
+  HorizontalSeparator
+    anchors.left: categoriesPanel.left
+    anchors.right: creaturesListPanel.right
+    anchors.bottom: bottomPanel.top
+
+  Panel
+    id: bottomPanel
+    anchors.top: categoriesPanel.bottom
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    anchors.left: parent.left
+    margin-right: 5
+    margin-left: 5
+    margin-bottom: 5
+    margin-top: 15
+
+    Panel
+      id: totalProgressBarBG
+      background-color: #1F191D
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: parent.left
+      margin-left: 5
+      height: 20
+      width: 220
+      padding: 2
+      border: 1 black
+      UIProgressBar
+        id: totalProgressBar
+        anchors.fill: parent
+        background-color: #4A2F39
+        border: 1 #866748
+      Label
+        id: progressPercent
+        anchors.centerIn: parent
+        text-auto-resize: true
+
+    Button
+      id: closeButton
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: parent.right
+      margin-right: 10
+      text: Close
+      width: 80
+      height: 25
+
+    Button
+      id: totalBonusesButton
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: closeButton.left
+      margin-right: 5
+      text: Bonuses
+      width: 80
+      height: 25
+
+    Button
+      id: charmsButton
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: totalBonusesButton.left
+      margin-right: 5
+      text: Charms
+      width: 80
+      height: 25
+
+    Button
+      id: bestiaryTracker
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: totalProgressBarBG.right
+      margin-left: 5
+      text: Tracker
+      width: 80
+      height: 25
+
+    FlatPanel
+      id: goldPanel
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: parent.left
+      margin-left: 10
+      width: 100
+      height: 20
+      visible: false
+      
+      UIWidget
+        id: icon
+        icon: images/gold_coin
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        margin-right: 5
+        size: 11 11   
+      
+      Label
+        id: amount
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: icon.left
+        margin-right: 5
+        text-auto-resize: true
+
+    FlatPanel
+      id: charmsPanel
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: goldPanel.right
+      margin-left: 5
+      width: 100
+      height: 20
+      visible: false
+      
+      UIWidget
+        id: icon
+        icon: images/charm_points
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        margin-right: 5
+        margin-bottom: 1
+        size: 11 11   
+      
+      Label
+        id: amount
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: icon.left
+        margin-right: 5
+        text-auto-resize: true
+
+    Button
+      id: backButton
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: closeButton.left
+      margin-right: 5
+      text: Back
+      width: 80
+      height: 25
+      visible: false
+
+  FlatPanel
+    id: charmsPanel
+    anchors.fill: parent
+    margin: 3
+    margin-top: 15
+    margin-bottom: 60
+    opacity: 1
+    phantom: false
+    visible: false
+
+    FlatPanel
+      id: leftPanel
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.bottom: parent.bottom
+      width: 220
+      margin: 10
+      text: Information
+      text-offset: 0 2
+      text-align: top
+      image-source: /images/ui/window
+      image-border: 6
+      image-border-top: 27
+      padding: 19 9 9 9
+      
+      TextEdit
+        id: searchTextEdit
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        placeholder: Type to search
+        height: 21
+        
+      TextList
+        id: charmMonsters
+        image-source: /images/ui/panel_map
+        image-border: 3
+        anchors.bottom: searchTextEdit.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin-bottom: 10
+        padding: 2 16 2 2
+        layout:
+          type: verticalBox
+          align-top: true
+        vertical-scrollbar: charmMonstersScrollBar
+
+      VerticalScrollBar
+        id: charmMonstersScrollBar
+        anchors.top: charmMonsters.top
+        anchors.right: charmMonsters.right
+        anchors.bottom: charmMonsters.bottom
+        margin: 2 2 3 0
+        step: 160
+        pixels-scroll: true
+        
+      Label
+        id: selectCreature
+        anchors.bottom: charmMonsters.top
+        anchors.left: parent.left
+        margin-bottom: 2
+        text: Select creature:
+        
+      FlatPanel
+        id: costPanel
+        anchors.bottom: selectCreature.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-bottom: 150
+        size: 100 21
+        
+        Label
+          id: cost
+          anchors.centerIn: parent
+          margin-right: 5
+          text-auto-resize: true
+          
+        UIWidget
+          id: goldIcon
+          anchors.bottom: parent.bottom
+          anchors.left: cost.right
+          icon: images/gold_coin
+          margin-bottom: 5
+          margin-left: 4
+          size: 11 11
+          visible: false
+
+        UIWidget
+          id: charmIcon
+          anchors.bottom: parent.bottom
+          anchors.left: cost.right
+          icon: images/charm_points
+          margin-bottom: 6
+          margin-left: 6
+          size: 11 11
+          visible: false
+          
+      Button
+        id: actionButton
+        height: 18
+        anchors.bottom: costPanel.top
+        anchors.left: costPanel.left
+        anchors.right: costPanel.right
+        margin-bottom: 4
+        text: Unlock
+        
+      FlatPanel
+        id: charmPanel
+        anchors.bottom: actionButton.top
+        anchors.horizontalCenter: actionButton.horizontalCenter
+        size: 35 35
+        margin-bottom: 4
+
+        UIWidget
+          id: imagePanel
+          anchors.centerIn: parent
+          image-smooth: true
+
+      FlatPanel
+        id: creaturePanel
+        anchors.top: costPanel.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 20
+        size: 100 100
+
+        UICreature
+          id: creature
+          margin: 10
+          anchors.centerIn: parent
+          size: 96 96
+          animate: true
+          visible: false
+
+      Label
+        id: informationText
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: creaturePanel.top
+        text-wrap: true
+        margin-top: 10
+        margin-right: 5
+        margin-left: 5
+
+    Panel
+      id: rightPanel
+      anchors.top: leftPanel.top
+      anchors.left: leftPanel.right
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin: 10
+      margin-top: 0
+
+      TextList
+        id: charms
+        image-source: /images/ui/panel_map
+        image-border: 3
+        anchors.fill: parent
+        padding: 8 8 3 8
+        layout:
+          type: grid
+          cell-size: 200 124
+          cell-spacing: 4
+          flow: true
+        vertical-scrollbar: charmsScrollBar
+
+      VerticalScrollBar
+        id: charmsScrollBar
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        margin: 2 2 3 0
+        step: 50
+        pixels-scroll: true
+
+  LockUI
+    id: LockUI
+
+  MessageBase
+    id: MessageBase

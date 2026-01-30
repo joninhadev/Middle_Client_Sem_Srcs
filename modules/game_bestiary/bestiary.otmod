@@ -1,0 +1,9 @@
+Module
+  name: game_bestiary
+  description: Bestiary
+  author: Fifth
+  autoload: true
+  sandboxed: true
+  scripts: [ bestiary_config, bestiary ]
+  @onLoad: Bestiary.init()
+  @onUnload: Bestiary.terminate()

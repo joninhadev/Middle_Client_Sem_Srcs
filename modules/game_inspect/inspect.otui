@@ -1,0 +1,513 @@
+InspectSkillIcon < UIWidget
+  id: icon
+  size: 10 10
+  anchors.left: parent.left
+  anchors.top: parent.top
+  margin-top: 1
+  margin-left: 2
+
+MiniPanel < Panel
+  text-offset: 0 2
+  text-align: top
+  image-source: /images/ui/miniwindow
+  image-border: 4
+  image-border-top: 20
+  image-border-bottom: 4
+  padding-left: 4
+  padding-bottom: 3
+  padding-top: 18
+  padding-right: 2
+
+HealthBar < ProgressBar
+  image-source: /images/ui/progressbar
+  image-border: 3
+  background-color: #ff4444
+
+ManaBar < ProgressBar
+  image-source: /images/ui/progressbar
+  image-border: 4
+  background-color: #4444ff
+
+InspectSkillName < GameLabel
+  id: name
+  font: verdana-11px-monochrome
+  anchors.left: parent.left
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+  width: 150
+  text: --
+
+InspectSkillValue < GameLabel
+  id: value
+  font: verdana-11px-monochrome
+  text-align: topright
+  anchors.right: parent.right
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+  anchors.left: prev.left
+  width: 150
+  text: --
+
+InspectSkillBar < ProgressBar
+  id: percent
+  background-color: green
+  height: 5
+  margin-top: 15
+  anchors.left: parent.left
+  anchors.right: parent.right
+  anchors.top: parent.top
+  phantom: false
+
+MainWindow
+  id: inspectWindow
+  !text: 'Player Inspect'
+  size: 564 450
+  @onEscape: modules.game_inspect.toggle()
+
+  MiniPanel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    size: 130 110
+    text: Outfit
+
+    UICreature
+      id: outfitInspectBox
+      size: 110 80
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-left: 10
+      fixed-creature-size: true
+      animate: true
+
+  MiniPanel
+    anchors.top: parent.top
+    anchors.left: prev.right
+    size: 192 110
+    margin-left: 10
+    text: Informações Básicas
+    padding-left: 5
+    padding-right: 5
+    layout: verticalBox
+
+    Panel
+      height: 14
+      Label
+        anchors.top: parent.top
+        anchors.left: parent.left
+        text: Name:
+
+      Label
+        id: name
+        anchors.top: parent.top
+        anchors.right: parent.right
+        text-auto-resize: true
+        text-align: right
+
+    Panel
+      height: 14
+      Label
+        anchors.top: parent.top
+        anchors.left: parent.left
+        text: Guild:
+
+      Label
+        id: guild
+        anchors.top: parent.top
+        anchors.right: parent.right
+        text-auto-resize: true
+        text-align: right
+
+    Panel
+      height: 14
+      Label
+        anchors.top: parent.top
+        anchors.left: parent.left
+        text: Vocation:
+
+      Label
+        id: vocation
+        anchors.top: parent.top
+        anchors.right: parent.right
+        text-auto-resize: true
+        text-align: right
+
+    HealthBar
+      id: healthBar
+      margin-top: 5
+      text: 100 / 100
+    
+    ManaBar
+      id: manaBar
+      margin-top: 2
+      text: 100 / 100
+
+  MiniPanel
+    anchors.top: parent.top
+    anchors.left: prev.right
+    size: 192 110
+    margin-left: 10
+    text: Informações do Personagem
+    padding-left: 5
+    padding-right: 5
+    layout: verticalBox
+
+    Panel
+      height: 14
+      Label
+        anchors.top: parent.top
+        anchors.left: parent.left
+        text: Level:
+
+      Label
+        id: level
+        anchors.top: parent.top
+        anchors.right: parent.right
+        text-align: right
+        text-auto-resize: true
+
+    Panel
+      height: 14
+      Label
+        anchors.top: parent.top
+        anchors.left: parent.left
+        text: Experience:
+
+      Label
+        id: exp
+        anchors.top: parent.top
+        anchors.right: parent.right
+        text-align: right
+        text-auto-resize: true
+    
+    Label
+      text-align: center
+      margin-top: 4
+      text: Reputações
+
+    Panel
+      id: repDwarf
+      phantom: false
+      height: 21
+      InspectSkillName
+        id: repDwarfName
+        text: 
+      InspectSkillValue
+        id: repDwarfRank
+        text: 0
+      InspectSkillBar
+        id: repDwarfBar
+
+  MiniPanel
+    id: inventoryPanel
+    text: Inventário
+    anchors.top: prev.bottom
+    anchors.bottom: separator.top
+    anchors.left: parent.left
+    margin-top: 10
+    margin-bottom: 10
+    width: 130
+    
+    HeadSlot
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 3
+      virtual: true
+
+    BodySlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 3
+      virtual: true
+
+    LegSlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 3
+      virtual: true
+
+    FeetSlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 3
+      virtual: true
+
+    NeckSlot
+      anchors.top: slot1.top
+      anchors.right: slot1.left
+      margin-top: 13
+      margin-right: 5
+      virtual: true
+
+    LeftSlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 3
+      virtual: true
+
+    FingerSlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 3
+      virtual: true
+
+    BackSlot
+      anchors.top: slot1.top
+      anchors.left: slot1.right
+      margin-top: 13
+      margin-left: 5
+      virtual: true
+
+    RightSlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 3
+      virtual: true
+
+    AmmoSlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 3
+      virtual: true
+
+  MiniPanel
+    anchors.top: prev.top
+    anchors.bottom: separator.top
+    anchors.left: prev.right
+    width: 192
+    margin-bottom: 10
+    margin-left: 10
+    text: Skills
+    padding-left: 5
+    padding-right: 5
+    layout: verticalBox
+
+    Panel
+      id: skill8
+      height: 18
+      phantom: false
+      InspectSkillName
+        text: Magic Level
+      InspectSkillValue
+        text: 0
+      InspectSkillBar
+        background-color: red
+
+    Panel
+      id: skill1
+      margin-top: 3
+      height: 18
+      phantom: false
+      InspectSkillName
+        text: Fist Fighting
+      InspectSkillValue
+        text: 10
+      InspectSkillBar
+
+    Panel
+      id: skill2
+      margin-top: 3
+      height: 18
+      phantom: false
+      InspectSkillName
+        text: Club Fighting
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: skill3
+      margin-top: 3
+      height: 18
+      phantom: false
+      InspectSkillName
+        text: Sword Fighting
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: skill4
+      margin-top: 3
+      height: 18
+      phantom: false
+      InspectSkillName
+        text: Axe Fighting
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: skill5
+      margin-top: 3
+      height: 18
+      phantom: false
+      InspectSkillName
+        text: Distance Fighting
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: skill6
+      margin-top: 3
+      height: 18
+      phantom: false
+      InspectSkillName
+        text: Shielding
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: skill7
+      margin-top: 3
+      height: 18
+      phantom: false
+      InspectSkillName
+        text: Fishing
+      InspectSkillValue
+      InspectSkillBar
+  
+  MiniPanel
+    anchors.top: prev.top
+    anchors.bottom: separator.top
+    anchors.left: prev.right
+    width: 192
+    margin-bottom: 10
+    margin-left: 10
+    text: Proteções
+    padding-left: 5
+    padding-right: 5
+    layout: verticalBox
+
+    Panel
+      id: stat1
+      phantom: false
+      height: 21
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: stat2
+      phantom: false
+      margin-top: 3
+      height: 21
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: stat3
+      phantom: false
+      margin-top: 3
+      height: 21
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: stat4
+      phantom: false
+      margin-top: 3
+      height: 21
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: stat5
+      phantom: false
+      margin-top: 3
+      height: 21
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+    
+    Panel
+      id: stat6
+      phantom: false
+      margin-top: 3
+      height: 21
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: stat7
+      phantom: false
+      margin-top: 3
+      height: 21
+      visible: false
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: stat8
+      phantom: false
+      margin-top: 3
+      height: 21
+      visible: false
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: stat9
+      phantom: false
+      margin-top: 3
+      height: 21
+      visible: false
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+    Panel
+      id: stat10
+      phantom: false
+      margin-top: 3
+      height: 21
+      visible: false
+      InspectSkillIcon
+      InspectSkillName
+        anchors.left: prev.right
+        margin-left: 5
+      InspectSkillValue
+      InspectSkillBar
+
+  HorizontalSeparator
+    id: separator
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 30
+
+  Button
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    text: Close
+    width: 60
+    @onClick: modules.game_inspect.hide()

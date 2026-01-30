@@ -1,0 +1,10 @@
+Module
+  name: game_inspect
+  description: Inspect players inventory and stats
+  author: Oen
+  website: None
+  sandboxed: true
+  autoload: true
+  scripts: [ inspect ]
+  @onLoad: init()
+  @onUnload: terminate()

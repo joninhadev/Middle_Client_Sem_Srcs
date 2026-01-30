@@ -1,0 +1,276 @@
+ShopCategory < Panel
+  height: 24
+  focusable: true
+  image-source: cat
+
+  $focus:
+    image-source: catOn
+
+  $hover:
+    image-source: catH
+
+  $disabled:
+    image-source: cat
+  
+  Label
+    id: name
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-left: 5
+    text-align: center
+    text-wrap: true
+    color: white
+    font: verdana-11px-rounded    
+    
+ShopCategoryItem < ShopCategory
+  UIItem
+    id: item
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin-top: 2
+    margin-bottom: 2
+    margin-left: 2
+    virtual: true
+    size: 13 13
+    
+ShopCategoryCreature < ShopCategory
+  UICreature
+    id: creature
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin-top: 2
+    margin-bottom: 2
+    margin-left: 2
+    size: 13 13
+    
+ShopCategoryImage < ShopCategory
+  Label
+    id: image
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin-left: 3
+    size: 26 26
+    
+    
+    
+ShopOffer < Panel
+  size: 128 128
+  //background: alpha
+  image-source: offer
+  
+  $focus:
+    image-source: offerOn
+
+  Label
+    id: title
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-top: 12
+    margin-left: 18
+    text-align: topcenter
+    font: verdana-11px-rounded 
+    color: #C0C0C0
+    height: 100
+
+  UILabel
+    image-source: tc
+    size: 11 11
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 106
+    margin-right: 44
+
+  Label
+    id: description
+    anchors.top: parent.top
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-top: 96
+    margin-right: 57
+    text-align: right
+    text-auto-resize: true
+    text-wrap: true
+    color: #ead41e
+    font: terminus-10px
+    
+  UIButton
+    id: buyButton
+    size: 75 25
+    font: verdana-11px-rounded   
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 10
+    text-align: center
+    
+ShopOfferItem < ShopOffer
+  UIItem
+    id: item
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 22
+    size: 64 64    
+    border: 1 #303030
+    
+ShopOfferCreature < ShopOffer
+  UICreature
+    id: creature
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 22
+    size: 64 64    
+    border: 1 #303030
+    
+ShopOfferImage < ShopOffer
+  Label
+    id: image
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 35
+    size: 64 64    
+  
+MainWindow
+  id: shopWindow
+  !text: tr('Store')
+  size: 738 535
+  image-source: teste2
+  @onEscape: modules.game_shop.hide()
+  $mobile:
+    size: 500 360
+
+  Panel
+    id: infoPanel
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    width: 230
+    height: 60
+
+    Label
+      id: points
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.top: parent.top
+      margin-top: 5
+      margin-left: -12
+      color: #C0C0C0 
+      text: -
+      text-auto-resize: true
+    
+    Button
+      id: buy
+      anchors.horizontalCenter: parent.horizontalCenter
+      width: 150
+      anchors.top: prev.bottom
+      margin-top: 10
+      visible: false
+      !text: tr("Buy points")
+
+  Panel
+    id: adPanel
+    anchors.top: parent.top
+    anchors.left: infoPanel.right
+    anchors.right: parent.right
+    margin-left: 10
+    
+    Label
+      id: ad
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.top: parent.top
+      anchors.bottom: parent.bottom
+      text-auto-resize: true
+      text-wrap: true
+      text-align: center
+      font: sans-bold-16px
+    
+  TextList    
+    id: categories
+    size: 180 450
+    vertical-scrollbar: categoriesScrollBar
+    anchors.top: parent.top
+    anchors.left: parent.left
+    background-color: alpha
+    margin-top: 10
+    margin-left: 6
+    margin-right: 41
+    margin-bottom: 0
+    padding: 1
+    focusable: false
+
+  VerticalScrollBar
+    id: categoriesScrollBar
+    anchors.top: categories.top
+    anchors.bottom: categories.bottom
+    anchors.right: categories.right
+    step: 50
+    pixels-scroll: true
+
+  TextList
+    id: offers
+    vertical-scrollbar: offersScrollBar
+    background-color: alpha
+    anchors.top: adPanel.bottom
+    anchors.left: adPanel.left
+    anchors.right: adPanel.right
+    anchors.bottom: transactionHistory.top
+    margin-top: 10
+    color: red
+    margin-bottom: 10
+    margin-left: -50
+    margin-right: -10
+    padding: 1
+    focusable: false
+    layout:
+      type: grid
+      flow: true
+      spacing: 5
+      cell-size: 128 128
+
+  VerticalScrollBar
+    id: offersScrollBar
+    anchors.top: offers.top
+    anchors.bottom: offers.bottom
+    anchors.right: offers.right
+    step: 50
+    pixels-scroll: true
+
+  Button
+    id: transactionHistory
+    !text: tr('History')
+    size: 43 20
+    anchors.left: parent.left
+    font: cipsoftFont 
+    color: white
+    margin-left: 605
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_shop.showHistory()
+
+  UIButton
+    id: transferOpen
+    font: cipsoftFont 
+    anchors.left: parent.left
+    size: 64 20
+    margin-left: 335
+    anchors.verticalCenter: prev.verticalCenter
+    @onClick: modules.game_shop.showTransfer()
+
+  Button
+    id: buttonCancel
+    !text: tr('Close')
+    font: cipsoftFont 
+    size: 43 20
+    color: white
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_shop.hide()
+
+  UIButton
+    id: buyCoins
+    size: 64 20
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-right: 77
+    anchors.bottom: parent.bottom
+    @onClick: g_platform.openUrl("https://google.com")
