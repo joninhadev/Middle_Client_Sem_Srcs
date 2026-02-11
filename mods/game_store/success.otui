@@ -1,0 +1,53 @@
+StaticMainWindow
+  size: 400 200
+  text: Purchase completed successfully
+
+  Panel
+    id: left
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    width: 220
+    background: #404040
+    border-width-top: 1
+    border-color-top: #00000044
+    border-width-left: 1
+    border-color-left: #00000044
+    border-width-right: 1
+    border-color-right: #ffffff44
+    border-width-bottom: 1
+    border-color-bottom: #ffffff44
+  
+  Label
+    id: text
+    anchors.fill: left
+    margin: 4
+    text-wrap: true
+    text-align: topLeft
+    color: #c0c0c0
+    font: verdana-11px-monochrome
+
+  UIButton
+    id: button
+    anchors.top: parent.top
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    image-source: /images/store/button_blue
+    image-clip: 0 0 98 40
+    image-border: 1
+    change-cursor-image: true
+    cursor: pointer
+    margin-left: 10
+
+    $pressed:
+      image-clip: 0 40 98 40
+  
+  Panel
+    id: animation
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.right: parent.right
+    size: 108 108
+    margin-right: 20
+    image-source: /images/store/purchase_animation
+    image-clip: 0 0 108 108

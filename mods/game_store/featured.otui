@@ -1,0 +1,80 @@
+Panel
+  UIScrollArea
+    id: list
+    anchors.fill: parent
+    padding: 5
+    margin-top: 10
+    margin-bottom: 5
+    margin-right: 12
+    auto-focus: none
+    image-source: /images/store/panel2
+    image-border: 2
+    vertical-scrollbar: scrollbar
+    layout:
+      type: verticalBox
+      spacing: 5
+
+    Label
+      id: bundlesLabel
+      font: verdana-bold-12px
+      height: 16
+      color: white
+      shadow: true
+      text: Special Bundles
+
+    Panel
+      id: bundles
+      layout:
+        type: grid
+        cell-size: 145 135
+        flow: true
+        fit-children: true
+
+    HorizontalSeparator
+      id: salesSeparator
+
+    Label
+      id: salesLabel
+      font: verdana-bold-12px
+      height: 16
+      color: white
+      shadow: true
+      text: On Sale
+
+    Panel
+      id: sales
+      layout:
+        type: grid
+        cell-size: 80 80
+        flow: true
+        auto-spacing: true
+        fit-children: true
+
+    HorizontalSeparator
+      id: popularSeparator
+
+    Label
+      id: popularLabel
+      font: verdana-bold-12px
+      height: 16
+      color: white
+      shadow: true
+      text: Most Popular
+
+    Panel
+      id: popular
+      layout:
+        type: grid
+        cell-size: 80 80
+        flow: true
+        auto-spacing: true
+        fit-children: true
+
+  VerticalScrollBar
+    id: scrollbar
+    anchors.top: prev.top
+    anchors.bottom: prev.bottom
+    anchors.left: prev.right
+    margin-left: 2
+    step: 50
+    pixels-scroll: true

@@ -1,0 +1,9 @@
+Module
+  name: game_reward
+  description: Simplified Game Reward System
+  author: Antigravity
+  website: https://github.com/edubart/otclient
+  sandboxed: true
+  scripts: [ game_reward ]
+  @onLoad: init()
+  @onUnload: terminate()

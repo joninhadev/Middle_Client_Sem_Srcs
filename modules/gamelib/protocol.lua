@@ -16,6 +16,7 @@ GameServerOpcodes = {
 
     -- otclient ONLY
     GameServerExtendedOpcode            = 50,
+    GameServerGameStore                 = 51,
 
     -- NOTE: add any custom opcodes in this range
     -- 51 - 99

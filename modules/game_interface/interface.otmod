@@ -28,11 +28,11 @@ Module
     - game_ruleviolation
     - game_market
     - game_tasks
+    - game_deliverytask
     - game_cooldown
     - game_modaldialog
     - game_unjustifiedpoints
     - game_walking
-    - game_shop
     - game_itemselector
     - client_textedit
     - client_profiles
@@ -43,5 +43,6 @@ Module
     - game_shaders
     - game_inspect
     - game_bot
+    - game_reward
   @onLoad: init()
   @onUnload: terminate()

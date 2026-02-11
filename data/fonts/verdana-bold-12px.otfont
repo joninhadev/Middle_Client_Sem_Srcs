@@ -1,0 +1,6 @@
+Font
+  name: verdana-bold-12px
+  texture: verdana-bold-12px
+  height: 16
+  glyph-size: 20 20
+  space-width: 3

@@ -1,0 +1,10 @@
+Module
+  name: game_store
+  description: In-game Game Store
+  author: Oen44
+  website: oen44 Discord
+  scripts: [ store ]
+  autoload: true
+  sandboxed: true
+  @onLoad: init()
+  @onUnload: terminate()

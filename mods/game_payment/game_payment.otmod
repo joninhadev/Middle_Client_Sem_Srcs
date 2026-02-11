@@ -1,0 +1,7 @@
+Module
+  name: game_payment
+  scripts: [ game_payment ]
+  sandboxed: true
+  autoload: true
+  @onLoad: init()
+  @onUnload: terminate()

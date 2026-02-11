@@ -1,0 +1,300 @@
+MainWindow
+  id: deliveryTaskWindow
+  !text: tr('Weekly Tasks')
+  size: 640 510
+  @onEscape: modules.game_deliverytask.toggle()
+
+  TabBar
+    id: tasksTabBar
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    height: 45
+    
+    Panel
+      id: buttonsPanel
+      anchors.fill: parent
+      layout:
+        type: horizontalBox
+        spacing: 0
+        
+      Button
+        id: tabMatar
+        !text: tr('Kill Task')
+        width: 300
+        height: 45
+        UIWidget
+          id: icon
+          image-source: /modules/game_deliverytask/images/amulet.png
+          anchors.left: parent.left
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 10
+          size: 32 32
+          phantom: true
+        image-source: /modules/game_deliverytask/images/activepage.png
+        image-color: white
+        border-width: 1
+        border-color: #000000
+        margin-right: 0
+        
+      Button
+        id: tabEntregar
+        !text: tr('Delivery Task')
+        width: 304
+        height: 45
+        UIWidget
+          id: icon
+          image-source: /modules/game_deliverytask/images/scroll.png
+          anchors.left: parent.left
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 10
+          size: 32 32
+          phantom: true
+        image-source: /modules/game_deliverytask/images/page.png
+        image-color: white
+        border-width: 1
+        border-color: #000000
+
+  ScrollablePanel
+    id: contentPanel
+    anchors.top: tasksTabBar.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: overallProgress.top
+    margin-top: 10
+    margin-bottom: 10
+    vertical-scrollbar: contentScrollBar
+    layout:
+      type: grid
+      cell-size: 180 100
+      cell-spacing: 20
+      num-columns: 3
+      flow: true
+
+  VerticalScrollBar
+    id: contentScrollBar
+    anchors.top: contentPanel.top
+    anchors.bottom: contentPanel.bottom
+    anchors.right: contentPanel.right
+    step: 16
+    pixels-scroll: true
+
+  UIWidget
+    id: timerIcon
+    image-source: /modules/game_deliverytask/images/watch.png
+    anchors.verticalCenter: timerLabel.verticalCenter
+    anchors.right: timerLabel.left
+    margin-right: 5
+    size: 32 32
+    phantom: true
+
+  Label
+    id: timerLabel
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-bottom: 10
+    margin-right: 10
+    text-align: right
+    text-auto-resize: true
+    !text: tr('Reset: 7d 00h')
+    font: verdana-11px-rounded
+    color: #FFAA00
+
+  ProgressBar
+    id: overallProgress
+    anchors.bottom: timerLabel.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 15
+    margin-left: 10
+    margin-right: 10
+    margin-bottom: 8
+    background-color: #35e412ff
+    border-width: 1
+    border-color: #000000ff
+
+    Label
+      id: overallProgressText
+      anchors.fill: parent
+      text-align: center
+      text: 0%
+      font: verdana-11px-rounded
+      color: #ffffff
+      shadow: true
+
+  Button
+    id: closeButton
+    !text: tr('Fechar')
+    width: 64
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_deliverytask.toggle()
+
+TaskWidget < UIWidget
+  size: 120 100
+  background-color: alpha
+  border-width: 1
+  border-color: #0a0a0aff
+
+  UIWidget
+    id: slotBg
+    anchors.top: taskLabel.bottom
+    anchors.left: parent.left
+    margin-left: 10
+    margin-top: 4
+    size: 60 60
+    image-source: images/box
+
+  UICreature
+    id: taskCreature
+    size: 50 50
+    anchors.centerIn: slotBg
+    fixed-creature-size: true
+    animate: true
+    margin-right: 6
+
+  UIItem
+    id: taskItem
+    size: 32 32
+    anchors.centerIn: slotBg
+    visible: false
+    virtual: true
+    animate: true
+
+  UIItem
+    id: rewardItem
+    size: 28 28
+    anchors.top: slotBg.top
+    anchors.left: slotBg.right
+    margin-left: 20
+    margin-top: 12
+    virtual: true
+    visible: false
+
+  Label
+    id: rewardItemAmount
+    anchors.left: rewardItem.right
+    anchors.verticalCenter: rewardItem.verticalCenter
+    margin-left: 3
+    font: verdana-9px
+    text-auto-resize: true
+    color: #ffffff
+    visible: false
+
+  UIWidget
+    id: rewardXpIcon
+    size: 12 12
+    anchors.top: rewardItem.bottom
+    anchors.left: slotBg.right
+    margin-left: 20
+    margin-top: 4
+    image-source: /modules/game_deliverytask/images/xp.png
+    visible: false
+
+  Label
+    id: rewardXpAmount
+    anchors.left: rewardXpIcon.right
+    anchors.verticalCenter: rewardXpIcon.verticalCenter
+    margin-left: 3
+    font: verdana-9px
+    text-auto-resize: true
+    color: #ffffff
+    visible: false
+
+  Label
+    id: taskLabel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+    margin-top: 0
+    font: verdana-11px-rounded
+    background-color: #00000055
+    visible: true 
+
+  UIWidget
+    id: progressBg
+    background-color: #222222
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 24
+    margin-left: 30
+    margin-right: 30
+    height: 12
+    border-width: 1
+    border-color: #000000ff
+
+    ProgressBar
+      id: taskProgress
+      background-color: #00C800
+      anchors.fill: parent
+      margin: 1
+
+  Label
+    id: amountLabel
+    anchors.fill: progressBg
+    text-align: center
+    font: verdana-11px-rounded
+    color: #ffffff
+    shadow: true
+
+  Button
+    id: actionButton
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 2
+    margin-left: 5
+    margin-right: 5
+    height: 20
+  UIWidget
+    id: doneImage
+    image-source: images/concluido
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-bottom: 2
+    margin-right: 2
+    visible: false
+    size: 12 12
+
+RewardWindow < MainWindow
+  id: rewardWindow
+  size: 300 170
+  anchors.centerIn: parent
+  !text: tr('Recompensas')
+  
+  UIItem
+    id: rewardItem
+    anchors.top: parent.top
+    anchors.right: parent.horizontalCenter
+    margin-top: 35
+    margin-right: 3
+    size: 32 32
+    virtual: true
+    
+  Label
+    id: rewardCount
+    anchors.left: parent.horizontalCenter
+    anchors.verticalCenter: rewardItem.verticalCenter
+    margin-left: 3
+    text-auto-resize: true
+    font: verdana-11px-rounded
+    
+  Label
+    id: xpLabel
+    anchors.top: rewardItem.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 15
+    text-auto-resize: true
+    font: verdana-11px-rounded
+    
+  Button
+    id: closeButton
+    !text: tr('Fechar')
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 5
+    width: 60
+    @onClick: self:getParent():hide()

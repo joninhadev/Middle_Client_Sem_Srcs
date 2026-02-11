@@ -32,4 +32,14 @@ StaticWindow < Window
 
 StaticMainWindow < StaticWindow
   anchors.centerIn: parent
+
+NewHeadlessWindow < UIWindow
+  image-source: /images/ui/3pixel-frame-borderimage
+  image-border: 5
+  anchors.centerIn: parent
+
+NewHeadlessWindowWindow < UIWindow
+  image-source: /images/ui/3pixel-frame-borderimage
+  image-border: 5
+  anchors.centerIn: parent
   

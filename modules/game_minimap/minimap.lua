@@ -5,6 +5,13 @@ fullmapView = false
 loaded = false
 oldZoom = nil
 oldPos = nil
+displayPartyMembersOnMinimap = true
+
+local GameServerUpdatePartyMemberPosition = 0x2E
+
+function getMinimap()
+  return minimapWindow
+end
 
 function init()
   minimapWindow = g_ui.loadUI('minimap', modules.game_interface.getRightPanel())
@@ -19,87 +26,12 @@ function init()
   minimapWidget = minimapWindow:recursiveGetChildById('minimap')
 
   local gameRootPanel = modules.game_interface.getRootPanel()
-
-  Keybind.new("Windows", "Toggle Minimap", "Ctrl+M", "")
-  Keybind.new("UI", "Toggle Full Map", "Ctrl+Shift+M", "")
-
-  Keybind.new("Minimap", "Center", "", "")
-  Keybind.new("Minimap", "One Floor Down", "Alt+PageDown", "")
-  Keybind.new("Minimap", "One Floor Up", "Alt+PageUp", "")
-  Keybind.new("Minimap", "Scroll East", "Alt+Right", "")
-  Keybind.new("Minimap", "Scroll North", "Alt+Up", "")
-  Keybind.new("Minimap", "Scroll South", "Alt+Down", "")
-  Keybind.new("Minimap", "Scroll West", "Alt+Left", "")
-  Keybind.new("Minimap", "Zoom In", "Alt+End", "")
-  Keybind.new("Minimap", "Zoom Out", "Alt+Home", "")
-
-  Keybind.bind("Windows", "Toggle Minimap", {
-    {
-      type = KEY_DOWN,
-      callback = toggle,
-    }
-  })
-  Keybind.bind("UI", "Toggle Full Map", {
-    {
-      type = KEY_DOWN,
-      callback = toggleFullMap,
-    }
-  })
-
-  Keybind.bind("Minimap", "Center", {
-    {
-      type = KEY_DOWN,
-      callback = reset,
-    }
-  })
-  Keybind.bind("Minimap", "One Floor Down", {
-    {
-      type = KEY_DOWN,
-      callback = floorDown,
-    }
-  })
-  Keybind.bind("Minimap", "One Floor Up", {
-    {
-      type = KEY_DOWN,
-      callback = floorUp,
-    }
-  })
-  Keybind.bind("Minimap", "Scroll East", {
-    {
-      type = KEY_PRESS,
-      callback = function() minimapWidget:move(-1, 0) end,
-    }
-  }, gameRootPanel)
-  Keybind.bind("Minimap", "Scroll North", {
-    {
-      type = KEY_PRESS,
-      callback = function() minimapWidget:move(0, 1) end,
-    }
-  }, gameRootPanel)
-  Keybind.bind("Minimap", "Scroll South", {
-    {
-      type = KEY_PRESS,
-      callback = function() minimapWidget:move(0, -1) end,
-    }
-  }, gameRootPanel)
-  Keybind.bind("Minimap", "Scroll West", {
-    {
-      type = KEY_PRESS,
-      callback = function() minimapWidget:move(1, 0) end,
-    }
-  }, gameRootPanel)
-  Keybind.bind("Minimap", "Zoom In", {
-    {
-      type = KEY_DOWN,
-      callback = zoomIn,
-    }
-  })
-  Keybind.bind("Minimap", "Zoom Out", {
-    {
-      type = KEY_DOWN,
-      callback = zoomOut,
-    }
-  })
+  g_keyboard.bindKeyPress('Alt+Left', function() minimapWidget:move(1,0) end, gameRootPanel)
+  g_keyboard.bindKeyPress('Alt+Right', function() minimapWidget:move(-1,0) end, gameRootPanel)
+  g_keyboard.bindKeyPress('Alt+Up', function() minimapWidget:move(0,1) end, gameRootPanel)
+  g_keyboard.bindKeyPress('Alt+Down', function() minimapWidget:move(0,-1) end, gameRootPanel)
+  g_keyboard.bindKeyDown('Ctrl+M', toggle)
+  g_keyboard.bindKeyDown('Ctrl+Shift+M', toggleFullMap)
 
   minimapWindow:setup()
 
@@ -115,6 +47,8 @@ function init()
   if g_game.isOnline() then
     online()
   end
+
+  registerProtocol()
 end
 
 function terminate()
@@ -131,23 +65,19 @@ function terminate()
     onPositionChange = updateCameraPosition
   })
 
-  Keybind.delete("Windows", "Toggle Minimap")
-  Keybind.delete("UI", "Toggle Full Map")
-
-  Keybind.delete("Minimap", "Center")
-  Keybind.delete("Minimap", "One Floor Down")
-  Keybind.delete("Minimap", "One Floor Up")
-  Keybind.delete("Minimap", "Scroll East")
-  Keybind.delete("Minimap", "Scroll North")
-  Keybind.delete("Minimap", "Scroll South")
-  Keybind.delete("Minimap", "Scroll West")
-  Keybind.delete("Minimap", "Zoom In")
-  Keybind.delete("Minimap", "Zoom Out")
+  local gameRootPanel = modules.game_interface.getRootPanel()
+  g_keyboard.unbindKeyPress('Alt+Left', gameRootPanel)
+  g_keyboard.unbindKeyPress('Alt+Right', gameRootPanel)
+  g_keyboard.unbindKeyPress('Alt+Up', gameRootPanel)
+  g_keyboard.unbindKeyPress('Alt+Down', gameRootPanel)
+  g_keyboard.unbindKeyDown('Ctrl+M')
+  g_keyboard.unbindKeyDown('Ctrl+Shift+M')
 
   minimapWindow:destroy()
   if minimapButton then
     minimapButton:destroy()
   end
+  unregisterProtocol()
 end
 
 function toggle()
@@ -173,6 +103,9 @@ function online()
 end
 
 function offline()
+  if minimapWidget and minimapWidget.clearCrossPartyPosition then
+    minimapWidget:clearCrossPartyPosition()
+  end
   saveMap()
 end
 
@@ -243,22 +176,34 @@ function toggleFullMap()
   minimapWidget:setCameraPosition(pos)
 end
 
-function center()
-  minimapWidget:reset()
+-- Party on minimap (opcode 0x2E)
+function registerProtocol()
+  ProtocolGame.registerOpcode(GameServerUpdatePartyMemberPosition, parseUpdatePartyMemberPosition)
 end
 
-function floorDown()
-  minimapWidget:floorDown(1)
+function unregisterProtocol()
+  ProtocolGame.unregisterOpcode(GameServerUpdatePartyMemberPosition, parseUpdatePartyMemberPosition)
 end
 
-function floorUp()
-  minimapWidget:floorUp(1)
+function parseUpdatePartyMemberPosition(protocol, msg)
+  local name = msg:getString()
+  local vocationId = msg:getU16()
+  local position
+  if vocationId ~= 0 then
+    position = g_game.getProtocolGame():getPosition(msg)
+  end
+
+  if displayPartyMembersOnMinimap and minimapWidget and minimapWidget.setCrossPartyPosition then
+    minimapWidget:setCrossPartyPosition(name, vocationId, position)
+  end
 end
 
-function zoomIn()
-  minimapWidget:zoomIn()
-end
-
-function zoomOut()
-  minimapWidget:zoomOut()
+function displayPartyMembers(value)
+  displayPartyMembersOnMinimap = value
+  if not minimapWidget then
+    return false
+  end
+  if not value and minimapWidget.removeCrossPartyIcons then
+    minimapWidget:removeCrossPartyIcons()
+  end
 end

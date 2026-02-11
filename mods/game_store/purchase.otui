@@ -1,0 +1,165 @@
+CheckBoxRound < CheckBox
+  image-source: /images/ui/checkbox_round
+
+StaticMainWindow
+  size: 360 240
+  text: Confirmation of Purchase
+  padding-bottom: 10
+
+  Panel
+    id: preview
+    anchors.top: parent.top
+    anchors.left: parent.left
+    size: 82 82
+    background: #404040
+    border-width-top: 1
+    border-color-top: #00000044
+    border-width-left: 1
+    border-color-left: #00000044
+    border-width-right: 1
+    border-color-right: #ffffff44
+    border-width-bottom: 1
+    border-color-bottom: #ffffff44
+    padding: 1
+
+    UIItem
+      id: item
+      anchors.centerIn: parent
+      size: 32 32
+      virtual: true
+      visible: false
+    
+    UICreature
+      id: outfit
+      anchors.centerIn: parent
+      size: 64 64
+      visible: false
+    
+    UIWidget
+      id: image
+      anchors.centerIn: parent
+      visible: false
+      image-auto-resize: true
+  
+  Panel
+    id: info
+    anchors.top: preview.top
+    anchors.left: preview.right
+    anchors.right: parent.right
+    anchors.bottom: preview.bottom
+    margin-left: 10
+
+    Panel
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      image-source: /images/store/backdrop-dark-grey
+      image-border: 1
+      padding: 2 4
+
+    Label
+      id: name
+      anchors.centerIn: prev
+      font: verdana-11px-monochrome
+      color: #ffbc3b
+      text-auto-resize: true
+
+    Panel
+      id: amount
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      layout:
+        type: verticalBox
+        fit-children: true
+      
+      Label
+        margin-top: 7
+        font: verdana-11px-monochrome
+        text: Amount
+      
+      Panel
+        id: boxes
+        height: 16
+        margin-top: 5
+        layout:
+          type: grid
+          flow: true
+          cell-size: 55 16
+          cell-spacing: 5
+
+    Panel
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      image-source: /images/store/backdrop-dark-grey
+      image-border: 1
+      padding: 2 4
+
+    Label
+      id: price
+      anchors.centerIn: prev
+      font: verdana-11px-monochrome
+      color: #ffbc3b
+      shadow: true
+      text-auto-resize: true
+      margin-right: 5
+
+    PointsCurrencyIcon
+      anchors.verticalCenter: price.verticalCenter
+      anchors.left: price.right
+
+    ItemCurrencyIcon
+      anchors.verticalCenter: price.verticalCenter
+      anchors.left: price.right
+
+    GoldCurrencyIcon
+      anchors.verticalCenter: price.verticalCenter
+      anchors.left: price.right
+
+  Panel
+    id: description
+    anchors.top: prev.bottom
+    anchors.bottom: next.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    margin-bottom: 5
+    background: #404040
+    border-width-top: 1
+    border-color-top: #00000044
+    border-width-left: 1
+    border-color-left: #00000044
+    border-width-right: 1
+    border-color-right: #ffffff44
+    border-width-bottom: 1
+    border-color-bottom: #ffffff44
+    padding: 3
+
+    Label
+      id: label
+      anchors.fill: parent
+      font: verdana-11px-monochrome
+      text-wrap: true
+      color: #c0c0c0
+
+  HorizontalSeparator
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 25
+  
+  SmallButton
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    width: 40
+    text: No
+    @onClick: modules.game_store.cancelPurchase()
+  
+  SmallButton
+    id: confirmBtn
+    anchors.right: prev.left
+    anchors.bottom: parent.bottom
+    width: 40
+    margin-right: 5
+    text: Yes

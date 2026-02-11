@@ -14,6 +14,10 @@ function UIMinimap:onSetup()
   })
 end
 
+function UIMinimap:getAlternatives()
+  return self.alternatives
+end
+
 function UIMinimap:onDestroy()
   for _,widget in pairs(self.alternatives) do
     widget:destroy()
@@ -91,22 +95,134 @@ local function onFlagMouseRelease(widget, pos, button)
   return false
 end
 
+local vocationIcons = {
+    [1] = '/images/game/minimap/rookie.png',
+    [2] = '/images/game/minimap/sorcerer.png',
+    [3] = '/images/game/minimap/druid.png',
+    [4] = '/images/game/minimap/paladin.png',
+    [5] = '/images/game/minimap/knight.png',
+    [6] = '/images/game/minimap/sorcerer.png',
+    [7] = '/images/game/minimap/druid.png',
+    [8] = '/images/game/minimap/paladin.png',
+    [9] = '/images/game/minimap/knight.png',
+    [10] = '/images/game/minimap/monk.png',
+    [11] = '/images/game/minimap/samurai.png',
+    [12] = '/images/game/minimap/bard.png',
+    [13] = '/images/game/minimap/assassin.png',
+    [14] = '/images/game/minimap/sorcerer.png',
+    [15] = '/images/game/minimap/druid.png',
+    [16] = '/images/game/minimap/paladin.png',
+    [17] = '/images/game/minimap/knight.png',
+    [18] = '/images/game/minimap/monk.png',
+    [19] = '/images/game/minimap/monk.png',
+    [20] = '/images/game/minimap/samurai.png',
+    [21] = '/images/game/minimap/samurai.png',
+    [22] = '/images/game/minimap/bard.png',
+    [23] = '/images/game/minimap/bard.png',
+    [24] = '/images/game/minimap/assassin.png',
+    [25] = '/images/game/minimap/assassin.png',
+    [26] = '/images/game/minimap/assassin.png',
+    [27] = '/images/game/minimap/assassin.png',
+    [28] = '/images/game/minimap/assassin.png',
+    [29] = '/images/game/minimap/assassin.png',
+    [30] = '/images/game/minimap/assassin.png',
+    [31] = '/images/game/minimap/assassin.png',
+    [32] = '/images/game/minimap/assassin.png',
+    [33] = '/images/game/minimap/assassin.png',
+    [34] = '/images/game/minimap/assassin.png',
+    [35] = '/images/game/minimap/assassin.png',
+    [36] = '/images/game/minimap/assassin.png',
+    [37] = '/images/game/minimap/assassin.png',
+    [38] = '/images/game/minimap/assassin.png',
+    [39] = '/images/game/minimap/assassin.png',
+    [40] = '/images/game/minimap/assassin.png',
+    [41] = '/images/game/minimap/assassin.png',
+    [42] = '/images/game/minimap/assassin.png',
+    [43] = '/images/game/minimap/assassin.png',
+    [44] = '/images/game/minimap/assassin.png',
+    [45] = '/images/game/minimap/assassin.png',
+    [46] = '/images/game/minimap/assassin.png',
+    [47] = '/images/game/minimap/assassin.png',
+    [48] = '/images/game/minimap/assassin.png',
+    [49] = '/images/game/minimap/assassin.png',
+    [50] = '/images/game/minimap/assassin.png',
+    -- Add more as needed
+}
+g_partyIcons = {}
+
+local partyWidgetIcons = {}
+function UIMinimap:setCrossPartyPosition(name, vocationId, position)
+	if partyWidgetIcons[name] then
+		partyWidgetIcons[name]:destroy()
+		partyWidgetIcons[name] = nil
+	end
+
+    if not name or not vocationId or not position then
+        return
+    end
+
+    -- Get icon based on vocationId
+    local iconPath = vocationIcons[vocationId + 1]
+    if not iconPath then
+        return
+    end
+
+    local partyIcon = g_ui.createWidget('MinimapCross', self)
+    partyIcon:setImageSource(iconPath)
+    partyIcon:setTooltip(name) -- Display the player's name when hovered
+    partyIcon:setSize({ width = 32, height = 32 }) -- Adjust size as needed
+	partyIcon:setClipping(true)
+	partyWidgetIcons[name] = partyIcon
+
+
+    -- Calculate screen position based on the game map position
+    local screenPos = self:getCameraPosition()
+    if not screenPos then
+        return
+    end
+
+    -- Set the widget position
+    self:centerInPosition(partyIcon, position)
+
+    -- Optional: Add animations or effects
+        partyIcon:show() -- Smooth fade-in effect
+
+    -- Store reference for later removal if needed
+    if not g_partyIcons then
+        g_partyIcons = {}
+    end
+    g_partyIcons[#g_partyIcons + 1] = partyIcon
+end
+
+-- Cleanup function if needed
+function UIMinimap:removeCrossPartyIcons()
+    for i = 1, #g_partyIcons do
+		if g_partyIcons[i] then
+			g_partyIcons[i]:destroy()
+			g_partyIcons[i] = nil
+		end
+    end
+end
+
+
 function UIMinimap:setCrossPosition(pos)
   local cross = self.cross
+  if not pos then
+    return
+  end
+
   if not self.cross then
     cross = g_ui.createWidget('MinimapCross', self)
     cross:setIcon('/images/game/minimap/cross')
     self.cross = cross
   end
-	if self:getCameraPosition() then
-		pos.z = self:getCameraPosition().z
-		cross.pos = pos
-		if pos then
-			self:centerInPosition(cross, pos)
-		else
-			cross:breakAnchors()
-		end
-	end
+
+  local cameraPos = self:getCameraPosition()
+  if cameraPos then
+    pos.z = cameraPos.z
+  end
+  cross.pos = pos
+  self:centerInPosition(cross, pos)
 end
 
 function UIMinimap:addFlag(pos, icon, description, temporary)
@@ -142,6 +258,11 @@ function UIMinimap:addAlternativeWidget(widget, pos, maxZoom)
   table.insert(self.alternatives, widget)
 end
 
+function UIMinimap:internalRegisterAlternative(widget)
+  self:centerInPosition(widget, widget.pos)
+  self:getLayout():update()
+end
+
 function UIMinimap:setAlternativeWidgetsVisible(show)
   local layout = self:getLayout()
   layout:disableUpdates()
@@ -159,10 +280,14 @@ end
 
 function UIMinimap:onZoomChange(zoom)
   for _,widget in pairs(self.alternatives) do
-    if (not widget.minZoom or widget.minZoom >= zoom) and widget.maxZoom <= zoom then
-      widget:show()
-    else
-      widget:hide()
+    if widget and zoom then
+      local minZoom = widget.minZoom or -999
+      local maxZoom = widget.maxZoom or 999
+      if minZoom <= zoom and maxZoom >= zoom then
+        widget:show()
+      else
+        widget:hide()
+      end
     end
   end
 end
@@ -249,6 +374,9 @@ function UIMinimap:onDragEnter(pos)
 end
 
 function UIMinimap:onDragMove(pos, moved)
+  if not self.dragReference or not self.dragCameraReference then
+    return false
+  end
   local scale = self:getScale()
   local dx = (self.dragReference.x - pos.x)/scale
   local dy = (self.dragReference.y - pos.y)/scale
@@ -280,9 +408,7 @@ function UIMinimap:createFlagWindow(pos)
   local okButton = self.flagWindow:getChildById('okButton')
   local cancelButton = self.flagWindow:getChildById('cancelButton')
 
-  if positionLabel then
-	positionLabel:setText(string.format('%i, %i, %i', pos.x, pos.y, pos.z))
-  end
+  positionLabel:setText(string.format('%i, %i, %i', pos.x, pos.y, pos.z))
 
   local flagRadioGroup = UIRadioGroup.create()
   for i=0,19 do
@@ -315,5 +441,12 @@ function UIMinimap:destroyFlagWindow()
   if self.flagWindow then
     self.flagWindow:destroy()
     self.flagWindow = nil
+  end
+end
+
+function UIMinimap:clearCrossPartyPosition()
+  for v, icon in pairs(partyWidgetIcons) do
+    icon:destroy()
+    partyWidgetIcons[v] = nil
   end
 end

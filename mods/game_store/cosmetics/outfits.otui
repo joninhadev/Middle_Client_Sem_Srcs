@@ -1,0 +1,23 @@
+Panel
+  UIScrollArea
+    id: list
+    anchors.fill: parent
+    margin-right: 12
+    auto-focus: none
+    vertical-scrollbar: scrollbar
+    text-align: center
+    color: #abababaa
+    layout:
+      type: grid
+      cell-size: 140 128
+      flow: true
+      auto-spacing: true
+    
+  VerticalScrollBar
+    id: scrollbar
+    anchors.top: prev.top
+    anchors.bottom: prev.bottom
+    anchors.left: prev.right
+    margin-left: 2
+    step: 50
+    pixels-scroll: true

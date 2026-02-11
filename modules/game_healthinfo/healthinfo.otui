@@ -1,5 +1,172 @@
-HealthInfoWindow
+HealthInfoShadowWidget < UIWidget
+  size: 115 11
+  image-source: /images/ui/bars
+  image-clip: 0 0 90 11
+  image-border: 4
+  margin-left: 6
+
+HealthInfoProgressBar < UIWidget
+  size: 115 11
+  anchors.left: prev.left
+  anchors.verticalCenter: prev.verticalCenter
+  image-source: /images/ui/bars
+  image-border: 4
+
+CipHealthBar < HealthInfoProgressBar
+  id: healthBar
+  image-clip: 0 11 90 11
+
+CipManaBar < HealthInfoProgressBar
+  id: manaBar
+  image-clip: 0 22 90 11
+
+HealthInfoIcon < UIWidget
+  image-source: /images/ui/health_mana
+  image-clip: 0 0 12 11
+  image-size: 12 11
+  size: 12 11
+
+ManaInfoIcon < UIWidget
+  image-source: /images/ui/health_mana
+  image-clip: 0 11 12 11
+  image-size: 12 11
+  size: 12 11
+
+MiniWindow
   id: healthInfoWindow
+  height: 38
   @onClose: modules.game_healthinfo.onMiniWindowClose()
   &save: true
   &autoOpen: 2
+  
+  // No background, no frame, no title
+  image-source: 
+  image-border: 0
+  text: 
+  
+  // Hide stock miniwindow elements aggressively
+  UIWidget
+    id: miniwindowTopBar
+    visible: false
+    // Force invisible
+    opacity: 0
+    size: 0 0
+    anchors.fill: none
+    enabled: false
+    
+  // Explicitly disable and hide buttons with aggressive properties
+  UIButton
+    id: closeButton
+    visible: false
+    size: 0 0
+    width: 0
+    height: 0
+    anchors.fill: none
+    opacity: 0
+    enabled: false
+    $on:
+      visible: false
+    
+  UIButton
+    id: minimizeButton
+    visible: false
+    size: 0 0
+    width: 0
+    height: 0
+    anchors.fill: none
+    opacity: 0
+    enabled: false
+    $on:
+      visible: false
+
+  UIButton
+    id: lockButton
+    visible: false
+    size: 0 0
+    width: 0
+    height: 0
+    anchors.fill: none
+    opacity: 0
+    enabled: false
+    $on:
+      visible: false
+      
+  VerticalScrollBar
+    id: miniwindowScrollBar
+    visible: false
+    size: 0 0
+    anchors.fill: none
+
+  ResizeBorder
+    id: bottomResizeBorder
+    visible: false
+    size: 0 0
+    anchors.fill: none
+
+  MiniWindowContents
+    anchors.fill: parent
+    padding: 0 0 0 0
+    margin: 0 0 0 0
+    
+    HealthInfoIcon
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-top: 4
+      margin-left: 5
+
+    HealthInfoShadowWidget
+      id: healthBackground
+      anchors.left: prev.right
+      anchors.verticalCenter: prev.verticalCenter
+
+    CipHealthBar
+
+    ManaInfoIcon
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      margin-top: 3
+      margin-left: 5
+
+    HealthInfoShadowWidget
+      id: manaBackground
+      anchors.left: prev.right
+      anchors.verticalCenter: prev.verticalCenter
+
+    CipManaBar
+
+    Label
+      id: healthLabel
+      anchors.left: healthBackground.right
+      anchors.verticalCenter: healthBackground.verticalCenter
+      margin-left: 8
+      text: 100
+      color: #bbbbbb
+      text-auto-resize: true
+
+    Label
+      id: manaLabel
+      anchors.left: manaBackground.right
+      anchors.verticalCenter: manaBackground.verticalCenter
+      margin-left: 8
+      text: 100
+      color: #bbbbbb
+      text-auto-resize: true
+
+    ExperienceBar
+      anchors.top: prev.bottom
+      margin-top: 5
+      visible: false
+      
+    Panel
+      id: conditionPanel
+      layout:
+        type: horizontalBox
+      height: 22
+      margin-top: 4
+      padding: 2
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      border-width: 0
+      background-color: alpha
+      visible: false

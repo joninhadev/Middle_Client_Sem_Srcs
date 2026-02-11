@@ -1,0 +1,35 @@
+MainWindow
+  id: QrWindow
+  !text: tr('Escaneie o c�digo abaixo!')
+  size: 220 250
+
+  UIWidget
+    id: Loading
+    size: 32 32
+    image-source: imagens/loading
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottom: parent.bottom
+    margin-bottom: -10
+
+  UIButton
+    id: qrCode
+    size: 170 170
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: parent.top
+    margin-top: 15
+    opacity: 1.0
+    $hover !disabled:
+      !tooltip: tr('Clique para copiar o c�digo Pix: copia e cola.')
+
+  UIButton
+    id: cancelButton
+    image-source: imagens/exit
+    size: 16 16
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-top: -2
+    margin-right: 10
+    @onClick: onCancelPix()
+
+    $hover:
+      image-source: imagens/exit_onhover

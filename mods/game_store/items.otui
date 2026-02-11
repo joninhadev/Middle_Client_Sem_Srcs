@@ -1,0 +1,59 @@
+Panel
+  layout:
+    type: horizontalBox
+    spacing: 5
+
+  Panel
+    id: left
+    width: 150
+    auto-focus: none
+    layout:
+      type: verticalBox
+      spacing: 5
+    
+    StoreSideTabBar
+      id: tabBar
+      width: 150
+    
+    HorizontalSeparator
+
+    TextEdit
+      id: search
+      placeholder: Search product...
+    
+    HorizontalSeparator
+
+    ComboBox
+      id: sort
+    
+    HorizontalSeparator
+    
+    CheckBox
+      id: sale
+      text: On Sale
+    
+    CheckBox
+      id: afford
+      text: Can Afford
+    
+    HorizontalSeparator
+    
+    CheckBox
+      id: currencyPoints
+      &sortType: 6
+      text: Points
+    CheckBox
+      id: currencyGold
+      &sortType: 7
+      text: Gold
+    CheckBox
+      id: currencyItem
+      &sortType: 8
+      text: Item
+  
+  VerticalSeparator
+
+  Panel
+    id: content
+    width: 440
+    padding: 2 0

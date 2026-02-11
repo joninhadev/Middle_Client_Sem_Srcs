@@ -61,6 +61,19 @@ function UITabBar:addTab(text, panel, icon)
   return tab
 end
 
+function UITabBar:addTabCustom(tab, panel)
+  panel.isTab = true
+  tab.tabPanel = panel
+  tab.tabBar = self
+  tab.onClick = onTabClick
+  tab.onMouseRelease = onTabMouseRelease
+
+  table.insert(self.tabs, tab)
+  if #self.tabs == 1 then
+    self:selectTab(tab)
+  end
+end
+
 function UITabBar:addButton(text, func, icon)
   local button = g_ui.createWidget(self:getStyleName() .. 'Button', self.buttonsPanel)
   button:setText(text)

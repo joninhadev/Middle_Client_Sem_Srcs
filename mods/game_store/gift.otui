@@ -1,0 +1,107 @@
+StaticMainWindow
+  size: 280 230
+  text: Gift Tibia Coins
+  font: verdana-11px-monochrome
+
+  Label
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 56
+    color: #c0c0c0
+    font: verdana-11px-monochrome
+    !text: ("Please select the amount of Tibia\nCoins you like to gift and enter the\nname of the character that should\nreceive the Tibia Coins.")
+  
+  Label
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    margin-top: 10
+    color: #c0c0c0
+    font: verdana-11px-monochrome
+    text: Recipient:
+  
+  TextEdit
+    id: input
+    anchors.top: prev.top
+    anchors.right: parent.right
+    color: #c0c0c0
+    font: verdana-11px-monochrome
+    size: 150 16
+    padding: 1 4
+  
+  Label
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    margin-top: 10
+    color: #c0c0c0
+    font: verdana-11px-monochrome
+    text: Transferable Tibia Coins:
+  
+  Label
+    id: giftable
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 7
+    color: #c0c0c0
+    font: verdana-11px-monochrome
+    text-auto-resize: true
+
+  UIWidget
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    image-source: /images/store/icon-tibiacoin
+    margin-left: 4
+  
+  Label
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    margin-top: 10
+    color: #c0c0c0
+    font: verdana-11px-monochrome
+    text: Amount to gift:
+  
+  Label
+    id: amount
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 7
+    color: #c0c0c0
+    font: verdana-11px-monochrome
+    text-auto-resize: true
+
+  UIWidget
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    image-source: /images/store/icon-tibiacoin
+    margin-left: 4
+  
+  HorizontalScrollBar
+    id: amountBar
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 10
+    step: 100
+    focusable: false
+  
+  HorizontalSeparator
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 28
+  
+  SmallButton
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 40 20
+    text: Cancel
+    @onClick: modules.game_store.hideGift()
+  
+  SmallButton
+    id: gift
+    anchors.right: prev.left
+    anchors.bottom: parent.bottom
+    size: 40 20
+    margin-right: 5
+    text: Gift
+    @onClick: modules.game_store.sendGift()

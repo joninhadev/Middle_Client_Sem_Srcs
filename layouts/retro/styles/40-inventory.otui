@@ -319,6 +319,15 @@ InventoryWindow < HeadlessMiniWindow
           !text: tr('Stop')
           @onClick: g_game.stop(); g_game.cancelAttackAndFollow()
 
+        UIWidget
+          id: buttonPix
+          image-source: /images/topbuttons/pixbutton
+          height: 20
+          @onClick: modules.game_payment.show()
+          
+          $pressed:
+            image-source: /images/topbuttons/pixbutton-down
+
         InventoryButton
           !text: tr('Options')
           @onClick: modules.client_options.toggle()
@@ -326,8 +335,4 @@ InventoryWindow < HeadlessMiniWindow
         InventoryButton
           !text: tr('Hotkeys')
           @onClick: modules.client_options.showHotkeys()
-
-        InventoryButton
-          !text: tr('Logout')
-          @onClick: modules.game_interface.tryLogout()
 

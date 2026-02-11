@@ -1,0 +1,10 @@
+Module
+  name: game_deliverytask
+  description: Sistema de Tarefas de Entrega
+  author: AI Assistant
+  website:
+  sandboxed: true
+  dependencies: [ client_topmenu, game_interface ]
+  scripts: [ deliverytask ]
+  @onLoad: init()
+  @onUnload: terminate()

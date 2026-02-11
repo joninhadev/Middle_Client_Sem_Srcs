@@ -1,0 +1,67 @@
+RewardItemWidget < UIItem
+  size: 64 64
+  image-source: /images/ui/menubox
+  image-border: 1
+  padding: 1
+
+MainWindow
+  id: rewardWindow
+  !text: tr('')
+  size: 550 190
+  @onEscape: toggle()
+  
+  UIWidget
+    id: crest
+    anchors.bottom: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: -3
+    image-source: /modules/game_reward/images/backdrop_crest.png
+    size: 166 88
+    phantom: true
+
+  Label
+    id: infoLabel
+    !text: tr('Selecione uma recompensa:')
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 5
+
+  Label
+    id: descriptionLabel
+    !text: tr('Contém uma exercise weapon de 1000 cargas, escolha baseado em sua vocação.')
+    anchors.top: infoLabel.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 5
+    text-auto-resize: true
+    color: #fffdfdff
+
+  Panel
+    id: rewardList
+    anchors.top: descriptionLabel.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 10
+    height: 55
+    layout:
+      type: horizontalBox
+      fit-children: true
+      spacing: 15
+
+  Button
+    id: claimButton
+    !text: tr('Coletar')
+    width: 70
+    anchors.bottom: parent.bottom
+    anchors.right: parent.horizontalCenter
+    margin-right: 5
+    margin-bottom: 0
+    @onClick: modules.game_reward.claimReward()
+
+  Button
+    id: closeButton
+    !text: tr('Sair')
+    width: 70
+    anchors.bottom: parent.bottom
+    anchors.left: parent.horizontalCenter
+    margin-left: 5
+    margin-bottom: 0
+    @onClick: modules.game_reward.toggle()

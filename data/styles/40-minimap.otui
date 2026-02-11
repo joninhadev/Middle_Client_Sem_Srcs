@@ -2,6 +2,21 @@ MinimapFlag < UIWidget
   size: 11 11
   focusable: false
 
+MinimapParty < UIWidget
+  size: 16 16
+  focusable: true
+
+PartyMode < UIButton
+  size: 20 20
+  image-source: /images/game/minimap/party-vocation-color
+  image-clip: 0 0 20 20
+  anchors.bottom: parent.bottom
+  anchors.left: parent.left
+  margin-bottom: 64
+  margin-left: 1
+  $pressed:
+    image-clip: 0 20 20 20
+
 MinimapCross < UIWidget
   focusable: false
   phantom: true
@@ -58,6 +73,7 @@ MinimapResetButton < Button
   anchors.left: parent.left
   anchors.top: parent.top
   margin: 4
+  visible: false
 
 Minimap < UIMinimap
   draggable: true
@@ -68,36 +84,46 @@ Minimap < UIMinimap
   MinimapFloorUpButton
     id: floorUpWidget
     @onClick: self:getParent():floorUp(1)
+    visible: false
 
   MinimapFloorDownButton
     id: floorDownWidget
     @onClick: self:getParent():floorDown(1)
+    visible: false
 
   MinimapZoomInButton
     id: zoomInWidget
     @onClick: self:getParent():zoomIn()
+    visible: false
 
   MinimapZoomOutButton
     id: zoomOutWidget
     @onClick: self:getParent():zoomOut()
+    visible: false
 
   MinimapResetButton
     id: resetWidget
     @onClick: self:getParent():reset()
+    visible: false
+
+  PartyMode
+    id: partyMode
+    @onClick: self:getParent():switchPartyView(self)
+    visible: false
 
 
 // Minimap Flag Create Window
 
 
 MinimapFlagCheckBox < CheckBox
-  size: 15 15
-  margin-left: 2
+  size: 16 16
+  margin-left: 5
   image-source: /images/game/minimap/flagcheckbox
-  image-size: 15 15
+  image-size: 16 16
   image-border: 3
   icon-source: /images/game/minimap/mapflags
   icon-size: 11 11
-  icon-offset: 2 4
+  icon-offset: 2 2
   anchors.left: prev.right
   anchors.top: prev.top
   $!checked:
@@ -110,32 +136,39 @@ MinimapFlagCheckBox < CheckBox
     image-clip: 52 0 26 26
 
 MinimapFlagWindow < MainWindow
-  !text: tr('Create Map Mark')
-  size: 196 185
+  !text: tr('Edit Mark')
+  size: 286 189
 
   Label
     !text: tr('Position') .. ':'
     text-auto-resize: true
     anchors.top: parent.top
+    visible: false
     anchors.left: parent.left
-    margin-top: 2
 
   Label
     id: position
+    visible: false
     text-auto-resize: true
     anchors.top: parent.top
     anchors.right: parent.right
-    margin-top: 2
 
   Label
-    !text: tr('Description') .. ':'
+    !text: tr('Enter a short description') .. ':'
     anchors.left: parent.left
     anchors.top: prev.bottom
-    margin-top: 7
+    margin-top: -18
 
   TextEdit
     id: description
     margin-top: 3
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    anchors.right: parent.right
+
+  Label
+    !text: tr('Select a type') .. ':'
+    margin-top: 12
     anchors.left: parent.left
     anchors.top: prev.bottom
     anchors.right: parent.right
@@ -145,7 +178,7 @@ MinimapFlagWindow < MainWindow
     icon-source: /images/game/minimap/flag0
     anchors.left: parent.left
     anchors.top: prev.bottom
-    margin-top: 6
+    margin-top: 5
     margin-left: 0  
 
   MinimapFlagCheckBox
@@ -189,7 +222,7 @@ MinimapFlagWindow < MainWindow
     icon-source: /images/game/minimap/flag10
     anchors.left: parent.left
     anchors.top: prev.bottom
-    margin-top: 6
+    margin-top: 5
     margin-left: 0  
 
   MinimapFlagCheckBox
@@ -228,10 +261,16 @@ MinimapFlagWindow < MainWindow
     id: flag19
     icon-source: /images/game/minimap/flag19
 
+  HorizontalSeparator
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: next.top
+    margin-bottom: 8
+
   Button
     id: okButton
     !text: tr('Ok')
-    width: 64
+    width: 43
     anchors.right: next.left
     anchors.bottom: parent.bottom
     margin-right: 10
@@ -239,24 +278,17 @@ MinimapFlagWindow < MainWindow
   Button
     id: cancelButton
     !text: tr('Cancel')
-    width: 64
+    width: 43
     anchors.right: parent.right
     anchors.bottom: parent.bottom
 
-MinimapWindow < MiniWindow
-  height: 150
-
-  Label
-    text: ?
-    text-align: center
-    phantom: false
-    !tooltip: tr('Hold left mouse button to navigate\nScroll mouse middle button to zoom\nRight mouse button to create map marks\nPress Ctrl+Shift+M to view the entire game map')
-    anchors.top: lockButton.top
-    anchors.right: lockButton.left
-    margin-right: 3
-    size: 14 14
+MinimapWindow < HeadlessMiniWindow
+  height: 175
+  &forceOpen: true
 
   MiniWindowContents
+    margin: 5
+
     Minimap
       id: minimap
       anchors.fill: parent
