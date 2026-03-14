@@ -729,6 +729,14 @@ OutfitWindow < MainWindow
     margin-bottom: 30
 
   Button
+    id: outfitBonusButton
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    text: Outfit Bonus
+    width: 90
+    @onClick: modules.game_bonusoutfit.toggle()
+
+  Button
     anchors.bottom: parent.bottom
     anchors.right: parent.right
     text: Cancel

@@ -49,12 +49,18 @@ local DAILY_REWARD_SYSTEM_TYPE_OTHER = 1
 local DAILY_REWARD_SYSTEM_TYPE_PREY_REROLL = 2
 local DAILY_REWARD_SYSTEM_TYPE_XP_BOOST = 3
 
+local killTrackerRegistered = false
+
 function init()
   connect(g_game, { onEnterGame = registerProtocol,
                     onPendingGame = registerProtocol,
                     onGameEnd = unregisterProtocol })
+  connect(g_game, { onEnterGame = registerKillTrackerOnly,
+                    onPendingGame = registerKillTrackerOnly,
+                    onGameEnd = unregisterKillTrackerOnly })
   if g_game.isOnline() then
     registerProtocol()
+	registerKillTrackerOnly()
   end
 end
 
@@ -62,8 +68,64 @@ function terminate()
   disconnect(g_game, { onEnterGame = registerProtocol,
                     onPendingGame = registerProtocol,
                     onGameEnd = unregisterProtocol })
+  disconnect(g_game, { onEnterGame = registerKillTrackerOnly,
+                    onPendingGame = registerKillTrackerOnly,
+                    onGameEnd = unregisterKillTrackerOnly })
                     
   unregisterProtocol()
+  unregisterKillTrackerOnly()
+end
+
+-- KillTracker 0xD1: registrado sempre (também para protocolo < 1200 onde GameTibia12Protocol é false)
+function registerKillTrackerOnly()
+  if killTrackerRegistered then return end
+  ProtocolGame.registerOpcode(ServerPackets.KillTracker, killTrackerHandler)
+  killTrackerRegistered = true
+end
+
+function unregisterKillTrackerOnly()
+  if not killTrackerRegistered then return end
+  ProtocolGame.unregisterOpcode(ServerPackets.KillTracker)
+  killTrackerRegistered = false
+end
+
+function killTrackerHandler(protocol, msg)
+  local monsterName = msg:getString()
+  local lookType = msg:getU16()
+  local lookHead = msg:getU8()
+  local lookBody = msg:getU8()
+  local lookLegs = msg:getU8()
+  local lookFeet = msg:getU8()
+  local addons = msg:getU8()
+  local size = msg:getU8()
+  local items = {}
+  local version = g_game.getProtocolVersion()
+  for i = 1, size do
+    local itemId = msg:getU16()
+    if version < 1150 then
+      msg:getU8() -- MARK_UNMARKED (0xFF)
+    end
+    local var = msg:getU8()
+    if version > 1150 then
+      if var == 1 then msg:getU32() end
+      if version >= 1260 then
+        if msg:getU8() == 1 then msg:getU32() end
+      end
+    end
+    local count = (var and var > 0 and var < 0xFE) and var or 1
+    local item = Item.create(itemId, count)
+    local itemName = "?"
+    if item and item.getMarketData then
+      local ok, data = pcall(function() return item:getMarketData() end)
+      if ok and data and data.name then itemName = data.name end
+    end
+    table.insert(items, { itemName, item })
+  end
+  scheduleEvent(function()
+    if modules.game_huntanalyzer and modules.game_huntanalyzer.injectKillTracker then
+      modules.game_huntanalyzer.injectKillTracker(monsterName, lookType, lookHead, lookBody, lookLegs, lookFeet, addons, items)
+    end
+  end, 0)
 end
 
 function registerProtocol()
@@ -546,23 +608,7 @@ function registerProtocol()
 	local supplyStashMenu = msg:getU8() -- ('Stow item', 'Stow container' ...)
 	local marketMenu = msg:getU8() -- ('Show in market')
   end)
-
-  registerOpcode(ServerPackets.KillTracker, function(protocol, msg)
-	msg:getString() -- Name
-	msg:getU16() -- lookType
-	msg:getU8() -- lookHead
-	msg:getU8() -- lookBody
-	msg:getU8() -- lookLegs
-	msg:getU8() -- lookFeet
-	msg:getU8() -- lookAddons
-	local size = msg:getU8() -- Corpse size
-	if size > 0 then
-		for i = 1, size do
-			readAddItem(msg)
-		end
-	end
-  end)
-
+  
   registerOpcode(ServerPackets.UpdateSupplyTracker, function(protocol, msg)
 	msg:getU16() -- Item client ID
   end)

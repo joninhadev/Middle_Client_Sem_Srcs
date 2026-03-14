@@ -1,0 +1,11 @@
+Module
+  name: game_loot_lookup
+  description: Lookup monsters that drop specific items
+  author: Antigravity
+  website: https://github.com/edubart/otclient
+  sandboxed: true
+  autoload: true
+  dependencies: [ client_topmenu, game_interface ]
+  scripts: [ loot_lookup ]
+  @onLoad: init()
+  @onUnload: terminate()

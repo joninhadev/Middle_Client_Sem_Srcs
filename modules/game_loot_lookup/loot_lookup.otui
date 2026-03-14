@@ -1,0 +1,120 @@
+LootCreatureBox < UIWidget
+  border-width: 1
+  border-color: #000000
+  background-color: #222222
+  image-border: 1
+
+  UICreature
+    id: creature
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: name.top
+    margin: 5
+    
+  Label
+    id: name
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+    font: verdana-9px
+    margin-bottom: 5
+
+MainWindow
+  id: lootLookupWindow
+  !text: tr('Drop Loot Information')
+  size: 640 360
+
+
+  Label
+    id: searchLabel
+    !text: tr('Pesquisar:')
+    anchors.top: parent.top
+    anchors.left: parent.left
+    width: 80
+    margin-top: 5
+
+  TextEdit
+    id: searchInput
+    multiline: false
+    anchors.top: searchLabel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+
+
+  Button
+    id: searchButton
+    !text: tr('Buscar')
+    anchors.top: searchInput.bottom
+    anchors.right: parent.right
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 4
+    width: 60
+
+
+  Label
+    id: resultLabel
+    !text: tr('Criaturas:')
+    anchors.top: searchInput.bottom
+    anchors.left: parent.left
+    margin-top: 10
+
+  ScrollablePanel
+    id: resultList
+    anchors.top: resultLabel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: closeButton.top
+    margin-top: 5
+    margin-bottom: 10
+    vertical-scrollbar: resultListScrollBar
+    layout:
+      type: grid
+      cell-size: 80 90
+      cell-spacing: 5
+      flow: true
+
+  VerticalScrollBar
+    id: resultListScrollBar
+    anchors.top: resultList.top
+    anchors.bottom: resultList.bottom
+    anchors.right: resultList.right
+    step: 14
+    pixels-scroll: true
+
+  Button
+    id: prevButton
+    !text: '<<'
+    width: 20
+    anchors.right: pageLabel.left
+    anchors.bottom: parent.bottom
+    margin-right: 5
+
+  Label
+    id: pageLabel
+    !text: '1/1'
+    width: 40
+    text-align: center
+    anchors.right: nextButton.left
+    anchors.bottom: parent.bottom
+    margin-bottom: 3
+    margin-right: 5
+
+  Button
+    id: nextButton
+    !text: '>>'
+    width: 20
+    anchors.right: closeButton.left
+    anchors.bottom: parent.bottom
+    margin-right: 15
+
+  Button
+    id: closeButton
+    !text: tr('Fechar')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    anchors.horizontalCenter: parent.horizontalCenter
+

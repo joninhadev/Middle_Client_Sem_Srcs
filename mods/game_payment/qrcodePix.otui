@@ -1,6 +1,6 @@
 MainWindow
   id: QrWindow
-  !text: tr('Escaneie o cï¿½digo abaixo!')
+  !text: tr('Escaneie o código abaixo!')
   size: 220 250
 
   UIWidget
@@ -19,7 +19,7 @@ MainWindow
     margin-top: 15
     opacity: 1.0
     $hover !disabled:
-      !tooltip: tr('Clique para copiar o cï¿½digo Pix: copia e cola.')
+      !tooltip: tr('Clique para copiar o código Pix: copia e cola.')
 
   UIButton
     id: cancelButton

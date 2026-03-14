@@ -39,7 +39,7 @@ FilterButton < Button
 MainWindow
   id: spelllistWindow
   !text: tr('Spell List')
-  size: 550 400
+  size: 550 450
   @onEscape: toggle()
 
   TextList
@@ -232,11 +232,11 @@ MainWindow
     width: 75
 
   CheckBox
-    id: vocationBoxPaladin
+    id: vocationBoxArcher
     anchors.left: prev.left
     anchors.top: prev.bottom
     margin-top: 3
-    !text: tr('Paladin')
+    !text: tr('Archer')
     width: 75
 
   CheckBox
@@ -245,6 +245,30 @@ MainWindow
     anchors.top: prev.bottom
     margin-top: 3
     !text: tr('Knight')
+    width: 75
+
+  CheckBox
+    id: vocationBoxDwarf
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Dwarf')
+    width: 75
+
+  CheckBox
+    id: vocationBoxOrc
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Orc')
+    width: 75
+
+  CheckBox
+    id: vocationBoxElf
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Elf')
     width: 75
 
   Label

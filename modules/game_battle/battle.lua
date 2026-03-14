@@ -14,6 +14,18 @@ prevCreature = nil
 battleButtons = {}
 local ageNumber = 1
 local ages = {}
+local knownVocations = {}
+local knownSummons = {}
+
+local vocationGroups = {
+  [1] = 1, [2] = 1, [3] = 1, [4] = 1, [40] = 1, -- Sorcerers
+  [5] = 2, [6] = 2, [7] = 2, [8] = 2, [41] = 2, -- Druids
+  [9] = 3, [10] = 3, [11] = 3, [12] = 3, [42] = 3, -- Archers
+  [13] = 4, [14] = 4, [15] = 4, [16] = 4, [43] = 4, -- Knights
+  [17] = 5, [18] = 5, [19] = 5, [20] = 5, [44] = 5, -- Dwarfs
+  [21] = 6, [22] = 6, [23] = 6, [24] = 6, [25] = 6, [26] = 6, [45] = 6, -- Orcs
+  [35] = 7, [36] = 7, [37] = 7, [38] = 7, [39] = 7, [46] = 7  -- Elves
+}
 
 function init()  
   g_ui.importStyle('battlebutton')
@@ -89,6 +101,8 @@ function init()
     onAttackingCreatureChange = updateSquare,
     onFollowingCreatureChange = updateSquare 
   })
+
+  ProtocolGame.registerExtendedOpcode(111, onReceiveVocationOpcode)
 end
 
 function terminate()
@@ -115,6 +129,8 @@ function terminate()
     onAttackingCreatureChange = updateSquare,
     onFollowingCreatureChange = updateSquare 
   })
+
+  ProtocolGame.unregisterExtendedOpcode(111)
 
   removeEvent(updateEvent)
 end
@@ -194,16 +210,20 @@ end
 function hideFilterPanel()
   filterPanel.originalHeight = filterPanel:getHeight()
   filterPanel:setHeight(0)
-  toggleFilterButton:getParent():setMarginTop(0)
-  toggleFilterButton:setImageClip(torect("0 0 21 12"))
+  if toggleFilterButton and toggleFilterButton:getParent() then
+    toggleFilterButton:getParent():setMarginTop(0)
+    toggleFilterButton:setImageClip(torect("0 0 21 12"))
+  end
   setHidingFilters(true)
   filterPanel:setVisible(false)
 end
 
 function showFilterPanel()
-  toggleFilterButton:getParent():setMarginTop(5)
+  if toggleFilterButton and toggleFilterButton:getParent() then
+    toggleFilterButton:getParent():setMarginTop(5)
+    toggleFilterButton:setImageClip(torect("21 0 21 12"))
+  end
   filterPanel:setHeight(filterPanel.originalHeight)
-  toggleFilterButton:setImageClip(torect("21 0 21 12"))
   setHidingFilters(false)
   filterPanel:setVisible(true)
 end
@@ -317,17 +337,58 @@ function doCreatureFitFilters(creature)
   local hideMonsters = filterPanel.buttons.hideMonsters:isChecked()
   local hideSkulls = filterPanel.buttons.hideSkulls:isChecked()
   local hideParty = filterPanel.buttons.hideParty:isChecked()
+  local hideGuild = filterPanel.buttons.hideGuild:isChecked()
+  local hideSummons = filterPanel.buttons.hideSummons:isChecked()
+
+  local hideSorcerers = filterPanel.buttons.hideSorcerers:isChecked()
+  local hideDruids = filterPanel.buttons.hideDruids:isChecked()
+  local hideArchers = filterPanel.buttons.hideArchers:isChecked()
+  local hideKnights = filterPanel.buttons.hideKnights:isChecked()
+  local hideDwarfs = filterPanel.buttons.hideDwarfs:isChecked()
+  local hideOrcs = filterPanel.buttons.hideOrcs:isChecked()
+  local hideElves = filterPanel.buttons.hideElves:isChecked()
 
   if hidePlayers and creature:isPlayer() then
     return false
   elseif hideNPCs and creature:isNpc() then
     return false
-  elseif hideMonsters and creature:isMonster() then
+  elseif hideMonsters and creature:isMonster() and not knownSummons[creature:getName()] then
+    return false
+  elseif hideSummons and knownSummons[creature:getName()] then
     return false
   elseif hideSkulls and creature:isPlayer() and creature:getSkull() == SkullNone then
     return false
   elseif hideParty and creature:getShield() > ShieldWhiteBlue then
     return false
+  elseif hideGuild and (creature:getEmblem() == EmblemGreen or creature:getEmblem() == EmblemMember) then
+    return false
+  elseif creature:isPlayer() then
+    local cVoc = knownVocations[creature:getName()]
+    if not cVoc then
+      local success, retVoc = pcall(function() return creature:getVocation() end)
+      if success and retVoc then
+        cVoc = retVoc
+      end
+    end
+
+    if cVoc then
+      local cGroup = vocationGroups[cVoc]
+      if hideSorcerers and cGroup == 1 then
+        return false
+      elseif hideDruids and cGroup == 2 then
+        return false
+      elseif hideArchers and cGroup == 3 then
+        return false
+      elseif hideKnights and cGroup == 4 then
+        return false
+      elseif hideDwarfs and cGroup == 5 then
+        return false
+      elseif hideOrcs and cGroup == 6 then
+        return false
+      elseif hideElves and cGroup == 7 then
+        return false
+      end
+    end
   end
 
   return true
@@ -463,4 +524,28 @@ function updateSquare()
   
   color = creature == hoveredCreature and color.hovered or color.notHovered
   creature:showStaticSquare(color)
+end
+
+function onReceiveVocationOpcode(protocol, opcode, buffer)
+  if opcode ~= 111 then return end
+  local status, data = pcall(function() return json.decode(buffer) end)
+  if not status or not data then return end
+
+  knownVocations = {}
+  knownSummons = {}
+
+  if data.v then
+    for name, voc in pairs(data.v) do
+      knownVocations[name] = voc
+    end
+  end
+
+  if data.s then
+    for name, isSummon in pairs(data.s) do
+      knownSummons[name] = true
+    end
+  end
+  
+  -- Force an update on the battle list after receiving new data
+  addEvent(checkCreatures)
 end

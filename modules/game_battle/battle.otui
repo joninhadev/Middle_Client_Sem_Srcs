@@ -7,16 +7,16 @@ BattleIcon < UICheckBox
     color: #cccccc
 
   $!checked:
-    image-clip: 0 0 20 20
+    image-color: white
 
   $hover !checked:
-    image-clip: 0 40 20 20
+    image-color: #cccccc
 
   $checked:
-    image-clip: 0 20 20 20
+    image-color: #555555
 
   $hover checked:
-    image-clip: 0 60 20 20
+    image-color: #777777
 
   $disabled:
     image-color: #ffffff88
@@ -25,7 +25,7 @@ BattlePlayers < BattleIcon
   image-source: /images/game/battle/battle_players
 
 BattleNPCs < BattleIcon
-  image-source: /images/game/battle/battle_npcs
+  image-source: /images/game/battle/battle_npc
 
 BattleMonsters < BattleIcon
   image-source: /images/game/battle/battle_monsters
@@ -35,6 +35,33 @@ BattleSkulls < BattleIcon
 
 BattleParty < BattleIcon
   image-source: /images/game/battle/battle_party
+
+BattleGuild < BattleIcon
+  image-source: /images/game/battle/battle_guild
+
+BattleSorcerers < BattleIcon
+  image-source: /images/game/battle/battle_sorcerer
+
+BattleDruids < BattleIcon
+  image-source: /images/game/battle/battle_druid
+
+BattleArchers < BattleIcon
+  image-source: /images/game/battle/battle_archer
+
+BattleKnights < BattleIcon
+  image-source: /images/game/battle/battle_knight
+
+BattleDwarfs < BattleIcon
+  image-source: /images/game/battle/battle_dwarf
+
+BattleOrcs < BattleIcon
+  image-source: /images/game/battle/battle_orc
+
+BattleElves < BattleIcon
+  image-source: /images/game/battle/battle_elf
+
+BattleSummons < BattleIcon
+  image-source: /images/game/battle/battle_summon
 
 MiniWindow
   id: battleWindow
@@ -51,17 +78,20 @@ MiniWindow
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: miniwindowScrollBar.left
-    height: 45
+    height: 70
 
     Panel
       id: buttons
       anchors.top: parent.top
       anchors.horizontalCenter: parent.horizontalCenter
-      height: 20
-      width: 120
+      height: 40
+      width: 148
       layout:
-        type: horizontalBox
-        spacing: 5
+        type: grid
+        cell-size: 16 16
+        flow: true
+        cell-spacing: 6
+        num-columns: 7
 
       BattlePlayers
         id: hidePlayers
@@ -89,6 +119,51 @@ MiniWindow
         id: hideParty
         !tooltip: tr('Hide party members')
         @onSetup: if g_app.isMobile() then self:setChecked(true) end
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleGuild
+        id: hideGuild
+        !tooltip: tr('Hide guild members')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleSummons
+        id: hideSummons
+        !tooltip: tr('Hide Summons')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleSorcerers
+        id: hideSorcerers
+        !tooltip: tr('Hide Sorcerers')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleDruids
+        id: hideDruids
+        !tooltip: tr('Hide Druids')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleArchers
+        id: hideArchers
+        !tooltip: tr('Hide Archers')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleKnights
+        id: hideKnights
+        !tooltip: tr('Hide Knights')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleDwarfs
+        id: hideDwarfs
+        !tooltip: tr('Hide Dwarfs')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleOrcs
+        id: hideOrcs
+        !tooltip: tr('Hide Orcs')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleElves
+        id: hideElves
+        !tooltip: tr('Hide Elves')
         @onCheckChange: modules.game_battle.checkCreatures()
 
     Panel

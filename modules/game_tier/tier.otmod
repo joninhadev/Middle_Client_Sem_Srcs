@@ -1,0 +1,11 @@
+Module
+  name: game_tier
+  description: Forge/Tier Ascension UI
+  author: Antigravity
+  website: -
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1000
+  scripts: [ tier ]
+  @onLoad: init()
+  @onUnload: terminate()

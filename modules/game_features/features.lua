@@ -18,7 +18,7 @@ function updateFeatures(version)
 	g_game.enableFeature(GameMagicEffectU16)
 	--g_game.enableFeature(GameMapDrawGroundFirst)
     --g_game.enableFeature(GameMinimapLimitedToSingleFloor) -- it will generate minimap only for current floor
-    --g_game.enableFeature(GameSpritesAlphaChannel)
+    g_game.enableFeature(GameSpritesAlphaChannel)
     
     if(version >= 770) then
         g_game.enableFeature(GameLooktypeU16)

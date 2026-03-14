@@ -18,17 +18,28 @@ function init()
                     onSpellGroupCooldown = onSpellGroupCooldown,
                     onSpellCooldown = onSpellCooldown })
 
-  cooldownButton = modules.client_topmenu.addRightGameToggleButton('cooldownButton', 
-    tr('Cooldowns'), '/images/topbuttons/cooldowns', toggle, false, 5)
-  cooldownButton:setOn(true)
-  cooldownButton:hide()
+  -- connect to game interface
+  local mapPanel
+  if modules.game_interface then
+    if modules.game_interface.getMapPanel then
+      mapPanel = modules.game_interface.getMapPanel()
+    elseif modules.game_interface.getRootPanel then
+      mapPanel = modules.game_interface.getRootPanel():getChildById('gameMapPanel')
+    end
+  end
+  
+  if not mapPanel then
+    local root = g_ui.getRootWidget()
+    mapPanel = root:recursiveGetChildById('gameMapPanel')
+  end
+  
+  cooldownWindow = g_ui.loadUI('cooldown', mapPanel)
+  
+  -- no need to move child index as we use anchors on the map panel overlay
+  -- mapPanel:moveChildToIndex(cooldownWindow, 1)
 
-  cooldownWindow = g_ui.loadUI('cooldown', modules.game_interface.getRightPanel())
-  cooldownWindow:disableResize()
-  cooldownWindow:setup()
-
-  contentsPanel = cooldownWindow:getChildById('contentsPanel')
-  cooldownPanel = contentsPanel:getChildById('cooldownPanel')
+  contentsPanel = cooldownWindow -- no longer separate contents panel
+  cooldownPanel = cooldownWindow:getChildById('cooldownPanel')
 
   -- preload cooldown images
   for k,v in pairs(SpelllistSettings) do
@@ -50,8 +61,14 @@ function terminate()
   end
   cooldowns = {}
 
-  cooldownWindow:destroy()
-  cooldownButton:destroy()
+  if cooldownButton then
+    cooldownButton:destroy()
+    cooldownButton = nil
+  end
+  if cooldownWindow then
+    cooldownWindow:destroy()
+    cooldownWindow = nil
+  end
 end
 
 function loadIcon(iconId)
@@ -78,27 +95,15 @@ function loadIcon(iconId)
   return icon
 end
 
-function onMiniWindowClose()
-  cooldownButton:setOn(false)
-end
-
-function toggle()
-  if cooldownButton:isOn() then
-    cooldownWindow:close()
-    cooldownButton:setOn(false)
-  else
-    cooldownWindow:open()
-    cooldownButton:setOn(true)
-  end
-end
 
 function online()
-  if g_game.getFeature(GameSpellList) then
+  --[[if g_game.getFeature(GameSpellList) then
     cooldownButton:show()
   else
     cooldownButton:hide()
     cooldownWindow:close()
-  end
+  end]]
+ -- cooldownWindow:open() -- panels are visible by default usually? or need show()?
 
   if not lastPlayer or lastPlayer ~= g_game.getCharacterName() then
     refresh()
@@ -149,6 +154,16 @@ end
 function updateCooldown(progressRect, duration)
   progressRect:setPercent(progressRect:getPercent() + 10000/duration)
 
+  if progressRect.label then
+    local remaining = math.ceil((100 - progressRect:getPercent()) * duration / 100000)
+    if remaining > 0 then
+      progressRect.label:setText(remaining .. 's')
+      progressRect.label:setVisible(true)
+    else
+      progressRect.label:setVisible(false)
+    end
+  end
+
   if progressRect:getPercent() < 100 then
     removeEvent(progressRect.event)
 
@@ -157,6 +172,9 @@ function updateCooldown(progressRect, duration)
       progressRect.callback[ProgressCallback.update]() 
     end, 100)
   else
+    if progressRect.label then
+      progressRect.label:setVisible(false)
+    end
     progressRect.callback[ProgressCallback.finish]()
   end
 end
@@ -185,6 +203,13 @@ function onSpellCooldown(iconId, duration)
   else
     progressRect:setPercent(0)
   end
+
+  local label = icon:getChildById('spellCooldownLabel')
+  if not label then
+    label = g_ui.createWidget('SpellCooldownLabel', icon)
+    label:setId('spellCooldownLabel')
+  end
+  progressRect.label = label
   local spell, profile, spellName = Spells.getSpellByIcon(iconId)
   progressRect:setTooltip(spellName)
 
@@ -204,7 +229,9 @@ function onSpellGroupCooldown(groupId, duration)
   if not SpellGroups[groupId] then return end
 
   local icon = contentsPanel:getChildById('groupIcon' .. SpellGroups[groupId])
-  local progressRect = contentsPanel:getChildById('progressRect' .. SpellGroups[groupId])
+  if not icon then return end
+  
+  local progressRect = icon:getChildById('progressRect' .. SpellGroups[groupId])
   if icon then
     icon:setOn(true)
     removeEvent(icon.event)
@@ -212,6 +239,7 @@ function onSpellGroupCooldown(groupId, duration)
 
   progressRect.icon = icon
   if progressRect then
+    progressRect.label = icon:getChildById('cooldownLabel' .. SpellGroups[groupId])
     removeEvent(progressRect.event)
     local updateFunc = function()
       updateCooldown(progressRect, duration)

@@ -1,5 +1,47 @@
 CharacterList = { }
 
+local VocationString = {
+  [0]  = "Campones",
+  [1]  = "Sorcerer",
+  [2]  = "Master Sorcerer",
+  [3]  = "Archmage",
+  [4]  = "Arcane Wizard",
+  [40] = "Secret of Flame",
+  [5]  = "Druid",
+  [6]  = "Elder Druid",
+  [7]  = "Celtic Druid",
+  [8]  = "Spirit Healer",
+  [41] = "Forest of Shepherd",
+  [9]  = "Archer",
+  [10] = "Royal Archer",
+  [11] = "Medieval Archer",
+  [12] = "Executioner",
+  [42] = "Scout of Watcher",
+  [13] = "Knight",
+  [14] = "Elite Knight",
+  [15] = "Templar Knight",
+  [16] = "Chaos Knight",
+  [43] = "King of Gondor",
+  [17] = "Dwarf",
+  [18] = "Dwarf Blacksmith",
+  [19] = "Dwarf Weaponsmith",
+  [20] = "Dwarf Artisan",
+  [44] = "Warden of the Mountain",
+  [21] = "Orc",
+  [22] = "Orc Warrior",
+  [23] = "Orc Berserker",
+  [24] = "Orc Leader",
+  [25] = "Orc Warlord",
+  [26] = "Orc General",
+  [45] = "Lord of Gundabad",
+  [35] = "Elf",
+  [36] = "Elf Ranger",
+  [37] = "Elf Sentinel",
+  [38] = "High Elf",
+  [39] = "Elven Elite",
+  [46] = "Keeper of Galadhrim",
+}
+
 -- private variables
 local charactersWindow
 local loadBox
@@ -12,6 +54,9 @@ local resendWaitEvent
 local loginEvent
 local autoReconnectEvent
 local lastLogout = 0
+
+-- 
+pvinfo = ''
 
 -- private functions
 local function tryLogin(charInfo, tries)
@@ -34,10 +79,10 @@ local function tryLogin(charInfo, tries)
   g_logger.info("Login to " .. charInfo.worldHost .. ":" .. charInfo.worldPort)
   loadBox = displayCancelBox(tr('Please wait'), tr('Connecting to game server...'))
   connect(loadBox, { onCancel = function()
-                                  loadBox = nil
-                                  g_game.cancelLogin()
-                                  CharacterList.show()
-                                end })
+        loadBox = nil
+        g_game.cancelLogin()
+        CharacterList.show()
+      end })
 
   -- save last used character
   g_settings.set('last-used-character', charInfo.characterName)
@@ -82,9 +127,9 @@ local function resendWait()
       local selected = characterList:getFocusedChild()
       if selected then
         local charInfo = { worldHost = selected.worldHost,
-                           worldPort = selected.worldPort,
-                           worldName = selected.worldName,
-                           characterName = selected.characterName }
+          worldPort = selected.worldPort,
+          worldName = selected.worldName,
+          characterName = selected.characterName }
         tryLogin(charInfo)
       end
     end
@@ -142,7 +187,7 @@ function onGameUpdateNeeded(signature)
   errorBox.onOk = function()
     errorBox = nil
     CharacterList.showAgain()
-  end  
+  end
 end
 
 function onGameEnd()
@@ -159,12 +204,12 @@ function scheduleAutoReconnect()
     return
   end
   if autoReconnectEvent then
-    removeEvent(autoReconnectEvent)    
+    removeEvent(autoReconnectEvent)
   end
   autoReconnectEvent = scheduleEvent(executeAutoReconnect, 2500)
 end
 
-function executeAutoReconnect()  
+function executeAutoReconnect()
   if not autoReconnectButton or not autoReconnectButton:isOn() or g_game.isOnline() then
     return
   end
@@ -234,6 +279,7 @@ function CharacterList.terminate()
     removeEvent(loginEvent)
     loginEvent = nil
   end
+  
 
   CharacterList = nil
 end
@@ -258,10 +304,10 @@ function CharacterList.create(characters, account, otui)
   for i,characterInfo in ipairs(characters) do
     local widget = g_ui.createWidget('CharacterWidget', characterList)
     for key,value in pairs(characterInfo) do
-      local subWidget = widget:getChildById(key)
+      local subWidget = widget:recursiveGetChildById(key)
       if subWidget then
         if key == 'outfit' then -- it's an exception
-          subWidget:setOutfit(value)
+          subWidget:getChildById('creature'):setOutfit(value)
         else
           local text = value
           if subWidget.baseText and subWidget.baseTranslate then
@@ -269,7 +315,11 @@ function CharacterList.create(characters, account, otui)
           elseif subWidget.baseText then
             text = string.format(subWidget.baseText, text)
           end
-          subWidget:setText(text)
+          if key == "vocation" then
+            subWidget:setText(VocationString[tonumber(text)])
+          else
+            subWidget:setText(text)
+          end
         end
       end
     end
@@ -291,7 +341,7 @@ function CharacterList.create(characters, account, otui)
     characterList:focusChild(focusLabel, KeyboardFocusReason)
     addEvent(function() characterList:ensureChildVisible(focusLabel) end)
   end
-  
+
   characterList.onChildFocusChange = function()
     removeEvent(autoReconnectEvent)
     autoReconnectEvent = nil
@@ -309,7 +359,7 @@ function CharacterList.create(characters, account, otui)
     accountStatusLabel:setText(('%s%s'):format(tr('Free Account'), status))
   else
     if account.premDays == 0 or account.premDays == 65535 then
-      accountStatusLabel:setText(('%s%s'):format(tr('Gratis Premium Account'), status))
+      accountStatusLabel:setText(('%s%s'):format(tr('Free Premium'), status))
     else
       accountStatusLabel:setText(('%s%s'):format(tr('Premium Account (%s) days left', account.premDays), status))
     end
@@ -343,7 +393,7 @@ function CharacterList.show()
   charactersWindow:show()
   charactersWindow:raise()
   charactersWindow:focus()
-  
+
   local autoReconnect = g_settings.getBoolean('autoReconnect', true)
   autoReconnectButton:setOn(autoReconnect)
 end
@@ -380,9 +430,9 @@ function CharacterList.doLogin()
   local selected = characterList:getFocusedChild()
   if selected then
     local charInfo = { worldHost = selected.worldHost,
-                       worldPort = selected.worldPort,
-                       worldName = selected.worldName,
-                       characterName = selected.characterName }
+      worldPort = selected.worldPort,
+      worldName = selected.worldName,
+      characterName = selected.characterName }
     charactersWindow:hide()
     if loginEvent then
       removeEvent(loginEvent)

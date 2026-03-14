@@ -43,7 +43,7 @@ function updateOrder()
       visibleCount = visibleCount + 1
     end
    end
-   if visibleCount > 6 and buttonsWindow:getHeight() < 30 then
-    buttonsWindow:setHeight(buttonsWindow:getHeight() + 22)
-   end
+   local numRows = math.ceil(visibleCount / 6)
+   if numRows < 1 then numRows = 1 end
+   buttonsWindow:setHeight(27 + (numRows - 1) * 22)
 end

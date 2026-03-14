@@ -642,9 +642,9 @@ MainWindow
     margin-left: 10
     image-color: #44ff44
     color: white
-    text: Get
+    text: PIX
     text-offset: -12 1
-    icon: /images/store/icon-tibiacoin
+    icon: /images/store/icon_pix
     icon-offset-x: 12
     image-source: /images/ui/button
     image-clip: 0 0 22 23

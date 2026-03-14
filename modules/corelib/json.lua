@@ -417,3 +417,63 @@ function json.decode(str)
   end
   return res
 end
+
+-- Verifica se o conteúdo parece JSON válido (evita tentar decodificar arquivos criptografados)
+local function looksLikeJson(content)
+  if not content or content:len() == 0 then return false end
+  local trimmed = content:match("^%s*(.)")
+  return trimmed == "{" or trimmed == "["
+end
+
+function json.safeLoadFromFile(filePath, defaultValue)
+  defaultValue = defaultValue or {}
+  
+  if not g_resources.fileExists(filePath) then
+    return defaultValue
+  end
+  
+  local fileContent = g_resources.readFileContents(filePath)
+
+  if not fileContent or fileContent:trim():len() == 0 then
+    g_logger.debug("JSON file is empty, using default: " .. filePath)
+    return defaultValue
+  end
+  
+  if not looksLikeJson(fileContent) then
+    g_logger.warning("JSON file appears encrypted or corrupted (recompile client to fix): " .. filePath)
+    local backupFile = filePath .. ".corrupted"
+    if g_resources.writeFileContents(backupFile, fileContent) then
+      g_logger.warning("Corrupted file backed up to: " .. backupFile)
+    end
+    if g_resources.deleteFile(filePath) then
+      g_logger.info("Corrupted file deleted: " .. filePath .. ". Will be recreated on save.")
+    end
+    return defaultValue
+  end
+  
+  local status, result = pcall(function()
+    return json.decode(fileContent)
+  end)
+  
+  if not status then
+    g_logger.error("Error while reading JSON file: " .. filePath .. ". Details: " .. result)
+    
+    local backupFile = filePath .. ".corrupted"
+    if g_resources.writeFileContents(backupFile, fileContent) then
+      g_logger.warning("Corrupted file backed up to: " .. backupFile)
+    end
+
+    if g_resources.deleteFile(filePath) then
+      g_logger.info("Corrupted file deleted: " .. filePath .. ". Will be recreated on save.")
+    end
+    
+    return defaultValue
+  end
+  
+  if not result or type(result) ~= "table" then
+    g_logger.warning("Invalid JSON data structure in: " .. filePath)
+    return defaultValue
+  end
+  
+  return result
+end

@@ -1,0 +1,131 @@
+PartyAnalyzerButton < UIWidget
+  height: 15
+  margin-top: 1
+
+PartyAnalyzerName < GameLabel
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  anchors.left: parent.left
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+
+GoldIcon < UIWidget
+  image-source: /modules/game_huntanalyzer/images/gold.png
+  size: 9 9
+  anchors.left: parent.left
+  anchors.verticalCenter: parent.verticalCenter
+
+PartyAnalyzerValue < GameLabel
+  id: value
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  text-align: right
+  text-auto-resize: true
+  anchors.right: parent.right
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+
+MemberPanel < Panel
+  height: 55
+  margin-bottom: 2
+
+MemberNameLabel < Label
+  id: memberName
+  font: verdana-11px-antialised
+  color: white
+  anchors.top: parent.top
+  anchors.left: parent.left
+
+TypeIcon < UIWidget
+  id: typeIcon
+  anchors.left: parent.left
+  anchors.top: memberName.bottom
+  margin-top: 6
+
+TypeLabel < Label
+  id: damageLabel
+  margin-top: 5
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  anchors.left: typeIcon.right
+  anchors.top: memberName.bottom
+  margin-left: 3
+  
+DamageValueLabel < Label
+  id: damageValueLabel
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  anchors.right: parent.right
+  anchors.top: damageLabel.top
+
+Shield < UIWidget
+  anchors.left: memberName.right
+  anchors.top: memberName.top
+  margin-left: 3
+  margin-top: 1
+  image-source: /images/game/shields/shield_blue
+
+Separator < HorizontalSeparator
+  margin-bottom: 3
+  margin-top: 10
+  anchors.bottom: parent.bottom
+  anchors.right: parent.right
+  anchors.left: parent.left
+
+MiniWindow
+  id: partyWindow
+  !text: tr('Party Analyzer')
+  color: #8F8F8F
+  height: 250
+  icon: /images/topbuttons/analyzers
+  &save: true
+
+  MiniWindowContents
+    id: contentsPanel
+    padding-left: 5
+    padding-right: 5
+    margin-top: 22
+    vertical-scrollbar: miniwindowScrollBar
+    layout: verticalBox
+
+    Panel
+      id: headerPanel
+      height: 68
+      layout: verticalBox
+      
+      PartyAnalyzerButton
+        id: sessionCtx
+        PartyAnalyzerName
+          !text: tr('Session:')
+        PartyAnalyzerValue
+          text: 00:00
+
+      PartyAnalyzerButton
+        id: lootCtx
+        GoldIcon
+        PartyAnalyzerName
+          !text: tr('Loot:')
+          anchors.left: prev.right
+          margin-left: 5
+        PartyAnalyzerValue
+          text: 0
+          
+      PartyAnalyzerButton
+        id: supplyCtx
+        GoldIcon
+        PartyAnalyzerName
+          !text: tr('Supplies:')
+          anchors.left: prev.right
+          margin-left: 5
+        PartyAnalyzerValue
+          text: 0
+
+      PartyAnalyzerButton
+        id: balanceCtx
+        GoldIcon
+        PartyAnalyzerName
+          !text: tr('Balance:')
+          anchors.left: prev.right
+          margin-left: 5
+        PartyAnalyzerValue
+          text: 0

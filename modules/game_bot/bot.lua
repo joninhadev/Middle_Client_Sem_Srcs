@@ -137,7 +137,7 @@ function refresh()
   
   -- get list of configs
   createDefaultConfigs()
-  local configs = g_resources.listDirectoryFiles("/bot", false, false)  
+  local configs = g_resources.listDirectoryFiles("default_configs", false, false)
   
   -- clean
   configList.onOptionChange = nil
@@ -159,7 +159,7 @@ function refresh()
     configList:addOption(configs[i])
   end
   configList:setCurrentOption(settings[index].config)
-  if configList:getCurrentOption().text ~= settings[index].config then
+  if configList:getCurrentOption().text ~= settings[index].config and configList:getCurrentOption().text ~= "" then
     settings[index].config = configList:getCurrentOption().text
     settings[index].enabled = false
   end
@@ -280,7 +280,7 @@ function onError(message)
 end
 
 function edit()
-  local configs = g_resources.listDirectoryFiles("/bot", false, false)  
+  local configs = g_resources.listDirectoryFiles("default_configs", false, false)  
   editWindow.manager.upload.config:clearOptions()  
   for i=1,#configs do 
     editWindow.manager.upload.config:addOption(configs[i])
@@ -300,29 +300,46 @@ function createDefaultConfigs()
       if not g_resources.directoryExists("/bot/" .. config_name) then
         return onError("Can't create /bot/" .. config_name .. " directory in " .. g_resources.getWriteDir())
       end
+    end
 
-      local defaultConfigFiles = g_resources.listDirectoryFiles("default_configs/" .. config_name, true, false)
-      for i, file in ipairs(defaultConfigFiles) do
-        local baseName = file:split("/")
-        baseName = baseName[#baseName]
-        if g_resources.directoryExists(file) then
-          g_resources.makeDir("/bot/" .. config_name .. "/" .. baseName)
-          if not g_resources.directoryExists("/bot/" .. config_name .. "/" .. baseName) then
-            return onError("Can't create /bot/" .. config_name  .. "/" .. baseName .. " directory in " .. g_resources.getWriteDir())
-          end
-          local defaultConfigFiles2 = g_resources.listDirectoryFiles("default_configs/" .. config_name .. "/" .. baseName, true, false)
-          for i, file in ipairs(defaultConfigFiles2) do
-            local baseName2 = file:split("/")
-            baseName2 = baseName2[#baseName2]
-            local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
-            if contents:len() > 0 then
-              g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName .. "/" .. baseName2, contents)
-            end  
-          end
+    -- clean up existing files to prevent user injection
+    local existingItems = g_resources.listDirectoryFiles("/bot/" .. config_name, false, false)
+    for _, item in ipairs(existingItems) do
+      if item ~= "storage" and not item:match("_configs$") then
+        if g_resources.directoryExists("/bot/" .. config_name .. "/" .. item) then
+           g_resources.deleteFile("/bot/" .. config_name .. "/" .. item)
         else
+           g_resources.deleteFile("/bot/" .. config_name .. "/" .. item)
+        end
+      end
+    end
+
+    local defaultConfigFilesList = g_resources.listDirectoryFiles("default_configs/" .. config_name, true, false)
+    for j, file in ipairs(defaultConfigFilesList) do
+      local baseName = file:split("/")
+      baseName = baseName[#baseName]
+      if g_resources.directoryExists(file) then
+        if not g_resources.directoryExists("/bot/" .. config_name .. "/" .. baseName) then
+           g_resources.makeDir("/bot/" .. config_name .. "/" .. baseName)
+        end
+        local defaultConfigFiles2 = g_resources.listDirectoryFiles("default_configs/" .. config_name .. "/" .. baseName, true, false)
+        for k, file2 in ipairs(defaultConfigFiles2) do
+          local baseName2 = file2:split("/")
+          baseName2 = baseName2[#baseName2]
+          local destPath = "/bot/" .. config_name .. "/" .. baseName .. "/" .. baseName2
+          if not (file2:match("%.json$") and g_resources.fileExists(destPath)) then
+            local contents = g_resources.fileExists(file2) and g_resources.readFileContents(file2) or ""
+            if contents:len() > 0 then
+              g_resources.writeFileContents(destPath, contents)
+            end
+          end  
+        end
+      else
+        local destPath = "/bot/" .. config_name .. "/" .. baseName
+        if not (file:match("%.json$") and g_resources.fileExists(destPath)) then
           local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
           if contents:len() > 0 then
-            g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName, contents)
+            g_resources.writeFileContents(destPath, contents)
           end
         end
       end

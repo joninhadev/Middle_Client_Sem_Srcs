@@ -29,6 +29,8 @@ function init()
   skillsButton:setOn(true)
   skillsWindow = g_ui.loadUI('skills', modules.game_interface.getRightPanel())
   
+  ProtocolGame.registerExtendedOpcode(154, onStoreBoostChange)
+  
   refresh()
   skillsWindow:setup()
 end
@@ -59,6 +61,7 @@ function terminate()
 
   skillsWindow:destroy()
   skillsButton:destroy()
+  ProtocolGame.unregisterExtendedOpcode(154)
 end
 
 function expForLevel(level)
@@ -226,6 +229,14 @@ function refresh()
 
   local contentsPanel = skillsWindow:getChildById('contentsPanel')
   skillsWindow:setContentMinimumHeight(44)
+  
+  local boostWidget = skillsWindow:recursiveGetChildById('storeBoost')
+  if boostWidget then
+    boostWidget:setVisible(true)
+    boostWidget:getChildById('value'):setText('00:00')
+    boostWidget:setTooltip(tr('You have 0 minutes of Store Boost remaining.'))
+  end
+
   if hasAdditionalSkills then
     skillsWindow:setContentMaximumHeight(480)
   else
@@ -263,6 +274,22 @@ function checkExpSpeed()
   if #player.lastExps > 30 then
     table.remove(player.lastExps, 1)
   end
+end
+
+function onStoreBoostChange(protocol, opcode, buffer)
+  local minutes = tonumber(buffer)
+  if not minutes then return end
+
+  local boostWidget = skillsWindow:recursiveGetChildById('storeBoost')
+  if not boostWidget then return end
+
+  local hours = math.floor(minutes / 60)
+  local mins = minutes % 60
+  local timeString = string.format("%02d:%02d", hours, mins)
+
+  boostWidget:setVisible(true)
+  boostWidget:getChildById('value'):setText(timeString)
+  boostWidget:setTooltip(tr('You have %d minutes of Store Boost remaining.', minutes))
 end
 
 function onMiniWindowClose()

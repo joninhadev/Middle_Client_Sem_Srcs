@@ -2,32 +2,54 @@ EnterGameWindow
   id: enterGame
   @onEnter: EnterGame.doLogin()
 
-  MenuLabel
-    !text: tr('Account name')
-    anchors.left: parent.left
+
+  UIWidget
+    id: clientLogo
     anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    image-source: /images/login_logo.png
+    width: 200
+    height: 100
+    margin-top: 0
+    border-width: 1
+    border-color: black
+
+  MenuLabel
+    !text: tr('Login')
+    anchors.top: prev.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 3
     text-auto-resize: true
 
   TextEdit
     id: accountNameTextEdit
     anchors.left: parent.left
     anchors.right: parent.right
+    font: verdana-11px-rounded
+    text-align: center
     anchors.top: prev.bottom
-    margin-top: 2
+    margin-top: 4
+    margin-left: 5
+    margin-right: 5
 
   MenuLabel
     !text: tr('Password')
-    anchors.left: prev.left
+    font: verdana-11px-rounded
+    anchors.horizontalCenter: parent.horizontalCenter
     anchors.top: prev.bottom
     margin-top: 8
     text-auto-resize: true
 
   PasswordTextEdit
     id: accountPasswordTextEdit
+    font: verdana-11px-rounded
+    text-align: center
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
     margin-top: 2
+    margin-left: 5
+    margin-right: 5
 
   Panel
     id: serverSelectorPanel
@@ -141,6 +163,8 @@ EnterGameWindow
     id: rememberPasswordBox
     !text: tr('Remember password')
     !tooltip: tr('Remember account and password when starts client')
+    font: verdana-11px-rounded
+    color: #035c03ff
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom

@@ -64,6 +64,24 @@ MiniWindow
         background-color: red
 
     SkillButton
+      id: storeBoost
+      height: 15
+      visible: false
+      UIWidget
+        id: icon
+        size: 13 13
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        image-source: /data/images/store/boosts
+        phantom: true
+      SkillNameLabel
+        !text: tr('Store Boost')
+        anchors.left: prev.right
+        margin-left: 5
+      SkillValueLabel
+        color: #11ee11ff
+
+    SkillButton
       id: health
       height: 15
       SkillNameLabel

@@ -1,0 +1,44 @@
+MainWindow
+  id: tierResultWindow
+  !text: tr('Upgrade Result')
+  size: 350 250
+  @onEscape: self:hide()
+
+  Label
+    id: resultLabel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+    margin-top: 10
+    font: verdana-11px-rounded
+    color: #ffffff
+    text-wrap: true
+    text-auto-resize: true
+
+  UIItem
+    id: itemIcon
+    anchors.top: resultLabel.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    virtual: true
+    size: 48 48
+    margin-top: 20
+    image-source: /images/ui/item
+
+  Label
+    id: tierLabel
+    anchors.top: itemIcon.bottom
+    anchors.horizontalCenter: itemIcon.horizontalCenter
+    margin-top: 10
+    text-align: center
+    font: verdana-11px-monochrome
+    color: #ffffff
+
+  Button
+    id: okButton
+    !text: tr('Close')
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: 64
+    height: 22
+    @onClick: self:getParent():hide()

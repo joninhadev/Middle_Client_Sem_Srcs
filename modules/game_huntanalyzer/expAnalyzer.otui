@@ -1,0 +1,148 @@
+SkillFirstWidget < UIWidget
+
+exphButton < UIButton
+  height: 21
+  margin-bottom: 2
+  &onClick: onexphButtonClick
+
+SkillNameLabel < GameLabel
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  anchors.left: parent.left
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+
+SkillValueLabel3 < GameLabel
+  id: value
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  text-align: right
+  text-auto-resize: true
+  anchors.right: parent.right
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+
+GoldIcon2 < UIWidget
+  image-source: /modules/game_huntanalyzer/images/gold.png
+  size: 9 9
+  anchors.left: parent.left
+  anchors.verticalCenter: parent.verticalCenter
+
+AnalyzerGraph < UIGraph
+  id: chartPanel
+  height: 100
+  capacity: 512
+//  anchors.left: parent.left
+//  anchors.right: parent.right
+//  anchors.bottom: parent.bottom
+  line-width: 1
+  color: green
+  margin-top: 21
+  margin-bottom: 14
+  margin-left: 1
+  margin-right: -1
+  background-color: #383636
+  padding: 3
+  font: verdana-11px-rounded
+  image-source: /images/ui/graph_background
+
+MiniWindow
+  id: exphWindow
+  !text: tr('Exp Analyzer')
+  color: #8F8F8F
+  height: 200
+  icon: /images/topbuttons/analyzers
+  &save: true
+  &autoOpen: false
+  visible: false
+
+  MiniWindowContents
+    id: contentsPanel
+    padding-left: 5
+    padding-right: 5
+    margin-top: 18
+    layout: verticalBox
+
+    exphButton
+      margin-top: 5
+      id: session
+      height: 18
+      SkillNameLabel
+        !text: tr('Session time:')
+      SkillValueLabel3
+
+    exphButton
+      id: expph
+      height: 18
+      SkillNameLabel
+        !text: tr('XP/h:')
+      SkillValueLabel3
+
+    exphButton
+      id: expgained
+      height: 18
+      SkillNameLabel
+        !text: tr('XP gained:')
+      SkillValueLabel3
+
+    exphButton
+      id: exptolevel
+      height: 18
+      SkillNameLabel
+        !text: tr('XP left:')
+      SkillValueLabel3
+
+    exphButton
+      id: timetolevel
+      height: 18
+      SkillNameLabel
+        !text: tr('Next Level in:')
+      SkillValueLabel3
+
+    exphButton
+      id: killedmobs
+      height: 18
+      SkillNameLabel
+        !text: tr('Killed monsters:')
+      SkillValueLabel3
+
+    exphButton
+      id: avgMobExp
+      height: 18
+      SkillNameLabel
+        !text: tr('Avg. XP/mob:')
+      SkillValueLabel3
+
+    exphButton
+      id: lootCtx
+      height: 18
+      GoldIcon2
+      SkillNameLabel
+        !text: tr('Loot:')
+        anchors.left: prev.right
+        margin-left: 5
+      SkillValueLabel3
+        text: 0
+
+    exphButton
+      id: supplyCtx
+      height: 18
+      GoldIcon2
+      SkillNameLabel
+        !text: tr('Supplies:')
+        anchors.left: prev.right
+        margin-left: 5
+      SkillValueLabel3
+        text: 0
+
+    exphButton
+      id: balanceCtx
+      height: 18
+      GoldIcon2
+      SkillNameLabel
+        !text: tr('Balance:')
+        anchors.left: prev.right
+        margin-left: 5
+      SkillValueLabel3
+        text: 0
+

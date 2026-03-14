@@ -1,0 +1,69 @@
+BossWidget < UIWidget
+  height: 48
+  background-color: alpha
+  margin: 1
+
+  UICreature
+    id: creature
+    anchors.top: parent.top
+    anchors.left: parent.left
+    size: 50 50
+    margin-left: 0
+    margin-top: -10
+
+  Label
+    id: name
+    anchors.top: parent.top
+    anchors.left: creature.right
+    margin-left: 10
+    margin-top: 5
+    font: verdana-11px-rounded
+    text-auto-resize: true
+
+  Label
+    id: timer
+    anchors.top: name.bottom
+    anchors.left: creature.right
+    margin-left: 10
+    margin-top: 2
+    font: verdana-11px-rounded
+    color: #ff5555
+    text-auto-resize: true
+
+MiniWindow
+  id: bossCooldownsWindow
+  !text: tr('Boss Cooldowns')
+  color: #8F8F8F
+  height: 300
+  &save: true
+
+  MiniWindowContents
+    id: contentsPanel
+    padding-left: 5
+    padding-right: 5
+    margin-top: 18
+    vertical-scrollbar: miniwindowScrollBar
+    layout: verticalBox
+
+    Label
+      id: infoLabel
+      !text: tr('Verifique seus Cooldowns:')
+      font: verdana-11px-antialised
+      color: #afafaf
+      text-align: center
+      margin-top: 5
+      margin-bottom: 5
+
+    Button
+      id: refreshButton
+      !text: tr('Atualizar')
+      height: 20
+      margin-left: 10
+      margin-right: 10
+      margin-bottom: 5
+      &onClick: requestBossCooldowns
+
+    Panel
+      id: bossList
+      layout: verticalBox
+      fit-children: true

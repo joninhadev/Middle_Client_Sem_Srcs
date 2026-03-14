@@ -1,0 +1,87 @@
+TeleportCityButton < Button
+  size: 148 165
+  image-source: /images/ui/button
+  image-clip: 0 0 22 23
+  image-border: 6
+  image-color: #dfdfdf
+  
+  $hover:
+    image-color: #ffffff
+
+  $pressed:
+    image-color: #dfdfdf
+
+  UIWidget
+    id: cityImage
+    anchors.fill: parent
+    margin: 3
+    image-smooth: true
+    image-fixed-ratio: false
+    border: 1 #000000
+    phantom: true
+
+  Label
+    id: cityName
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin: 3
+    height: 20
+    text-align: center
+    text-auto-resize: false
+    background-color: #000000AA
+    font: verdana-11px-rounded
+    phantom: true
+
+MainWindow
+  id: teleportWindow
+  size: 820 630
+  &save: true
+  @onEscape: self:hide()
+  text: Teleport System
+
+  Label
+    id: descriptionLabel
+    text: Para usar o teleport voce deve ser premium account, estar sem battle ou em area de protecao.
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    text-align: center
+    font: verdana-11px-rounded
+    color: #FFA500
+
+  ScrollablePanel
+    id: cityList
+    anchors.top: descriptionLabel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: closeButton.top
+    margin-top: 15
+    margin-bottom: 10
+    layout:
+      type: grid
+      cell-size: 148 165
+      cell-spacing: 12
+      flow: true
+      num-columns: 5
+
+  Button
+    id: teleportButton
+    !text: tr('Teleportar')
+    width: 120
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-right: 15
+    margin-bottom: 10
+    enabled: false
+
+  Button
+    id: closeButton
+    !text: tr('Cancelar')
+    width: 90
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin-left: 15
+    margin-bottom: 10
+    @onClick: self:getParent():hide()

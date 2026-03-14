@@ -1,0 +1,11 @@
+Module
+  name: game_bonusoutfit
+  description: UI for selecting an outfit bonus independently of visual outfit
+  author: AI
+  website: -
+  sandboxed: true
+  scripts: [ bonusoutfit ]
+  autoload: true
+  autoload-priority: 1000
+  @onLoad: init()
+  @onUnload: terminate()

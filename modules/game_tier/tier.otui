@@ -1,0 +1,226 @@
+TierListLabel < UIItem
+  focusable: true
+  phantom: false
+  size: 36 36
+  padding: 1
+  image-source: /images/ui/item
+  image-border: 1
+  margin: 1
+  border-width: 1
+  border-color: alpha
+
+  $checked:
+    border-color: #ffffff
+
+MainWindow
+  id: tierWindow
+  !text: tr('Exalted Forge')
+  size: 540 420
+  @onEscape: modules.game_tier.hide()
+  
+  Panel
+    id: leftPanel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 220
+    width: 190
+    image-source: /images/ui/panel_flat
+    image-border: 6
+    padding: 5
+    
+    Label
+      !text: tr('Items')
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      text-align: center
+      font: verdana-11px-monochrome
+      color: #dfdfdf
+      margin-bottom: 5
+      height: 20
+
+    ScrollablePanel
+      id: itemList
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      padding: 1
+      focusable: false
+      vertical-scrollbar: itemScrollBar
+      margin-right: 12
+      layout:
+        type: grid
+        cell-size: 36 36
+        cell-spacing: 2
+        flow: true
+
+    VerticalScrollBar
+      id: itemScrollBar
+      anchors.top: itemList.top
+      anchors.bottom: itemList.bottom
+      anchors.right: parent.right
+      step: 36
+      pixels-scroll: true
+
+  Panel
+    id: detailsPanel
+    anchors.top: parent.top
+    anchors.left: leftPanel.right
+    anchors.right: parent.right
+    anchors.bottom: closeButton.top
+    margin-left: 10
+    margin-bottom: 10
+    image-source: /images/ui/panel_flat
+    image-border: 6
+    padding: 15
+
+    Label
+      !text: tr('Detalhes da Forja')
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      text-align: center
+      font: verdana-11px-monochrome
+      color: #dfdfdf
+      margin-bottom: 15
+      
+    UIItem
+      id: selectedItem
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 5
+      size: 64 64
+      virtual: true
+      image-source: /images/ui/item
+      
+    Label
+      id: selectedItemName
+      anchors.top: selectedItem.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      text-align: center
+      margin-top: 10
+      color: #f0f0f0ff
+      font: verdana-11px-monochrome
+      text-auto-resize: true
+      !text: tr('Select an item from the list')
+
+    Panel
+      id: separator
+      anchors.top: selectedItemName.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 15
+      height: 2
+      background-color: #444444
+
+    Label
+      !text: tr('Materiais necessários:')
+      anchors.top: separator.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      text-align: center
+      margin-top: 15
+      color: #aaaaaa
+      font: verdana-11px-monochrome
+
+    Panel
+      id: costsContainer
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      height: 60
+      margin-top: 10
+
+      Panel
+        id: cost1Panel
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.horizontalCenter
+        height: 60
+        
+        UIItem
+          id: cost1Item
+          anchors.top: parent.top
+          anchors.horizontalCenter: parent.horizontalCenter
+          virtual: true
+          size: 32 32
+          image-source: /images/ui/item
+        
+        Label
+          id: cost1Label
+          anchors.top: cost1Item.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          text-align: center
+          margin-top: 5
+          font: verdana-11px-rounded
+          !text: tr('- / -')
+
+      Panel
+        id: cost2Panel
+        anchors.top: parent.top
+        anchors.left: parent.horizontalCenter
+        anchors.right: parent.right
+        height: 60
+        
+        UIItem
+          id: cost2Item
+          anchors.top: parent.top
+          anchors.horizontalCenter: parent.horizontalCenter
+          virtual: true
+          size: 32 32
+          image-source: /images/ui/item
+        
+        Label
+          id: cost2Label
+          anchors.top: cost2Item.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          text-align: center
+          margin-top: 5
+          font: verdana-11px-rounded
+          !text: tr('- / -')
+
+    UIItem
+      id: protectionItem
+      anchors.bottom: upgradeBtn.top
+      anchors.left: parent.left
+      margin-bottom: 12
+      margin-left: 5
+      virtual: true
+      size: 24 24
+      image-source: /images/ui/item
+
+    CheckBox
+      id: protectionCheckBox
+      !text: tr('Use Protection Item (0)')
+      anchors.verticalCenter: protectionItem.verticalCenter
+      anchors.left: protectionItem.right
+      margin-left: 8
+      width: 170
+
+    Button
+      id: upgradeBtn
+      !text: tr('Upgrade')
+      anchors.bottom: parent.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      width: 150
+      margin-bottom: 5
+      height: 30
+      color: #55ff55
+      icon: /modules/game_tier/images/button_conversion
+      icon-align: left
+      icon-offset: 10 0
+      @onClick: modules.game_tier.requestUpgrade()
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: 64
+    height: 22
+    @onClick: modules.game_tier.hide()

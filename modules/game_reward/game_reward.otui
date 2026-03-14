@@ -1,5 +1,5 @@
 RewardItemWidget < UIItem
-  size: 64 64
+  size: 44 44
   image-source: /images/ui/menubox
   image-border: 1
   padding: 1
@@ -7,53 +7,53 @@ RewardItemWidget < UIItem
 MainWindow
   id: rewardWindow
   !text: tr('')
-  size: 550 190
+  size: 500 150
   @onEscape: toggle()
   
   UIWidget
     id: crest
     anchors.bottom: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
-    margin-bottom: -3
     image-source: /modules/game_reward/images/backdrop_crest.png
-    size: 166 88
-    phantom: true
+    size: 145 56
+    margin-top: 5
 
   Label
     id: infoLabel
-    !text: tr('Selecione uma recompensa:')
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
     margin-top: 5
 
   Label
     id: descriptionLabel
-    !text: tr('Contém uma exercise weapon de 1000 cargas, escolha baseado em sua vocação.')
+    !text: tr('Escolha uma recompensa, contÃ©m uma exercise weapon de 1000 cargas.')
     anchors.top: infoLabel.bottom
     anchors.horizontalCenter: parent.horizontalCenter
-    margin-top: 5
+    margin-top: -10
     text-auto-resize: true
-    color: #fffdfdff
+    font: verdana-11px-rounded
+    color: #035c03ff
 
   Panel
     id: rewardList
     anchors.top: descriptionLabel.bottom
     anchors.horizontalCenter: parent.horizontalCenter
     margin-top: 10
-    height: 55
+    height: 37
     layout:
       type: horizontalBox
       fit-children: true
-      spacing: 15
+      spacing: 10
 
   Button
     id: claimButton
-    !text: tr('Coletar')
+    !text: tr('Receber')
     width: 70
     anchors.bottom: parent.bottom
     anchors.right: parent.horizontalCenter
+    font: verdana-11px-rounded
     margin-right: 5
-    margin-bottom: 0
+    margin-bottom: 5
     @onClick: modules.game_reward.claimReward()
 
   Button
@@ -63,5 +63,6 @@ MainWindow
     anchors.bottom: parent.bottom
     anchors.left: parent.horizontalCenter
     margin-left: 5
-    margin-bottom: 0
+    font: verdana-11px-rounded
+    margin-bottom: 5
     @onClick: modules.game_reward.toggle()

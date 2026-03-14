@@ -1,0 +1,11 @@
+Module
+  name: game_dailyreward
+  description: Daily Reward System
+  author: AI
+  website: -
+  sandboxed: true
+  autoload: true
+  reloadable: true
+  scripts: [ dailyreward ]
+  @onLoad: init()
+  @onUnload: terminate()

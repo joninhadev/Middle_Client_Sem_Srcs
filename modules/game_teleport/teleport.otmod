@@ -1,0 +1,9 @@
+Module
+  name: game_teleport
+  description: Teleport System
+  author: Antigravity
+  website: -
+  scripts: [ teleport ]
+  @onLoad: init()
+  @onUnload: terminate()
+  dependencies: [ client_topmenu ]

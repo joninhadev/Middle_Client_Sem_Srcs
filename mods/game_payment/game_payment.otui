@@ -124,7 +124,7 @@ DonaterInfo < Panel
     anchors.left: parent.left
     anchors.right: parent.right
     margin-top: 6
-    !text: 'Doacoes feitas durante o beta recebem +50% de bonus.'
+    !text: 'Aqui qualquer mensagem.'
     size: 60 60
     font: $var-cip-font
     color: yellow

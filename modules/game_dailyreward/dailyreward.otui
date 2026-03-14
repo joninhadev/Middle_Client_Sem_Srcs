@@ -1,0 +1,135 @@
+MainWindow
+  id: dailyRewardWindow
+  size: 800 400
+  title: Daily Reward System
+  @onEscape: self:hide()
+  image-source: /images/ui/window
+  padding: 15
+
+  Label
+    id: statusLabel
+    text: Loading Account Status...
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+    margin-top: 5
+    font: verdana-11px-rounded
+    color: #33ff00ff
+
+  Label
+    id: timerLabel
+    text: Time left: --:--:--
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+    margin-top: 5
+    font: verdana-11px-monochrome
+    color: #dddddd
+
+  // FREE REWARDS SECTION
+  Label
+    id: freeTitleLabel
+    text: Free Daily Reward
+    anchors.top: prev.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 20
+    font: verdana-11px-antialised
+    color: #ffffff
+
+  Panel
+    id: freeRewardsPanel
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 96
+    margin-top: 5
+    layout:
+      type: grid
+      cell-size: 96 96
+      cell-spacing: 12
+      num-columns: 7
+
+  // PREMIUM REWARDS SECTION
+  Label
+    id: premiumTitleLabel
+    text: Premium Daily Reward
+    anchors.top: prev.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 20
+    font: verdana-11px-antialised
+    color: #00ff22ff
+
+  Panel
+    id: premiumRewardsPanel
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 96
+    margin-top: 5
+    layout:
+      type: grid
+      cell-size: 96 96
+      cell-spacing: 12
+      num-columns: 7
+
+  Button
+    id: claimButton
+    text: Claim Reward
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: 140
+    height: 25
+    margin-bottom: 5
+    font: verdana-11px-antialised
+    @onClick: modules.game_dailyreward.claimReward()
+    enabled: false
+
+  Button
+    id: closeButton
+    text: Close
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    width: 60
+    height: 25
+    margin-right: 5
+    margin-bottom: 5
+    font: verdana-11px-antialised
+    @onClick: modules.game_dailyreward.hide()
+
+DayPanel < UIWidget
+  size: 96 96
+  image-source: /images/ui/panel_flat
+  @onClick: modules.game_dailyreward.onDayPanelClick(self)
+  
+  Label
+    id: dayLabel
+    text: Dia 01
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin: 2
+    background-color: #00000088
+    text-align: center
+    font: verdana-11px-rounded
+    color: #ffffff
+    
+  Item
+    id: rewardItem
+    size: 44 44
+    anchors.centerIn: parent
+    margin-bottom: 2
+    virtual: true
+    @onClick: modules.game_dailyreward.onDayPanelClick(self:getParent())
+    
+  UIWidget
+    id: checkLabel
+    size: 12 12
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-bottom: 5
+    margin-right: 5
+    image-source: /game_dailyreward/images/icon-lock-red
+    visible: false
+

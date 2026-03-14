@@ -49,12 +49,7 @@ function init()
   healthInfoWindow:disableResize()
   
   if not healthInfoWindow.forceOpen then
-    healthInfoButton = modules.client_topmenu.addRightGameToggleButton('healthInfoButton', tr('Health Information'), '/images/topbuttons/healthinfo', toggle)
-    if g_app.isMobile() then
-      healthInfoButton:hide()
-    else
-      healthInfoButton:setOn(true)
-    end
+    healthInfoWindow:open()
   end
 
   healthBar = healthInfoWindow:recursiveGetChildById('healthBar')
@@ -94,7 +89,6 @@ function init()
   
   if g_app.isMobile() then
     healthInfoWindow:close()
-    healthInfoButton:setOn(false)  
   end
   
   -- Aggressively remove window buttons and frames that might persist from the base class
@@ -117,21 +111,12 @@ function terminate()
   disconnect(overlay, { onGeometryChange = onOverlayGeometryChange })
   
   healthInfoWindow:destroy()
-  if healthInfoButton then
-    healthInfoButton:destroy()
-  end
   overlay:destroy()
 end
 
 function toggle()
-  if not healthInfoButton then return end
-  if healthInfoButton:isOn() then
-    healthInfoWindow:close()
-    healthInfoButton:setOn(false)
-  else
-    healthInfoWindow:open()
-    healthInfoButton:setOn(true)
-  end
+  -- icon removed, toggle disabled
+  -- healthInfoWindow:open()
 end
 
 function toggleIcon(bitChanged)
@@ -164,9 +149,7 @@ end
 
 -- hooked events
 function onMiniWindowClose()
-  if healthInfoButton then
-    healthInfoButton:setOn(false)
-  end
+  -- icon removed
 end
 
 function onHealthChange(localPlayer, health, maxHealth)

@@ -12,6 +12,7 @@ Module
     - game_console
     - game_outfit
     - game_healthinfo
+    - game_spelllist
     - game_skills
     - game_inventory
     - game_containers
@@ -28,7 +29,6 @@ Module
     - game_ruleviolation
     - game_market
     - game_tasks
-    - game_deliverytask
     - game_cooldown
     - game_modaldialog
     - game_unjustifiedpoints
@@ -44,5 +44,7 @@ Module
     - game_inspect
     - game_bot
     - game_reward
+    - game_teleport
+
   @onLoad: init()
   @onUnload: terminate()

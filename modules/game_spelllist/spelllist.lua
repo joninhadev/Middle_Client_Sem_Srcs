@@ -17,8 +17,11 @@ descriptionValueLabel = nil
 vocationBoxAny        = nil
 vocationBoxSorcerer   = nil
 vocationBoxDruid      = nil
-vocationBoxPaladin    = nil
+vocationBoxArcher     = nil
 vocationBoxKnight     = nil
+vocationBoxDwarf      = nil
+vocationBoxOrc        = nil
+vocationBoxElf        = nil
 
 groupBoxAny           = nil
 groupBoxAttack        = nil
@@ -41,8 +44,21 @@ FILTER_PREMIUM_YES        = 2
 FILTER_VOCATION_ANY       = 0
 FILTER_VOCATION_SORCERER  = 1
 FILTER_VOCATION_DRUID     = 2
-FILTER_VOCATION_PALADIN   = 3
+FILTER_VOCATION_ARCHER    = 3
 FILTER_VOCATION_KNIGHT    = 4
+FILTER_VOCATION_DWARF     = 5
+FILTER_VOCATION_ORC       = 6
+FILTER_VOCATION_ELF       = 7
+
+local VocationGroups = {
+  [FILTER_VOCATION_SORCERER] = {1, 2, 3, 4, 40},
+  [FILTER_VOCATION_DRUID]    = {5, 6, 7, 8, 41},
+  [FILTER_VOCATION_ARCHER]   = {9, 10, 11, 12, 42},
+  [FILTER_VOCATION_KNIGHT]   = {13, 14, 15, 16, 43},
+  [FILTER_VOCATION_DWARF]    = {17, 18, 19, 20, 44},
+  [FILTER_VOCATION_ORC]      = {21, 22, 23, 24, 25, 26, 45},
+  [FILTER_VOCATION_ELF]      = {35, 36, 37, 38, 39, 46}
+}
 
 FILTER_GROUP_ANY          = 0
 FILTER_GROUP_ATTACK       = 1
@@ -118,8 +134,11 @@ function init()
   vocationBoxAny        = spelllistWindow:getChildById('vocationBoxAny')
   vocationBoxSorcerer   = spelllistWindow:getChildById('vocationBoxSorcerer')
   vocationBoxDruid      = spelllistWindow:getChildById('vocationBoxDruid')
-  vocationBoxPaladin    = spelllistWindow:getChildById('vocationBoxPaladin')
+  vocationBoxArcher     = spelllistWindow:getChildById('vocationBoxArcher')
   vocationBoxKnight     = spelllistWindow:getChildById('vocationBoxKnight')
+  vocationBoxDwarf      = spelllistWindow:getChildById('vocationBoxDwarf')
+  vocationBoxOrc        = spelllistWindow:getChildById('vocationBoxOrc')
+  vocationBoxElf        = spelllistWindow:getChildById('vocationBoxElf')
 
   groupBoxAny           = spelllistWindow:getChildById('groupBoxAny')
   groupBoxAttack        = spelllistWindow:getChildById('groupBoxAttack')
@@ -134,8 +153,11 @@ function init()
   vocationRadioGroup:addWidget(vocationBoxAny)
   vocationRadioGroup:addWidget(vocationBoxSorcerer)
   vocationRadioGroup:addWidget(vocationBoxDruid)
-  vocationRadioGroup:addWidget(vocationBoxPaladin)
+  vocationRadioGroup:addWidget(vocationBoxArcher)
   vocationRadioGroup:addWidget(vocationBoxKnight)
+  vocationRadioGroup:addWidget(vocationBoxDwarf)
+  vocationRadioGroup:addWidget(vocationBoxOrc)
+  vocationRadioGroup:addWidget(vocationBoxElf)
 
   groupRadioGroup = UIRadioGroup.create()
   groupRadioGroup:addWidget(groupBoxAny)
@@ -241,7 +263,7 @@ function updateSpelllist()
     local tmpLabel = spellList:getChildById(spell)
 
     local localPlayer = g_game.getLocalPlayer()
-    if (not(filters.level) or info.level <= localPlayer:getLevel()) and (not(filters.vocation) or table.find(info.vocations, localPlayer:getVocation())) and (filters.vocationId == FILTER_VOCATION_ANY or table.find(info.vocations, filters.vocationId) or table.find(info.vocations, filters.vocationId+4)) and (filters.groupId == FILTER_GROUP_ANY or info.group[filters.groupId]) and (filters.premium == FILTER_PREMIUM_ANY or (info.premium and filters.premium == FILTER_PREMIUM_YES) or (not(info.premium) and filters.premium == FILTER_PREMIUM_NO)) then
+    if (not(filters.level) or info.level <= localPlayer:getLevel()) and (not(filters.vocation) or table.find(info.vocations, localPlayer:getVocation())) and (filters.vocationId == FILTER_VOCATION_ANY or (VocationGroups[filters.vocationId] and (function() for _, v in pairs(VocationGroups[filters.vocationId]) do if table.find(info.vocations, v) then return true end end return false end)())) and (filters.groupId == FILTER_GROUP_ANY or info.group[filters.groupId]) and (filters.premium == FILTER_PREMIUM_ANY or (info.premium and filters.premium == FILTER_PREMIUM_YES) or (not(info.premium) and filters.premium == FILTER_PREMIUM_NO)) then
       tmpLabel:setVisible(true)
     else
       tmpLabel:setVisible(false)
@@ -271,7 +293,7 @@ function updateSpellInformation(widget)
 
     for i = 1, #info.vocations do
       local vocationId = info.vocations[i]
-      if vocationId <= 4 or not(table.find(info.vocations, (vocationId-4))) then
+      if VocationNames[vocationId] then
         vocation = vocation .. (vocation:len() == 0 and '' or ', ') .. VocationNames[vocationId]
       end
     end
@@ -324,10 +346,16 @@ function toggleFilter(widget, selectedWidget)
       filters.vocationId = FILTER_VOCATION_SORCERER
     elseif boxId == 'vocationBoxDruid' then
       filters.vocationId = FILTER_VOCATION_DRUID
-    elseif boxId == 'vocationBoxPaladin' then
-      filters.vocationId = FILTER_VOCATION_PALADIN
+    elseif boxId == 'vocationBoxArcher' then
+      filters.vocationId = FILTER_VOCATION_ARCHER
     elseif boxId == 'vocationBoxKnight' then
       filters.vocationId = FILTER_VOCATION_KNIGHT
+    elseif boxId == 'vocationBoxDwarf' then
+      filters.vocationId = FILTER_VOCATION_DWARF
+    elseif boxId == 'vocationBoxOrc' then
+      filters.vocationId = FILTER_VOCATION_ORC
+    elseif boxId == 'vocationBoxElf' then
+      filters.vocationId = FILTER_VOCATION_ELF
     end
   elseif widget == groupRadioGroup then
     local boxId = selectedWidget:getId()

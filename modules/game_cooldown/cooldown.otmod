@@ -4,6 +4,7 @@ Module
   author: OTClient team
   website: https://github.com/edubart/otclient
   sandboxed: true
+  dependencies: [ game_interface ]
   scripts: [ cooldown ]
   @onLoad: init()
   @onUnload: terminate()

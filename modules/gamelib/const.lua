@@ -451,4 +451,12 @@ VocationClientToServer = {
   [VocationsClient.ElderDruid] = VocationsServer.ElderDruid
 }
 
+ANALYZER_HEAL = 0
+ANALYZER_DAMAGE_DEALT = 1
+ANALYZER_DAMAGE_RECEIVED = 2
+PriceTypeEnum = {
+    Market = 0,
+    Leader = 1
+}
+
 -- @}

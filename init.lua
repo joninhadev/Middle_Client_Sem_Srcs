@@ -24,7 +24,7 @@ Servers = {
 --USE_NEW_ENERGAME = true -- uses entergamev2 based on websockets instead of entergame
 ALLOW_CUSTOM_SERVERS = false -- if true it shows option ANOTHER on server list
 
-g_app.setName("Middle [v.0.323]")
+g_app.setName("Middle [v.0.5]")
 -- CONFIG END
 
 -- print first terminal message
@@ -85,3 +85,5 @@ if type(Services.updater) == 'string' and Services.updater:len() > 4
   return Updater.init(loadModules)
 end
 loadModules()
+
+g_modules.ensureModuleLoaded("game_dailyreward")

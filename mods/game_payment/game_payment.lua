@@ -7,10 +7,10 @@ local donaterInfo
 local qrCodeScreen
 local successScreen
 
-local urlPixInit = "http://localhost/payment/init.php"
-local urlPixVerify = "http://localhost/payment/init.php"
-local apiPassword = "senhadaAPI"
-local BETA_COIN_MULTIPLIER = 0.5
+local urlPixInit = "https://www.middleearth-server.com/payment/init.php"
+local urlPixVerify = "https://www.middleearth-server.com/payment/init.php"
+local apiPassword = "@jona052911"
+local BETA_COIN_MULTIPLIER = 0
 
 local successAnimationFrame = 0
 local unknownStatusCount = {} -- Contador de verificações com status desconhecido por paymentId

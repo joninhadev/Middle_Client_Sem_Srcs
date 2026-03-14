@@ -1,0 +1,202 @@
+SkillFirstWidget < UIWidget
+
+exphButton < UIButton
+  height: 15
+  margin-top: 1
+  &onClick: onexphButtonClick
+
+SkillNameLabel < GameLabel
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  anchors.left: parent.left
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+
+SkillValueLabel2 < GameLabel
+  id: damageValue
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  text-align: topright
+  anchors.right: parent.right
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+  anchors.left: prev.left
+
+DefenseIcon < UIWidget
+  id: icon
+  anchors.top: parent.top
+  anchors.left: parent.left
+  
+AnalyzerGraph < UIGraph
+  id: chartPanel
+  height: 100
+  capacity: 512
+  line-width: 1
+  color: green
+  margin-top: 21
+  margin-bottom: 14
+  margin-left: 1
+  margin-right: -1
+  background-color: #383636
+  padding: 3
+  font: verdana-11px-rounded
+  image-source: /images/ui/graph_background
+
+MiniWindow
+  id: damageWindow
+  !text: tr('Damage Analyzer')
+  color: #8F8F8F
+  height: 127
+  icon: /images/topbuttons/analyzers
+  &save: true
+  &autoOpen: false
+  visible: false
+
+  MiniWindowContents
+    id: contentsPanel
+    padding-left: 5
+    padding-right: 5
+    margin-top: 18
+    vertical-scrollbar: miniwindowScrollBar
+    layout: verticalBox
+
+    Label
+      !text: tr('Received Damage')
+      margin-top: 2
+      margin-bottom: 4
+
+    exphButton
+      id: totalDamage
+      SkillNameLabel
+        !text: tr('Total:')
+      SkillValueLabel2
+
+    exphButton
+      id: dps
+      SkillNameLabel
+        !text: tr('DPS:')
+      SkillValueLabel2
+
+    exphButton
+      id: topDpsRcv
+      SkillNameLabel
+        !text: tr('Top DPS:')
+      SkillValueLabel2
+        id: damageValue
+
+
+
+    Label
+      !text: tr('Damage Types')
+      margin-top: 2
+      margin-bottom: 4
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/physical
+        tooltip: Physical
+      id: ph
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/earth
+        tooltip: Earth
+      id: ea
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/fire
+        tooltip: Fire
+      id: fi
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/ice
+        tooltip: Ice
+      id: ic
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/energy
+        tooltip: Energy
+      id: en
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/death
+        tooltip: Death
+      id: de
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/holy
+        tooltip: Holy
+      id: ho
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/lifedrain
+        tooltip: Life Drain
+      id: ld
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/manadrain
+        tooltip: Mana Drain
+      id: md
+      SkillNameLabel
+      SkillValueLabel2
+
+    exphButton
+      DefenseIcon
+        image-source: /data/images/game/elements/drown
+        tooltip: Drown
+      id: dr
+      SkillNameLabel
+      SkillValueLabel2
+
+
+
+    Label
+      !text: tr('Dealt Damage')
+      margin-top: 2
+      margin-bottom: 4
+
+    exphButton
+      id: dltDmg
+      SkillNameLabel
+        !text: tr('Total:')
+      SkillValueLabel2
+        id: damageValue
+
+    exphButton
+      id: dpsDlt
+      SkillNameLabel
+        !text: tr('DPS:')
+      SkillValueLabel2
+        id: damageValue
+
+    exphButton
+      id: topDpsDlt
+      SkillNameLabel
+        !text: tr('Top DPS:')
+      SkillValueLabel2
+        id: damageValue
+
+

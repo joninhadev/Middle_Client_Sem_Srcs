@@ -1,0 +1,168 @@
+AnalyzerButton < UIButton
+  id: analyzerButton
+  height: 21
+  margin-bottom: 2
+
+MiniWindow
+  id: mainWindow
+  !text: tr('Hunt Analyzer')
+  color: #8F8F8F
+  icon: /images/topbuttons/analyzers
+  height: 225
+  @onClose: modules.game_hunteranalyzer.onAnalyzerClose()
+  &save: true
+
+  MiniWindowContents
+    padding-left: 5
+    padding-right: 5
+    vertical-scrollbar: miniwindowScrollBar
+    layout: anchor
+  
+    Button
+      id: buttonExpH
+      margin-top: 5
+      anchors.left: parent.left
+      anchors.top: parent.top
+      width: 104
+      text: Exp Analyzer
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: showExpWindow
+
+    Button
+      id: ResetbuttonExpH
+      margin-top: 5
+      anchors.left: buttonExpH.right
+      anchors.top: parent.top
+      margin-left: 5
+      width: 35
+      text: Reset
+      !tooltip: 'Reset exp tracker.'
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: startFreshanalyzerWindow
+
+    Button
+      id: buttonDrop
+      anchors.left: parent.left
+      anchors.top: prev.bottom
+      width: 104
+      margin-top: 5
+      text: Loot Tracker
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: showDropWindow
+
+    Button
+      id: ResetbuttonDrop
+      margin-top: 5
+      anchors.left: buttonDrop.right
+      anchors.top: ResetbuttonExpH.bottom
+      margin-left: 5
+      width: 35
+      text: Reset
+      !tooltip: 'Reset loot tracker.'
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: resetDropTracker
+
+    Button
+      id: buttonKill
+      anchors.left: parent.left
+      anchors.top: prev.bottom
+      width: 104
+      margin-top: 5
+      text: Kill Tracker
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: showKillWindow
+
+    Button
+      id: ResetbuttonKill
+      margin-top: 5
+      anchors.left: buttonKill.right
+      anchors.top: ResetbuttonDrop.bottom
+      margin-left: 5
+      width: 35
+      text: Reset
+      !tooltip: 'Reset kill tracker.'
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: resetKillTracker
+
+    Button
+      id: buttonDamage
+      anchors.left: parent.left
+      anchors.top: prev.bottom
+      width: 104
+      margin-top: 5
+      text: Damage Analyzer
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: showDamageWindow
+
+    Button
+      id: resetButtonDamage
+      margin-top: 5
+      anchors.left: buttonDamage.right
+      anchors.top: ResetbuttonKill.bottom
+      margin-left: 5
+      width: 35
+      text: Reset
+      !tooltip: 'Reset damage analyzer.'
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: resetDamageAnalyzer
+
+    Button
+      id: buttonParty
+      anchors.left: parent.left
+      anchors.top: prev.bottom
+      width: 104
+      margin-top: 5
+      text: Party Analyzer
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: showPartyWindow
+
+    Button
+      id: resetButtonParty
+      margin-top: 5
+      anchors.left: buttonParty.right
+      anchors.top: resetButtonDamage.bottom
+      margin-left: 5
+      width: 35
+      text: Reset
+      !tooltip: 'Reset party analyzer.'
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: resetPartyAnalyzer
+
+    Button
+      id: buttonBossCooldowns
+      anchors.left: parent.left
+      anchors.top: prev.bottom
+      width: 144
+      margin-top: 5
+      text: Boss Cooldowns
+      font: cipsoftFont
+      color: #ffffff
+      &onClick: showBossCooldownsWindow
+
+    Button
+      id: buttonStartNew
+      anchors.left: parent.left
+      anchors.top: prev.bottom
+      width: 144
+      margin-top: 5
+      text: Start new hunt
+      font: cipsoftFont
+      color: #ffffff
+      !tooltip: 'Open all analyzers and reset the progress.'
+      &onClick: resetSessionAll
+      
+      $!on:
+        image-color: #83CAFF
+
+      $on:
+        image-color: #83CAFF

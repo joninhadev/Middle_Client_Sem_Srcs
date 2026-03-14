@@ -195,8 +195,8 @@ function UIMiniWindowContainer:order()
   end
 
   table.sort(children, function(a, b)
-    local indexA = a.miniIndex or a.autoOpen or 999
-    local indexB = b.miniIndex or b.autoOpen or 999
+    local indexA = tonumber(a.miniIndex) or tonumber(a.autoOpen) or 999
+    local indexB = tonumber(b.miniIndex) or tonumber(b.autoOpen) or 999
     return indexA < indexB
   end)
 
