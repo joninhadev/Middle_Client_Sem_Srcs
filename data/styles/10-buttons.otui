@@ -102,3 +102,25 @@ AddButton < UIButton
   $disabled:
     image-color: #ffffff55
     change-cursor-image: false
+
+EntergameButton < UIButton
+  font: verdana-bold-12px
+  color: #f6ede5
+  size: 147 49
+  text-offset: 0 0
+  image-source: /images/ui/entergame/nofocus
+  image-border: 10
+  padding: 5
+  opacity: 1.0
+  cursor: pointer
+  $hover !disabled:
+    image-source: /images/ui/entergame/hover
+    opacity: 1.0
+  $pressed:
+    image-source: /images/ui/entergame/press
+    opacity: 1.0
+    text-offset: 1 1
+  $disabled:
+    color: #1a1a1a88
+    opacity: 0.6
+    change-cursor-image: false

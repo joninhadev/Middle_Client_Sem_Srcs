@@ -1,196 +1,641 @@
-EnterGameWindow
-  id: enterGame
-  @onEnter: EnterGame.doLogin()
+ButtonInformation < Button
 
+UIWidget
+  id: enterGameClip
+  anchors.fill: parent
+  clipping: true
+  phantom: true
+  UIWidget
+    id: middleLogo
+    size: 250 250
+    anchors.bottom: enterGame.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 10
+    image-source: /images/middle_logo
+    image-smooth: true
+    phantom: true
+    focusable: false
 
   UIWidget
-    id: clientLogo
+    id: enterGame
+    size: 350 450
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
+    visible: false
+    focusable: true
+    @onEnter: EnterGame.doLogin()
+    UIWidget
+      id: emailLabel
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      image-source: /images/ui/entergame/email
+      image-auto-resize: true
+      phantom: true
+      focusable: false
+
+    RAccTextEdit
+      id: accountNameTextEdit
+      size: 282 53
+      anchors.top: emailLabel.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 4
+      max-length: 45
+      @onTextChange: modules.client_entergame.onTextChange()
+    UIWidget
+      id: emailStatus
+      !tooltip: tr('You have not entered a valid email address.')
+      tooltip-side: left
+      tooltip-pos: 15 20
+      anchors.top: prev.top
+      anchors.left: prev.right
+      margin-left: 5
+      margin-top: 8
+      image-source: /images/ui/entergame/attention-icon
+      image-auto-resize: true
+      visible: false
+      focusable: false
+
+    UIButton
+      id: savedAccounts
+      anchors.top: accountNameTextEdit.top
+      anchors.left: accountNameTextEdit.left
+      margin-top: 22
+      margin-left: 13
+      image-source: /images/ui/entergame/save-account
+      image-auto-resize: true
+      opacity: 0.7
+      cursor: pointer
+      $hover !pressed:
+        opacity: 1.0
+      @onClick: toggleSavedAccountsDropdown()
+
+    UIButton
+      id: toggleEmailVisibility
+      size: 19 13
+      anchors.top: accountNameTextEdit.top
+      anchors.right: accountNameTextEdit.right
+      margin-top: 21
+      margin-right: 16
+      image-source: /images/ui/entergame/disable
+      image-auto-resize: true
+      opacity: 0.5
+      cursor: pointer
+      $hover !pressed:
+        opacity: 1.0
+      $on:
+        image-source: /images/ui/entergame/enable
+      @onClick: toggleEmailVisibility()
+
+    UIWidget
+      id: passLabel
+      anchors.top: accountNameTextEdit.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 18
+      image-source: /images/ui/entergame/password-label
+      image-auto-resize: true
+      phantom: true
+      focusable: false
+
+    RAccTextEdit
+      id: accountPasswordTextEdit
+      size: 282 53
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 3
+      max-length: 45
+      box-text-padding: 30
+      padding-right: 40
+      @onTextChange: onPasswordTextChange(self)
+    UIButton
+      id: togglePasswordVisibility
+      size: 19 13
+      anchors.top: accountPasswordTextEdit.top
+      anchors.right: accountPasswordTextEdit.right
+      margin-top: 21
+      margin-right: 16
+      image-source: /images/ui/entergame/disable
+      image-auto-resize: true
+      opacity: 0.5
+      cursor: pointer
+      $hover !pressed:
+        opacity: 1.0
+      $on:
+        image-source: /images/ui/entergame/enable
+      @onClick: togglePasswordVisibility()
+
+    SmallCheckBox
+      id: rememberMeBox
+      size: 160 24
+      anchors.top: accountPasswordTextEdit.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 22
+      margin-left: 20
+      !tooltip: tr('Remember account and password')
+      UIWidget
+        id: rememberMeLabel
+        !text: tr('REMEMBER ME')
+        text-auto-resize: true
+        anchors.top: parent.top
+        anchors.left: parent.left
+        font: verdana-11px-antialised
+        color: #b0b0b0
+        margin-top: 2
+        margin-left: 30
+        phantom: true
+
+    UIButton
+      id: loginButton
+      size: 153 57
+      anchors.top: rememberMeBox.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 19
+      cursor: pointer
+      image-source: /images/ui/entergame/login-button
+      image-auto-resize: true
+      opacity: 1.0
+      $hover !pressed:
+        image-source: /images/ui/entergame/login-button-hover
+      $pressed:
+        image-source: /images/ui/entergame/login-button-pressed
+      @onClick: EnterGame.doLogin()
+
+    Button
+      id: googleLoginButton
+      size: 32 29
+      anchors.top: prev.bottom
+      anchors.left: prev.left
+      image-source: /images/ui/entergame/gmail
+      image-clip: 0 0 32 29
+      margin-left: 42
+      cursor: pointer
+      $hover !pressed:
+        image-source: /images/ui/entergame/gmail-hover
+        image-clip: 0 0 32 29
+      $pressed:
+        image-clip: -1 -1 32 29
+      @onClick: EnterGame.onGoogleClick()
+
+    Button
+      id: discordLoginButton
+      size: 32 29
+      anchors.top: prev.top
+      anchors.left: prev.right
+      image-source: /images/ui/entergame/discord
+      image-clip: 0 0 32 29
+      margin-left: 5
+      cursor: pointer
+      $hover !pressed:
+        image-source: /images/ui/entergame/discord-hover
+        image-clip: 0 0 32 29
+      $pressed:
+        image-clip: -1 -1 32 29
+      @onClick: EnterGame.onDiscordClick()
+
+    UIButton
+      id: forgotPasswordBtn
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 35
+      image-source: /images/ui/entergame/forgot-password
+      image-auto-resize: true
+      opacity: 0.7
+      cursor: pointer
+      $hover:
+        opacity: 1.0
+      @onClick: g_platform.openUrl("https://YOUR_SERVER.com/account/lost")
+
+    // ===== Create Account =====
+    UIButton
+      id: createAccountBtn
+      anchors.top: forgotPasswordBtn.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 20
+      image-source: /images/ui/entergame/create-account
+      image-auto-resize: true
+      opacity: 0.7
+      cursor: pointer
+      $hover:
+        opacity: 1.0
+      @onClick: g_platform.openUrl("https://YOUR_SERVER.com/account/create")
+
+    // ===== Saved Accounts Dropdown =====
+    Panel
+      id: savedAccountsDropdown
+      anchors.top: accountNameTextEdit.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      size: 320 0
+      margin-top: -2
+      visible: false
+      phantom: false
+      focusable: true
+      image-source: /images/ui/entergame/password
+      image-border: 6
+      padding: 6
+      layout:
+        type: verticalBox
+
+    // ===== Server Selector (Olimpia specific - hidden if only 1 server) =====
+    Panel
+      id: serverSelectorPanel
+      size: 280 20
+      anchors.bottom: parent.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-bottom: 5
+      on: true
+      focusable: false
+      visible: false
+
+      $on:
+        visible: true
+        margin-top: 0
+
+      $!on:
+        visible: false
+      ComboBox
+        id: serverSelector
+        anchors.fill: parent
+        font: verdana-11px-antialised
+        color: #dfdfdf
+        @onOptionChange: EnterGame.onServerChange()
+
+    Panel
+      id: customServerSelectorPanel
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: serverSelectorPanel.top
+      height: 52
+      on: true
+      focusable: true
+      visible: false
+
+      $on:
+        visible: true
+        margin-top: 0
+
+      $!on:
+        visible: false
+
+      HorizontalSeparator
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        margin-top: 8
+
+      MenuLabel
+        id: serverLabel
+        !text: tr('IP:PORT or URL')
+        anchors.left: prev.left
+        anchors.top: prev.bottom
+        margin-top: 8
+        text-auto-resize: true
+
+      TextEdit
+        id: serverHostTextEdit
+        !tooltip: tr('Make sure that your client uses\nthe correct game client version')
+        anchors.left: parent.left
+        anchors.top: serverLabel.bottom
+        margin-top: 2
+        width: 150
+
+      MenuLabel
+        id: clientLabel
+        !text: tr('Version')
+        anchors.left: serverHostTextEdit.right
+        anchors.top: serverLabel.top
+        text-auto-resize: true
+        margin-left: 10
+
+      ComboBox
+        id: clientVersionSelector
+        anchors.top: serverHostTextEdit.top
+        anchors.bottom: serverHostTextEdit.bottom
+        anchors.left: prev.left
+        anchors.right: parent.right
+        menu-scroll: true
+        menu-height: 125
+        menu-scroll-step: 25
+        margin-right: 3
+
+
+bottomBar < Panel
+  anchors.bottom: parent.bottom
+  anchors.left: parent.left
+  anchors.right: parent.right
+  height: 73
+  image-source: /images/ui/entergame/bottom-bar
+  image-border: 4
+  phantom: false
+
+  UIWidget
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
-    image-source: /images/login_logo.png
-    width: 200
-    height: 100
-    margin-top: 0
-    border-width: 1
-    border-color: black
-
-  MenuLabel
-    !text: tr('Login')
-    anchors.top: prev.bottom
-    anchors.horizontalCenter: parent.horizontalCenter
-    margin-top: 3
-    text-auto-resize: true
-
-  TextEdit
-    id: accountNameTextEdit
-    anchors.left: parent.left
-    anchors.right: parent.right
-    font: verdana-11px-rounded
-    text-align: center
-    anchors.top: prev.bottom
-    margin-top: 4
-    margin-left: 5
-    margin-right: 5
-
-  MenuLabel
-    !text: tr('Password')
-    font: verdana-11px-rounded
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.top: prev.bottom
-    margin-top: 8
-    text-auto-resize: true
-
-  PasswordTextEdit
-    id: accountPasswordTextEdit
-    font: verdana-11px-rounded
-    text-align: center
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 2
-    margin-left: 5
-    margin-right: 5
-
-  Panel
-    id: serverSelectorPanel
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    height: 52
-    on: true
-    focusable: false
-    
-    $on:
-      visible: true
-      margin-top: 0
-    
-    $!on:
-      visible: false
-      margin-top: -52
-      
-    HorizontalSeparator
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.top: parent.top
-      margin-top: 10
-
-    MenuLabel
-      id: serverLabel
-      !text: tr('Server')
-      anchors.left: parent.left
-      anchors.top: prev.bottom
-      text-auto-resize: true    
-      margin-top: 5
-
-    ComboBox
-      id: serverSelector
-      anchors.left: prev.left
-      anchors.right: parent.right
-      anchors.top: serverLabel.bottom
-      margin-top: 2
-      margin-right: 3
-      menu-scroll: true
-      menu-height: 125
-      menu-scroll-step: 25
-      text-offset: 5 2
-      @onOptionChange: EnterGame.onServerChange()
-    
-  Panel
-    id: customServerSelectorPanel
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    height: 52
-    on: true
-    focusable: true
-    
-    $on:
-      visible: true
-      margin-top: 0
-    
-    $!on:
-      visible: false
-      margin-top: -52
-    
-    HorizontalSeparator
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.top: parent.top
-      margin-top: 8
-
-    MenuLabel
-      id: serverLabel
-      !text: tr('IP:PORT or URL')
-      anchors.left: prev.left
-      anchors.top: prev.bottom
-      margin-top: 8
-      text-auto-resize: true
-
-    TextEdit
-      id: serverHostTextEdit
-      !tooltip: tr('Make sure that your client uses\nthe correct game client version')
-      anchors.left: parent.left
-      anchors.top: serverLabel.bottom
-      margin-top: 2
-      width: 150
-
-    MenuLabel
-      id: clientLabel
-      !text: tr('Version')
-      anchors.left: serverHostTextEdit.right
-      anchors.top: serverLabel.top
-      text-auto-resize: true
-      margin-left: 10
-
-    ComboBox
-      id: clientVersionSelector
-      anchors.top: serverHostTextEdit.top
-      anchors.bottom: serverHostTextEdit.bottom
-      anchors.left: prev.left
-      anchors.right: parent.right
-      menu-scroll: true
-      menu-height: 125
-      menu-scroll-step: 25
-      margin-right: 3
-      
-  HorizontalSeparator
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 10
-
-  CheckBox
-    id: rememberPasswordBox
-    !text: tr('Remember password')
-    !tooltip: tr('Remember account and password when starts client')
-    font: verdana-11px-rounded
-    color: #035c03ff
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 9
-
-  HorizontalSeparator
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 9
-
-  Button
-    !text: tr('Login')
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 10
-    margin-left: 50
-    margin-right: 50
-    @onClick: EnterGame.doLogin()
-
-  Label
-    id: serverInfoLabel
-    font: verdana-11px-rounded
-    anchors.top: prev.top
-    anchors.left: parent.left
     margin-top: 5
-    color: green
-    text-auto-resize: true
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+
+  // --- Left: Menu Icons ---
+  UIButton
+    id: muteBtn
+    size: 47 47
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: parent.left
+    margin-top: 8
+    margin-left: 220
+    image-source: /images/ui/entergame/menu-buttons/sound
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('Sound')
+    tooltip-side: left
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: muteBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  UIButton
+    id: configBtn
+    size: 47 47
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: muteBtn.right
+    margin-top: 8
+    margin-left: 32
+    image-source: /images/ui/entergame/menu-buttons/config
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('Settings')
+    tooltip-side: left
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: configBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  UIButton
+    id: serverBtn
+    size: 45 44
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: configBtn.right
+    margin-top: 8
+    margin-left: 32
+    image-source: /images/ui/entergame/menu-buttons/server
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: serverBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  UIButton
+    id: changelogBtn
+    size: 40 44
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: serverBtn.right
+    margin-top: 8
+    margin-left: 36
+    image-source: /images/ui/entergame/menu-buttons/changelog
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('Patch Notes')
+    tooltip-side: left
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: changelogBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  UIButton
+    id: calendarBtn
+    size: 48 46
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: changelogBtn.right
+    margin-top: 7
+    margin-left: 38
+    image-source: /images/ui/entergame/menu-buttons/calendario-button
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('Event Schedule')
+    tooltip-side: left
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: calendarBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  // --- Center: Player Count ---
+  Panel
+    id: onlinePlayersPanel
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 7
+    height: 22
+    layout:
+      type: horizontalBox
+      spacing: 5
+      fit-children: true
+    phantom: true
+    visible: false
+
+    Label
+      id: onlinePlayersCount
+      !text: tr('0')
+      font: verdana-bold-12px
+      text-auto-resize: true
+      color: #f8c100
+      phantom: true
+
+    Label
+      id: onlinePlayersLabel
+      !text: tr('PLAYERS ONLINE')
+      font: verdana-bold-12px
+      text-auto-resize: true
+      color: #f6ede5
+      phantom: true
+
+  // --- Right: Social Links + Exit ---
+  UIButton
+    id: discordBtn
+    size: 51 42
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.right: youtubeBtn.left
+    margin-top: 7
+    margin-right: 28
+    image-source: /images/ui/entergame/menu-buttons/discord-button
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('Discord')
+    tooltip-side: right
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: discordBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  UIButton
+    id: youtubeBtn
+    size: 53 43
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.right: instagramBtn.left
+    margin-top: 8
+    margin-right: 26
+    image-source: /images/ui/entergame/menu-buttons/youtube-button
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('YouTube')
+    tooltip-side: right
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: youtubeBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  UIButton
+    id: instagramBtn
+    size: 45 45
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.right: wikiBtn.left
+    margin-top: 8
+    margin-right: 27
+    image-source: /images/ui/entergame/menu-buttons/instagram-button
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('Instagram')
+    tooltip-side: right
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: instagramBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  UIButton
+    id: wikiBtn
+    size: 47 45
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.right: exitBtn.left
+    margin-top: 7
+    margin-right: 28
+    image-source: /images/ui/entergame/menu-buttons/wiki-button
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('Wiki')
+    tooltip-side: right
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: wikiBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+  UIButton
+    id: exitBtn
+    size: 47 47
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.right: parent.right
+    margin-top: 8
+    margin-right: 145
+    image-source: /images/ui/entergame/menu-buttons/exit
+    image-auto-resize: true
+    opacity: 0.6
+    cursor: pointer
+    !tooltip: tr('Exit')
+    tooltip-side: right
+    $hover:
+      opacity: 1.0
+
+  UIWidget
+    anchors.top: parent.top
+    anchors.horizontalCenter: exitBtn.horizontalCenter
+    margin-top: 5
+    image-source: /images/ui/entergame/arrow-mark
+    image-auto-resize: true
+    phantom: true
+
+OlimpiaLogo < Panel
+  image-source: /data/images/login_logo.png
+  anchors.horizontalCenter: parent.horizontalCenter
+  anchors.verticalCenter: parent.verticalCenter
+  margin-bottom: 130
+  margin-top: -30
+  size: 320 100
+
+IconWidget < UIWidget
+  id: icon
+  image-source: /images/icons
+  size: 19 19
+
+DailyMultiplierLabel < UIWidget
+  phantom: true
+  text-wrap: true
+  text-auto-resize: true
+  text-align: left
+  text-offset: 22 0
+  $!first:
+    margin-top: 5
+
+  IconWidget
+    id: icon
+    anchors.left: parent.left
+    anchors.verticalcenter: parent.verticalcenter
+
+  Panel
+    id: dailyMonsters
+    anchors.bottom: parent.bottom
+    anchors.horizontalcenter: parent.horizontalcenter
+    margin-bottom: 40
+    height: 144
+    layout:
+      type: horizontalBox
+      spacing: 4

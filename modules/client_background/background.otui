@@ -19,3 +19,290 @@ UIWidget
     padding: 2
     color: #ffffff
     font: terminus-14px-bold
+    visible: false
+
+  Panel
+    id: bottomBar
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 73
+    image-source: /images/ui/entergame/bottom-bar
+    image-border: 4
+    phantom: false
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+
+    // --- Left: Menu Icons ---
+    UIButton
+      id: muteBtn
+      size: 47 47
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: parent.left
+      margin-top: 8
+      margin-left: 220
+      image-source: /images/ui/entergame/menu-buttons/sound
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('Sound')
+      tooltip-side: left
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: muteBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    UIButton
+      id: configBtn
+      size: 47 47
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: muteBtn.right
+      margin-top: 8
+      margin-left: 32
+      image-source: /images/ui/entergame/menu-buttons/config
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('Settings')
+      tooltip-side: left
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: configBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    UIButton
+      id: serverBtn
+      size: 45 44
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: configBtn.right
+      margin-top: 8
+      margin-left: 32
+      image-source: /images/ui/entergame/menu-buttons/server
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: serverBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    UIButton
+      id: changelogBtn
+      size: 40 44
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: serverBtn.right
+      margin-top: 8
+      margin-left: 36
+      image-source: /images/ui/entergame/menu-buttons/changelog
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('Patch Notes')
+      tooltip-side: left
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: changelogBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    UIButton
+      id: calendarBtn
+      size: 48 46
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: changelogBtn.right
+      margin-top: 7
+      margin-left: 38
+      image-source: /images/ui/entergame/menu-buttons/calendario-button
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('Event Schedule')
+      tooltip-side: left
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: calendarBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    // --- Center: Player Count ---
+    Panel
+      id: onlinePlayersPanel
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 7
+      height: 22
+      layout:
+        type: horizontalBox
+        spacing: 5
+        fit-children: true
+      phantom: true
+
+      Label
+        id: onlinePlayersCount
+        !text: tr('0')
+        font: verdana-bold-12px
+        text-auto-resize: true
+        color: #f8c100
+        phantom: true
+
+      Label
+        id: onlinePlayersLabel
+        !text: tr('PLAYERS ONLINE')
+        font: verdana-bold-12px
+        text-auto-resize: true
+        color: #f6ede5
+        phantom: true
+
+    // --- Right: Social Links + Exit ---
+    UIButton
+      id: discordBtn
+      size: 51 42
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: youtubeBtn.left
+      margin-top: 7
+      margin-right: 28
+      image-source: /images/ui/entergame/menu-buttons/discord-button
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('Discord')
+      tooltip-side: right
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: discordBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    UIButton
+      id: youtubeBtn
+      size: 53 43
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: instagramBtn.left
+      margin-top: 8
+      margin-right: 26
+      image-source: /images/ui/entergame/menu-buttons/youtube-button
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('YouTube')
+      tooltip-side: right
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: youtubeBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    UIButton
+      id: instagramBtn
+      size: 45 45
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: wikiBtn.left
+      margin-top: 8
+      margin-right: 27
+      image-source: /images/ui/entergame/menu-buttons/instagram-button
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('Instagram')
+      tooltip-side: right
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: instagramBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    UIButton
+      id: wikiBtn
+      size: 47 45
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: exitBtn.left
+      margin-top: 7
+      margin-right: 28
+      image-source: /images/ui/entergame/menu-buttons/wiki-button
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('Wiki')
+      tooltip-side: right
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: wikiBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true
+
+    UIButton
+      id: exitBtn
+      size: 47 47
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: parent.right
+      margin-top: 8
+      margin-right: 145
+      image-source: /images/ui/entergame/menu-buttons/exit
+      image-auto-resize: true
+      opacity: 0.6
+      cursor: pointer
+      !tooltip: tr('Exit')
+      tooltip-side: right
+      $hover:
+        opacity: 1.0
+
+    UIWidget
+      anchors.top: parent.top
+      anchors.horizontalCenter: exitBtn.horizontalCenter
+      margin-top: 5
+      image-source: /images/ui/entergame/arrow-mark
+      image-auto-resize: true
+      phantom: true

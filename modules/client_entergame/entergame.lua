@@ -2,6 +2,7 @@ EnterGame = { }
 
 -- private variables
 local loadBox
+local enterGameClip
 local enterGame
 local enterGameButton
 local logpass
@@ -16,10 +17,286 @@ local serverSelector
 local clientVersionSelector
 local serverHostTextEdit
 local rememberPasswordBox
+local savedAccountsDropdown
+local savedAccountsVisible = false
+local emailVisible = true
+local passwordVisible = false
+local realEmailText = ''
+local realPasswordText = ''
+local updatingPasswordField = false
 local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "910", "961", "1000", "1077", "1090", "1096", "1098", "1099", "1100", "1200", "1220"}
 
 local checkedByUpdater = {}
 local waitingForHttpResults = 0
+
+-- Saved accounts helper functions
+function getSavedAccounts()
+  local raw = g_settings.get('savedAccounts')
+  if raw and raw ~= '' then
+    local ok, accounts = pcall(function() return json.decode(raw) end)
+    if ok and type(accounts) == 'table' then return accounts end
+  end
+  return {}
+end
+
+function setSavedAccounts(accounts)
+  local ok, encoded = pcall(function() return json.encode(accounts) end)
+  if ok then g_settings.set('savedAccounts', encoded) end
+end
+
+function saveCurrentAccount()
+  if not enterGame then return end
+  local accField = enterGame:getChildById('accountNameTextEdit')
+  if not accField then return end
+  local email = accField:getText()
+  if email == '' then return end
+  local accounts = getSavedAccounts()
+  for i, acc in ipairs(accounts) do
+    if acc.email == email then
+      if rememberPasswordBox and rememberPasswordBox:isChecked() then
+        local pwField = enterGame:getChildById('accountPasswordTextEdit')
+        if pwField then
+          acc.password = g_crypt.encrypt(pwField:getText())
+        end
+      end
+      setSavedAccounts(accounts)
+      return
+    end
+  end
+  local entry = { email = email }
+  if rememberPasswordBox and rememberPasswordBox:isChecked() then
+    local pwField = enterGame:getChildById('accountPasswordTextEdit')
+    if pwField then
+      entry.password = g_crypt.encrypt(pwField:getText())
+    end
+  end
+  table.insert(accounts, entry)
+  setSavedAccounts(accounts)
+end
+
+function removeSavedAccount(email)
+  local accounts = getSavedAccounts()
+  for i, acc in ipairs(accounts) do
+    if acc.email == email then
+      table.remove(accounts, i)
+      setSavedAccounts(accounts)
+      return
+    end
+  end
+end
+
+function maskEmail(email)
+  local at = email:find('@')
+  if not at or at <= 2 then return email end
+  local name = email:sub(1, at - 1)
+  local domain = email:sub(at)
+  if #name <= 3 then
+    return name:sub(1, 1) .. string.rep('*', #name - 1) .. domain
+  end
+  return name:sub(1, 2) .. string.rep('*', #name - 2) .. domain
+end
+
+function populateSavedAccountsDropdown()
+  if not savedAccountsDropdown then return end
+  local children = savedAccountsDropdown:getChildren()
+  for _, child in ipairs(children) do
+    child:destroy()
+  end
+
+  local accounts = getSavedAccounts()
+  if #accounts == 0 then
+    savedAccountsDropdown:setHeight(0)
+    return
+  end
+
+  local rowHeight = 36
+  local maxVisible = 4
+  local dropdownPadding = 12
+  local visibleCount = math.min(#accounts, maxVisible)
+  local totalHeight = visibleCount * rowHeight + dropdownPadding
+
+  for i, acc in ipairs(accounts) do
+    local row = g_ui.createWidget('UIWidget', savedAccountsDropdown)
+    row:setHeight(rowHeight)
+    row:setPhantom(false)
+    row:setFocusable(false)
+    row:setBackgroundColor('#00000000')
+
+    local displayEmail = maskEmail(acc.email)
+    local label = g_ui.createWidget('Label', row)
+    label:setId('emailLabel')
+    label:setText(displayEmail)
+    label:setFont('verdana-11px-antialised')
+    label:setColor('#b0b0b0')
+    label:addAnchor(AnchorTop, 'parent', AnchorTop)
+    label:addAnchor(AnchorLeft, 'parent', AnchorLeft)
+    label:addAnchor(AnchorRight, 'parent', AnchorRight)
+    label:setMarginTop(8)
+    label:setMarginLeft(10)
+    label:setMarginRight(30)
+    label:setPhantom(true)
+    label:setTextAlign(AlignLeft)
+    label:setTextAutoResize(true)
+
+    local deleteBtn = g_ui.createWidget('UIButton', row)
+    deleteBtn:setId('deleteBtn')
+    deleteBtn:setSize({width = 12, height = 12})
+    deleteBtn:addAnchor(AnchorRight, 'parent', AnchorRight)
+    deleteBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
+    deleteBtn:setMarginRight(8)
+    deleteBtn:setText('X')
+    deleteBtn:setFont('verdana-11px-antialised')
+    deleteBtn:setColor('#ff5555')
+    deleteBtn:setOpacity(0.4)
+    deleteBtn:setCursor('pointer')
+
+    local emailToDelete = acc.email
+    deleteBtn.onClick = function()
+      removeSavedAccount(emailToDelete)
+      populateSavedAccountsDropdown()
+      if #getSavedAccounts() == 0 then
+        hideSavedAccountsDropdown()
+      end
+    end
+
+    row.onHoverChange = function(widget, hovered)
+      if hovered then
+        widget:setBackgroundColor('#ffffff11')
+        widget:getChildById('emailLabel'):setColor('#f6ede5')
+      else
+        widget:setBackgroundColor('#00000000')
+        widget:getChildById('emailLabel'):setColor('#b0b0b0')
+      end
+    end
+
+    local emailToSelect = acc.email
+    local passwordToSelect = acc.password
+    row.onClick = function()
+      selectSavedAccount(emailToSelect, passwordToSelect)
+    end
+  end
+
+  savedAccountsDropdown:setHeight(totalHeight)
+end
+
+function selectSavedAccount(email, encryptedPassword)
+  if not enterGame then return end
+  local accountWidget = enterGame:getChildById('accountNameTextEdit')
+  local passwordWidget = enterGame:getChildById('accountPasswordTextEdit')
+
+  if accountWidget then
+    accountWidget:setText(email)
+    accountWidget:setCursorPos(#email)
+  end
+
+  if passwordWidget then
+    if encryptedPassword and encryptedPassword ~= '' then
+      passwordWidget:setText(g_crypt.decrypt(encryptedPassword))
+    else
+      passwordWidget:clearText()
+    end
+  end
+
+  if rememberPasswordBox then rememberPasswordBox:setChecked(true) end
+  hideSavedAccountsDropdown()
+  if accountWidget then accountWidget:focus() end
+end
+
+function toggleSavedAccountsDropdown()
+  if savedAccountsVisible then
+    hideSavedAccountsDropdown()
+  else
+    showSavedAccountsDropdown()
+  end
+end
+
+function showSavedAccountsDropdown()
+  if not savedAccountsDropdown then return end
+  local accounts = getSavedAccounts()
+  if #accounts == 0 then return end
+
+  populateSavedAccountsDropdown()
+
+  savedAccountsDropdown:setVisible(true)
+  savedAccountsDropdown:raise()
+  savedAccountsVisible = true
+end
+
+function hideSavedAccountsDropdown()
+  if not savedAccountsDropdown then return end
+  savedAccountsDropdown:setVisible(false)
+  savedAccountsVisible = false
+end
+
+function toggleEmailVisibility()
+  if not enterGame then return end
+  local emailWidget = enterGame:getChildById('accountNameTextEdit')
+  if not emailWidget then return end
+
+  if emailVisible then
+    realEmailText = emailWidget:getText()
+    emailVisible = false
+    emailWidget:setText(string.rep('*', #realEmailText))
+  else
+    emailVisible = true
+    emailWidget:setText(realEmailText)
+    emailWidget:setCursorPos(#realEmailText)
+  end
+  g_settings.set('emailHidden', not emailVisible)
+
+  local eyeBtn = enterGame:getChildById('toggleEmailVisibility')
+  if eyeBtn then
+    eyeBtn:setOn(emailVisible)
+  end
+end
+
+function togglePasswordVisibility()
+  if not enterGame then return end
+  local pwField = enterGame:getChildById('accountPasswordTextEdit')
+  if not pwField then return end
+
+  if not passwordVisible then
+    passwordVisible = true
+    pwField:setText(realPasswordText)
+    pwField:setCursorPos(#realPasswordText)
+  else
+    realPasswordText = pwField:getText()
+    passwordVisible = false
+    pwField:setText(string.rep('*', #realPasswordText))
+  end
+
+  local eyeBtn = enterGame:getChildById('togglePasswordVisibility')
+  if eyeBtn then
+    eyeBtn:setOn(passwordVisible)
+  end
+end
+
+function onTextChange()
+  if not enterGame then return end
+  if savedAccountsVisible then hideSavedAccountsDropdown() end
+end
+
+function onPasswordTextChange(widget)
+  if updatingPasswordField then return end
+  if passwordVisible then
+    realPasswordText = widget:getText()
+    return
+  end
+  local displayed = widget:getText()
+  local realLen = #realPasswordText
+  local dispLen = #displayed
+  if dispLen > realLen then
+    local newChars = displayed:sub(realLen + 1)
+    realPasswordText = realPasswordText .. newChars
+  elseif dispLen < realLen then
+    realPasswordText = realPasswordText:sub(1, dispLen)
+  end
+  updatingPasswordField = true
+  local cursorPos = widget:getCursorPos()
+  widget:setText(string.rep('*', #realPasswordText))
+  widget:setCursorPos(cursorPos)
+  updatingPasswordField = false
+end
 
 -- private functions
 local function onProtocolError(protocol, message, errorCode)
@@ -40,6 +317,7 @@ local function onCharacterList(protocol, characters, account, otui)
 
     g_settings.set('account', account)
     g_settings.set('password', password)
+    saveCurrentAccount()
   else
     EnterGame.clearAccountFields()
   end
@@ -297,32 +575,39 @@ end
 -- public functions
 function EnterGame.init()
   if USE_NEW_ENERGAME then return end
-  enterGame = g_ui.displayUI('entergame')
+  enterGameClip = g_ui.displayUI('entergame')
+  enterGame = enterGameClip:getChildById('enterGame')
+  if not enterGame then
+    enterGame = enterGameClip -- fallback if no nested enterGame
+  end
   if LOGPASS ~= nil then
-    logpass = g_ui.loadUI('logpass', enterGame:getParent())
+    logpass = g_ui.loadUI('logpass', enterGameClip:getParent())
   end
   
-  serverSelectorPanel = enterGame:getChildById('serverSelectorPanel')
-  customServerSelectorPanel = enterGame:getChildById('customServerSelectorPanel')
+  savedAccountsDropdown = enterGame:getChildById('savedAccountsDropdown')
+  serverSelectorPanel = enterGame:recursiveGetChildById('serverSelectorPanel')
+  customServerSelectorPanel = enterGame:recursiveGetChildById('customServerSelectorPanel')
   
-  serverSelector = serverSelectorPanel:getChildById('serverSelector')
-  rememberPasswordBox = enterGame:getChildById('rememberPasswordBox')
-  serverHostTextEdit = customServerSelectorPanel:getChildById('serverHostTextEdit')
-  clientVersionSelector = customServerSelectorPanel:getChildById('clientVersionSelector')
+  serverSelector = serverSelectorPanel and serverSelectorPanel:getChildById('serverSelector')
+  rememberPasswordBox = enterGame:recursiveGetChildById('rememberPasswordBox') or enterGame:recursiveGetChildById('rememberMeBox')
+  serverHostTextEdit = customServerSelectorPanel and customServerSelectorPanel:getChildById('serverHostTextEdit')
+  clientVersionSelector = customServerSelectorPanel and customServerSelectorPanel:getChildById('clientVersionSelector')
   
-  if Servers ~= nil then 
+  if Servers ~= nil and serverSelector then 
     for name,server in pairs(Servers) do
       serverSelector:addOption(name)
     end
   end
-  if serverSelector:getOptionsCount() == 0 or ALLOW_CUSTOM_SERVERS then
+  if serverSelector and (serverSelector:getOptionsCount() == 0 or ALLOW_CUSTOM_SERVERS) then
     serverSelector:addOption(tr("Another"))    
   end  
-  for i,proto in pairs(protos) do
-    clientVersionSelector:addOption(proto)
+  if clientVersionSelector then
+    for i,proto in pairs(protos) do
+      clientVersionSelector:addOption(proto)
+    end
   end
 
-  if serverSelector:getOptionsCount() == 1 then
+  if serverSelector and serverSelector:getOptionsCount() == 1 and serverSelectorPanel then
     enterGame:setHeight(enterGame:getHeight() - serverSelectorPanel:getHeight())
     serverSelectorPanel:setOn(false)
   end
@@ -333,20 +618,42 @@ function EnterGame.init()
   local host = g_settings.get('host')
   local clientVersion = g_settings.get('client-version')
 
-  if serverSelector:isOption(server) then
+  if serverSelector and serverSelector:isOption(server) then
     serverSelector:setCurrentOption(server, false)
-    if Servers == nil or Servers[server] == nil then
+    if (Servers == nil or Servers[server] == nil) and serverHostTextEdit then
       serverHostTextEdit:setText(host)
     end
-    clientVersionSelector:setOption(clientVersion)
+    if clientVersionSelector then clientVersionSelector:setOption(clientVersion) end
   else
     server = ""
     host = ""
   end
   
-  enterGame:getChildById('accountPasswordTextEdit'):setText(password)
-  enterGame:getChildById('accountNameTextEdit'):setText(account)
-  rememberPasswordBox:setChecked(#account > 0)
+  local pwField = enterGame:recursiveGetChildById('accountPasswordTextEdit')
+  local accField = enterGame:recursiveGetChildById('accountNameTextEdit')
+  if pwField then
+    pwField:setText(string.rep('*', #password))
+  end
+  if accField then
+    accField:setText(account)
+    accField:setCursorPos(#account)
+  end
+  if rememberPasswordBox then rememberPasswordBox:setChecked(#account > 0) end
+
+  -- Initialize email visibility from saved setting
+  emailVisible = not g_settings.getBoolean('emailHidden', false)
+  if accField and not emailVisible then
+    realEmailText = accField:getText()
+    accField:setText(string.rep('*', #realEmailText))
+  end
+  local emailEyeBtn = enterGame:getChildById('toggleEmailVisibility')
+  if emailEyeBtn then emailEyeBtn:setOn(emailVisible) end
+
+  -- Password always starts hidden
+  passwordVisible = false
+  realPasswordText = password or ''
+  local pwEyeBtn = enterGame:getChildById('togglePasswordVisibility')
+  if pwEyeBtn then pwEyeBtn:setOn(false) end
 
   Keybind.new("Misc.", "Change Character", "Ctrl+G", "")
   Keybind.bind("Misc.", "Change Character", {
@@ -366,7 +673,7 @@ function EnterGame.init()
 end
 
 function EnterGame.terminate()
-  if not enterGame then return end
+  if not enterGameClip and not enterGame then return end
 
   Keybind.delete("Misc.", "Change Character")
 
@@ -375,7 +682,14 @@ function EnterGame.terminate()
     logpass = nil
   end
   
-  enterGame:destroy()
+  if enterGameClip then
+    enterGameClip:destroy()
+    enterGameClip = nil
+    enterGame = nil
+  elseif enterGame then
+    enterGame:destroy()
+    enterGame = nil
+  end
   if loadBox then
     loadBox:destroy()
     loadBox = nil
@@ -389,10 +703,15 @@ end
 
 function EnterGame.show()
   if not enterGame then return end
+  if enterGameClip then
+    enterGameClip:show()
+    enterGameClip:raise()
+  end
   enterGame:show()
   enterGame:raise()
   enterGame:focus()
-  enterGame:getChildById('accountNameTextEdit'):focus()
+  local accField = enterGame:getChildById('accountNameTextEdit')
+  if accField then accField:focus() end
   if logpass then
     logpass:show()
     logpass:raise()
@@ -402,6 +721,9 @@ end
 
 function EnterGame.hide()
   if not enterGame then return end
+  if enterGameClip then
+    enterGameClip:hide()
+  end
   enterGame:hide()
   if logpass then
     logpass:hide()
@@ -420,10 +742,11 @@ function EnterGame.openWindow()
 end
 
 function EnterGame.clearAccountFields()
-  enterGame:getChildById('accountNameTextEdit'):clearText()
-  enterGame:getChildById('accountPasswordTextEdit'):clearText()
-  --enterGame:getChildById('accountTokenTextEdit'):clearText()
-  enterGame:getChildById('accountNameTextEdit'):focus()
+  local accField = enterGame:getChildById('accountNameTextEdit')
+  local pwField = enterGame:getChildById('accountPasswordTextEdit')
+  if accField then accField:clearText() end
+  if pwField then pwField:clearText() end
+  if accField then accField:focus() end
   g_settings.remove('account')
   g_settings.remove('password')
 end
@@ -456,13 +779,20 @@ function EnterGame.doLogin(account, password, host)
     return
   end
   
-  G.account = account or enterGame:getChildById('accountNameTextEdit'):getText()
-  G.password = password or enterGame:getChildById('accountPasswordTextEdit'):getText()
+  local accField = enterGame:getChildById('accountNameTextEdit')
+  local pwField = enterGame:getChildById('accountPasswordTextEdit')
+  -- Use real text if fields are masked with asterisks
+  local accText = accField and accField:getText() or ''
+  local pwText = pwField and pwField:getText() or ''
+  if not emailVisible and realEmailText ~= '' then accText = realEmailText end
+  if not passwordVisible and realPasswordText ~= '' then pwText = realPasswordText end
+  G.account = account or accText
+  G.password = password or pwText
 --  G.authenticatorToken = token or enterGame:getChildById('accountTokenTextEdit'):getText()
   G.stayLogged = true
-  G.server = serverSelector:getText():trim()
-  G.host = host or serverHostTextEdit:getText()
-  G.clientVersion = tonumber(clientVersionSelector:getText())  
+  G.server = serverSelector and serverSelector:getText():trim() or ''
+  G.host = host or (serverHostTextEdit and serverHostTextEdit:getText() or '')
+  G.clientVersion = clientVersionSelector and tonumber(clientVersionSelector:getText()) or 0  
  
   if not rememberPasswordBox:isChecked() then
     g_settings.set('account', G.account)
@@ -597,7 +927,7 @@ function EnterGame.doLoginHttp()
     stayloggedin = true
   }
   
-  local server = serverSelector:getText()
+  local server = serverSelector and serverSelector:getText() or ''
   if Servers and Servers[server] ~= nil then
     if type(Servers[server]) == "table" then
       local urls = Servers[server]      

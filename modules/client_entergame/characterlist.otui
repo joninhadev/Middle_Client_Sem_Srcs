@@ -1,187 +1,317 @@
-CharacterWidget < FlatPanel
-  padding: 7
-  padding-top: 3
-  border-width: 1
-  border-color: alpha
-  &updateOnStates: |
-    function(self)
-      local children = self:getChildren()
-      for i=1,#children do
-        children[i]:setOn(self:isFocused())
-      end
-    end
-  @onFocusChange: self:updateOnStates()
-  @onSetup: self:updateOnStates()
-
-  $focus:
-    border-width: 2
-    border-color: #3fbe3250
-
+CharacterWidget < UIWidget
+  height: 77
+  image-source: /images/ui/entergame/character-button
+  image-border: 10
+  focusable: true
   Label
     id: name
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: parent.right
-    margin-left: 4
-    margin-right: 4
-    margin-top: 4
-    padding-top: 2
-    padding-bottom: 2
-    height: 20
-    text-align: center
-    color: #e5dede
-    background-color: #00000040
+    font: verdana-bold-12px
+    color: #b2aca6
+    background-color: alpha
+    margin-left: 18
+    margin-top: 16
+    margin-right: 18
+    text-align: left
+    text-auto-resize: true
 
+  Label
+    id: worldName
+    anchors.top: parent.top
+    anchors.right: parent.right
+    font: verdana-11px-antialised
+    color: #b2aca6
+    background-color: alpha
+    margin-right: 18
+    margin-top: 12
+    text-align: right
+    text-auto-resize: true
+
+  Label
+    id: level
+    anchors.top: name.bottom
+    anchors.left: parent.left
+    font: verdana-11px-antialised
+    color: #808080
+    background-color: alpha
+    margin-left: 18
+    margin-top: 2
+    text-align: left
+    text-auto-resize: true
+
+  Label
+    id: vocation
+    anchors.top: name.bottom
+    anchors.left: level.right
+    font: verdana-11px-antialised
+    color: #4e4c48
+    background-color: alpha
+    margin-left: 4
+    margin-top: 2
+    text-align: left
+    text-auto-resize: true
+
+  Label
+    id: pvpType
+    anchors.top: worldName.bottom
+    anchors.right: parent.right
+    font: verdana-11px-antialised
+    color: #d28524
+    background-color: alpha
+    margin-right: 18
+    margin-top: 1
+    text-align: right
+    text-auto-resize: true
+
+DeleteButton < UIButton
+  size: 120 20
+  anchors.top: parent.top
+  anchors.right: parent.right
+  margin-top: -2
+  margin-right: 2
+  image-source: /images/ui/button_red
+  image-color: #dfdfdf
+  image-clip: 0 0 60 23
+  image-border: 5
+  border: 1 alpha
+  text: Delete Character
+  @onClick: CharacterList.showDeleteDialog()
+
+  $hover:
+    image-color: #ffffff
+
+  $focus:
+    border: 1 white
+    image-color: #ffffff
+
+UIWidget
+  id: charactersWindow
+  anchors.fill: parent
+  visible: false
+  focusable: true
+  phantom: true
+
+  // ===== LEFT PANEL - Character List =====
   Panel
-    id: outfit
-    image-border: 4
-    anchors.top: prev.bottom
-    anchors.bottom: next.top
+    id: leftPanel
     anchors.left: parent.left
-    anchors.right: parent.right
-    margin-left: 4
-    margin-right: 4
-    margin-top: 4
-    margin-bottom: 4
-    background-color: #00000040
-
-    UICreature
-      id: creature
-      anchors.centerIn: parent
-      size: 96 96
-
-  FlatPanel
-    id: info
+    anchors.top: parent.top
     anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    height: 36
-    margin-left: 4
-    margin-right: 4
-    margin-bottom: 4
-    background-color: #00000040
+    width: 439
+    margin-bottom: 148
+    margin-left: 80
+    margin-top: 80
+    image-source: /images/ui/entergame/c-list-bg
+    image-border-top: 90
+    image-border-bottom: 60
+    opacity: 1.0
+    phantom: false
 
     Label
-      id: vocation
+      id: sortLabel
+      !text: tr('SORT BY')
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 62
+      font: verdana-11px-antialised
+      color: #b0a898
+      text-auto-resize: true
+
+    ScrollablePanel
+      id: characters
+      anchors.top: sortLabel.bottom
+      anchors.left: parent.left
+      anchors.right: characterListScrollBar.left
+      anchors.bottom: parent.bottom
+      background-color: alpha
+      margin-top: 6
+      margin-bottom: 45
+      margin-left: 12
+      margin-right: 15
+      padding-bottom: 15
+      vertical-scrollbar: characterListScrollBar
+      auto-focus: none
+      layout:
+        type: verticalBox
+        spacing: -11
+
+    VerticalScrollBar
+      id: characterListScrollBar
+      anchors.top: sortLabel.bottom
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-top: 6
+      margin-bottom: 14
+      margin-right: 8
+      step: 25
+
+    Panel
+      id: accountStatusPanel
+      anchors.bottom: parent.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      height: 24
+      margin-bottom: 22
+      margin-left: -5
+      phantom: false
+      Label
+        id: accountStatusIcon
+        size: 22 20
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        margin-left: 20
+        image-source: /images/game/entergame/nopremium
+        image-clip: 0 0 22 20
+        phantom: true
+      Label
+        id: accountStatusLabel
+        !text: tr('FREE ACCOUNT')
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: accountStatusIcon.right
+        margin-left: 5
+        font: verdana-bold-12px
+        color: #f04040
+        text-auto-resize: true
+        phantom: true
+
+
+  // ===== CENTER PANEL - Character Preview =====
+  Panel
+    id: centerPanel
+    anchors.top: parent.top
+    anchors.left: leftPanel.right
+    anchors.bottom: parent.bottom
+    anchors.right: eventsPanel.left
+    margin-top: 80
+    margin-left: 15
+    margin-right: 15
+    margin-bottom: 95
+    opacity: 1.0
+    phantom: true
+
+  // ===== Preview (anchored to full screen center) =====
+  UIWidget
+    id: previewAltar
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
+    margin-top: -20
+    image-source: /images/ui/entergame/altar_0
+    image-smooth: true
+    image-auto-resize: true
+    image-fixed-ratio: true
+    size: 420 410
+    phantom: true
+    visible: false
+
+  UICreature
+    id: previewCreature
+    size: 128 128
+    anchors.horizontalCenter: previewAltar.horizontalCenter
+    anchors.verticalCenter: previewAltar.verticalCenter
+    margin-top: -45
+    margin-left: -50
+    idle-animate: true
+    phantom: true
+    visible: false
+
+  UIWidget
+    id: previewEffect
+    size: 64 64
+    anchors.horizontalCenter: previewAltar.horizontalCenter
+    anchors.verticalCenter: previewAltar.verticalCenter
+    margin-top: -20
+    margin-left: -27
+    phantom: true
+    visible: false
+
+  // ===== TOP-RIGHT PANEL - Active Events =====
+  Panel
+    id: eventsPanel
+    anchors.top: parent.top
+    anchors.right: parent.right
+    width: 280
+    height: 200
+    margin-top: 83
+    margin-right: 80
+    image-source: /images/ui/entergame/ntextedit
+    image-border: 1
+    padding: 4
+    opacity: 1.0
+    visible: true
+    phantom: false
+
+    Label
+      id: eventsHeader
+      !text: tr('EVENTS')
       anchors.top: parent.top
       anchors.left: parent.left
       anchors.right: parent.right
-      margin-top: 2
+      height: 26
+      font: verdana-bold-12px
+      color: #d4a828
       text-align: center
-      color: #e5dede
-      font: verdana-11px-monochrome
+      margin-top: 2
 
-    Label
-      id: level
-      anchors.top: vocation.bottom
+    UIWidget
+      id: eventsSeparator
+      anchors.top: eventsHeader.bottom
       anchors.left: parent.left
       anchors.right: parent.right
-      margin-top: 1
-      text-align: center
-      &baseText: 'Level: %s'
-      color: #e5dede
-      font: verdana-11px-monochrome
+      height: 1
+      background-color: #5b5450
+      margin-top: 5
+      margin-left: 6
+      margin-right: 6
 
-StaticMainWindow
-  id: charactersWindow
-  !text: tr('Character List')
-  visible: false
-  size: 542 406
-  $mobile:
-    size: 410 280
-  @onEnter: CharacterList.doLogin()
-  @onEscape: CharacterList.hide(true)
-  @onSetup: |
-    g_keyboard.bindKeyPress('Up', function() self:getChildById('characters'):focusPreviousChild(KeyboardFocusReason) end, self)
-    g_keyboard.bindKeyPress('Down', function() self:getChildById('characters'):focusNextChild(KeyboardFocusReason) end, self)
-    g_keyboard.bindKeyPress('Left', function() self:getChildById('characters'):focusPreviousChild(KeyboardFocusReason) end, self)
-    g_keyboard.bindKeyPress('Right', function() self:getChildById('characters'):focusNextChild(KeyboardFocusReason) end, self)  
+    ScrollablePanel
+      id: eventsContent
+      anchors.top: eventsSeparator.bottom
+      anchors.left: parent.left
+      anchors.right: eventsScrollBar.left
+      anchors.bottom: parent.bottom
+      margin-top: 4
+      margin-bottom: 4
+      margin-left: 8
+      margin-right: 2
+      padding: 1
+      vertical-scrollbar: eventsScrollBar
+      layout:
+        type: verticalBox
+        spacing: 2
 
-  ScrollablePanel
-    id: characters
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.right: scrollBar.left
-    anchors.bottom: separator.top
-    margin-bottom: 5
-    background-color: alpha
-    padding: 2
-    focusable: false
-    auto-focus: first
+    VerticalScrollBar
+      id: eventsScrollBar
+      anchors.top: eventsSeparator.bottom
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-top: 2
+      margin-bottom: 2
+      margin-right: 2
+      step: 14
+      visible: false
+
+  // ===== BOTTOM BUTTONS =====
+  Panel
+    id: bottomButtonsPanel
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    height: 50
+    margin-bottom: 78
     layout:
-      type: grid
-      cell-size: 160 147
-      flow: true
-      cell-spacing: 2
-    vertical-scrollbar: scrollBar
+      type: horizontalBox
+      spacing: 8
+      fit-children: true
 
-  VerticalScrollBar
-    id: scrollBar
-    anchors.top: parent.top
-    anchors.bottom: separator.top
-    anchors.right: parent.right
-    margin-bottom: 5
-    step: 50
-    pixels-scroll: true
+    EntergameButton
+      id: buttonOk
+      !text: tr('ENTER')
+      size: 120 36
+      @onClick: CharacterList.doLogin()
 
-  Label
-    id: accountStatusCaption
-    !text: tr('Account Status') .. ':'
-    anchors.left: autoReconnect.right
-    anchors.top: separator.bottom
-    anchors.horizontalCenter: separator.horizontalCenter
-    margin-top: 7
-    color: #e5dede
-
-  Label
-    id: accountStatusLabel
-    !text: tr('Free Account')
-    anchors.top: accountStatusCaption.bottom
-    anchors.horizontalCenter: accountStatusCaption.horizontalCenter
-    text-auto-resize: true
-    color: #e5dede
-
-    $on:
-      color: #FF0000
-
-  HorizontalSeparator
-    id: separator
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: next.top
-    margin-bottom: 5
-
-  Button
-    id: autoReconnect
-    width: 145
-    anchors.left: parent.left
-    anchors.bottom: parent.bottom
-    margin-bottom: 2
-    margin-left: 1
-    
-    $!on:
-      image-color: red    
-      !text: tr('Auto reconnect: Off')
-
-    $on:
-      !text: tr('Auto reconnect: On')
-      image-color: green
-
-  Button
-    id: buttonOk
-    !text: tr('Ok')
-    width: 64
-    anchors.right: next.left
-    anchors.bottom: parent.bottom
-    margin-right: 10
-    margin-bottom: 2
-    @onClick: CharacterList.doLogin()
-
-  Button
-    id: buttonCancel
-    !text: tr('Cancel')
-    width: 70
-    anchors.right: parent.right
-    anchors.bottom: parent.bottom
-    margin-bottom: 2
-    @onClick: CharacterList.hide(true)
+    EntergameButton
+      id: buttonCancel
+      !text: tr('EXIT')
+      size: 120 36
+      @onClick: CharacterList.hide(true)

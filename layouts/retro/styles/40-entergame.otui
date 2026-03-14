@@ -1,2 +1,199 @@
 EnterGameWindow < StaticMainWindow
-  size: 280 420
+  !text: tr('Journey Onwards')
+  text-offset: 0 1
+  font: verdana-11px-antialised
+  color: #909090
+  size: 280 300
+
+SmallCheckBox < UICheckBox
+  size: 25 24
+  text-align: left
+  text-offset: 18 1
+  color: #dfdfdf
+  image-color: #dfdfdfff
+  image-rect: 0 0 25 24
+  image-source: /images/ui/entergame/checkbox
+  cursor: pointer
+  $hover !disabled:
+    color: #ffffff
+  $!checked:
+    image-source: /images/ui/entergame/checkbox2
+    image-clip: 0 0 25 24
+  $hover !checked:
+    image-source: /images/ui/entergame/checkbox2
+    image-clip: 0 0 25 24
+  $checked:
+    image-source: /images/ui/entergame/checkbox
+    image-clip: 0 0 25 24
+  $hover checked:
+    image-source: /images/ui/entergame/checkbox-hover
+    image-clip: 0 0 25 24
+  $disabled:
+    image-color: #dfdfdf88
+    color: #dfdfdf88
+    opacity: 0.8
+
+RAccTextEdit < UITextEdit
+  font: verdana-11px-antialised
+  color: #dfdfdf
+  padding-top: 21
+  padding-left: 45
+  padding-right: 38
+  image-source: /images/ui/entergame/password
+  image-border: 2
+  selection-background-color: #05648a21
+  cursor: pointer
+  blink-speed: 600
+  $hover:
+    image-source: /images/ui/entergame/password-hover
+  $disabled:
+    color: #27272788
+    opacity: 0.5
+
+RPasswordTextEdit < UITextEdit
+  image-source: /images/ui/entergame/password
+  image-border: 1
+  text-hidden: true
+  font: verdana-11px-antialised
+  color: #dfdfdf
+  selection-background-color: #05648a21
+  cursor: pointer
+  padding-top: 21
+  padding-left: 45
+  padding-right: 38
+  $hover:
+    image-source: /images/ui/entergame/password-hover
+
+EntergameTextEdit < UITextEdit
+  font: verdana-11px-antialised
+  color: #dfdfdf
+  text-align: center
+  selection-background-color: #05648a21
+  height: 36
+  padding-left: 30
+  padding-right: 30
+  padding-top: 2
+  image-source: /images/ui/entergame/password
+  image-border: 6
+  cursor: none
+  blink-speed: 600
+  $disabled:
+    color: #60606088
+    opacity: 0.5
+
+PopupError < UIWidget
+  id: popupError
+  anchors.horizontalCenter: parent.horizontalCenter
+  anchors.verticalCenter: parent.verticalCenter
+  focusable: true
+  phantom: false
+  size: 540 210
+  UIWidget
+    id: windowBg
+    phantom: true
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 200
+    image-source: /images/ui/entergame/windowbg
+    image-border-top: 100
+    image-border-bottom: 20
+  Label
+    id: popupTitle
+    !text: tr('ERROR')
+    anchors.top: windowBg.top
+    anchors.horizontalCenter: windowBg.horizontalCenter
+    margin-top: 45
+    text-auto-resize: true
+    font: verdana-bold-12px
+    color: #d4a828
+    text-align: center
+    shadow: true
+    text-shadow-color: #000000
+    text-shadow-offset: 1 1
+    text-shadow-opacity: 0.7
+  Label
+    id: popupText
+    !text: tr('Error')
+    anchors.top: windowBg.top
+    anchors.left: windowBg.left
+    anchors.right: windowBg.right
+    margin-top: 110
+    margin-left: 30
+    margin-right: 30
+    text-auto-resize: true
+    text-wrap: true
+    font: verdana-11px-antialised
+    color: #f6ede5
+    text-align: center
+    shadow: true
+    text-shadow-color: #000000
+    text-shadow-offset: 1 1
+    text-shadow-opacity: 0.6
+  EntergameButton
+    id: popupOkButton
+    !text: tr('OK')
+    size: 178 56
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 15
+
+PopupLoading < UIWidget
+  id: popupLoading
+  anchors.horizontalCenter: parent.horizontalCenter
+  anchors.verticalCenter: parent.verticalCenter
+  focusable: true
+  phantom: false
+  size: 540 210
+  UIWidget
+    id: windowBg
+    phantom: true
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 190
+    image-source: /images/ui/entergame/windowbg
+    image-border-top: 100
+    image-border-bottom: 20
+  Label
+    id: popupTitle
+    !text: tr('PLEASE WAIT')
+    anchors.top: windowBg.top
+    anchors.horizontalCenter: windowBg.horizontalCenter
+    margin-top: 45
+    text-auto-resize: true
+    font: verdana-bold-12px
+    color: #d4a828
+    text-align: center
+    shadow: true
+    text-shadow-color: #000000
+    text-shadow-offset: 1 1
+    text-shadow-opacity: 0.7
+  Label
+    id: popupText
+    anchors.top: windowBg.top
+    anchors.horizontalCenter: windowBg.horizontalCenter
+    margin-top: 115
+    !text: tr('Connecting to login server')
+    text-auto-resize: true
+    font: verdana-11px-antialised
+    color: #f6ede5
+    text-align: center
+    shadow: true
+    text-shadow-color: #000000
+    text-shadow-offset: 1 1
+    text-shadow-opacity: 0.6
+  EntergameButton
+    id: popupCancelButton
+    !text: tr('CANCEL')
+    size: 178 56
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+
+RComboBox < ComboBox
+  font: verdana-11px-antialised
+  color: #b0a898
+  text-align: center
+  text-offset: -8 0
+  background-color: alpha
+  border: 0 alpha

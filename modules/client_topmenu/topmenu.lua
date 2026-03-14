@@ -61,6 +61,8 @@ function init()
 
   if g_game.isOnline() then
     scheduleEvent(online, 10)
+  else
+    topMenu:hide()
   end
   
   updateFps()  
@@ -80,9 +82,8 @@ function terminate()
 end
 
 function online()
-  if topMenu.hideIngame then
-    hide()
-  else
+  topMenu:show()
+  if not topMenu.hideIngame then
     modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'topMenu', AnchorBottom)
   end
   if topMenu.onlineLabel then
@@ -103,9 +104,7 @@ function online()
 end
 
 function offline()
-  if topMenu.hideIngame then
-    show()
-  end
+  topMenu:hide()
   if topMenu.onlineLabel then
     topMenu.onlineLabel:show()
   end

@@ -110,3 +110,41 @@ HorizontalScrollBar < UIScrollBar
   ScrollBarSliderHorizontal
 
   ScrollBarValueLabel
+
+GradientSlider < UIButton
+  id: sliderButton
+  anchors.centerIn: parent
+  size: 14 14
+  minimum: 14
+  border-radius: 7
+  background-color: #9e958f
+  $hover:
+    background-color: #b0a89e
+  $pressed:
+    background-color: #6b635e
+
+GradientHorizontalScrollBar < UIScrollBar
+  orientation: horizontal
+  height: 12
+  width: 39
+  background-color: #000000
+  border-radius: 6
+  pixels-scroll: true
+
+  UIButton
+    id: decrementButton
+    anchors.top: parent.top
+    anchors.left: parent.left
+    size: 0 0
+    phantom: true
+
+  UIButton
+    id: incrementButton
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    size: 0 0
+    phantom: true
+
+  GradientSlider
+
+  ScrollBarValueLabel

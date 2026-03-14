@@ -15,7 +15,7 @@ Services = {
 
 -- Servers accept http login url, websocket login url or ip:port:version
 Servers = {
-  --MiddleOT = "34.39.230.92:7171:1100:",
+  --MiddleOT = "play.middleearth-server.com:7171:1100:",
   LocalOT = "127.0.0.1:7171:1100:"
 }
 
