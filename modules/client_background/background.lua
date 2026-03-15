@@ -45,19 +45,30 @@ function initBottomBar()
   muteButton = bar:getChildById('muteBtn')
   if muteButton then
     muteButton.onClick = function()
-      if not g_sounds then return end
       isMuted = not isMuted
       if isMuted then
-        for _, id in pairs(SoundChannels or {}) do
-          local ch = g_sounds.getChannel(id)
-          if ch then ch:setGain(0) end
+        -- Mute: set volume to 0
+        if EnterGame and EnterGame.muteStartupMusic then
+          EnterGame.muteStartupMusic()
+        end
+        if g_sounds then
+          for _, id in pairs(SoundChannels or {}) do
+            local ch = g_sounds.getChannel(id)
+            if ch then ch:setGain(0) end
+          end
         end
         muteButton:setImageSource('/images/ui/entergame/menu-buttons/muted')
         muteButton:setTooltip(tr('Muted'))
       else
-        for _, id in pairs(SoundChannels or {}) do
-          local ch = g_sounds.getChannel(id)
-          if ch then ch:setGain(1.0) end
+        -- Unmute: restore volume
+        if EnterGame and EnterGame.unmuteStartupMusic then
+          EnterGame.unmuteStartupMusic()
+        end
+        if g_sounds then
+          for _, id in pairs(SoundChannels or {}) do
+            local ch = g_sounds.getChannel(id)
+            if ch then ch:setGain(1.0) end
+          end
         end
         muteButton:setImageSource('/images/ui/entergame/menu-buttons/sound')
         muteButton:setTooltip(tr('Sound'))

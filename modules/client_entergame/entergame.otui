@@ -41,6 +41,7 @@ UIWidget
       margin-top: 4
       max-length: 45
       @onTextChange: modules.client_entergame.onTextChange()
+      @onEnter: EnterGame.doLogin()
     UIWidget
       id: emailStatus
       !tooltip: tr('You have not entered a valid email address.')
@@ -106,6 +107,7 @@ UIWidget
       box-text-padding: 30
       padding-right: 40
       @onTextChange: onPasswordTextChange(self)
+      @onEnter: EnterGame.doLogin()
     UIButton
       id: togglePasswordVisibility
       size: 19 13

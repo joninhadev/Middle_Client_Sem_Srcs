@@ -29,6 +29,57 @@ local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "
 local checkedByUpdater = {}
 local waitingForHttpResults = 0
 
+STARTUP_MUSIC_VOLUME = 0.3
+
+local function isStartupMusicAllowed()
+  local enableAudio = g_settings.getBoolean('enableAudio', true)
+  local muteAudio = g_settings.getBoolean('muteAudio', false)
+  if modules.client_options and modules.client_options.getOption then
+    local optEnable = modules.client_options.getOption('enableAudio')
+    local optMute = modules.client_options.getOption('muteAudio')
+    if optEnable ~= nil then enableAudio = optEnable end
+    if optMute ~= nil then muteAudio = optMute end
+  end
+  return enableAudio ~= false and not muteAudio
+end
+
+local startupSoundSource = nil
+local function playStartupMusic()
+  if not g_sounds then return end
+  if not isStartupMusicAllowed() then return end
+  pcall(function()
+    g_sounds.setAudioEnabled(true)
+    startupSoundSource = g_sounds.play('/sounds/startup', 0, STARTUP_MUSIC_VOLUME)
+  end)
+end
+
+local function stopStartupMusic()
+  if not g_sounds then return end
+  pcall(function()
+    startupSoundSource = nil
+    if g_sounds.stopAll then
+      g_sounds.stopAll()
+    end
+  end)
+end
+
+local startupMusicMuted = false
+
+local function muteStartupMusic()
+  startupMusicMuted = true
+  stopStartupMusic()
+end
+
+local function unmuteStartupMusic()
+  startupMusicMuted = false
+  playStartupMusic()
+end
+
+EnterGame.playStartupMusic = playStartupMusic
+EnterGame.stopStartupMusic = stopStartupMusic
+EnterGame.muteStartupMusic = muteStartupMusic
+EnterGame.unmuteStartupMusic = unmuteStartupMusic
+
 -- Saved accounts helper functions
 function getSavedAccounts()
   local raw = g_settings.get('savedAccounts')
@@ -577,6 +628,15 @@ function EnterGame.init()
   if USE_NEW_ENERGAME then return end
   enterGameClip = g_ui.displayUI('entergame')
   enterGame = enterGameClip:getChildById('enterGame')
+
+  -- Intercept Enter key from any child to trigger login
+  enterGameClip.onKeyPress = function(self, keyCode, keyboardModifiers)
+    if keyCode == KeyEnter or keyCode == KeyReturn then
+      EnterGame.doLogin()
+      return true
+    end
+    return false
+  end
   if not enterGame then
     enterGame = enterGameClip -- fallback if no nested enterGame
   end
@@ -667,6 +727,9 @@ function EnterGame.init()
     return EnterGame.hide()
   end
 
+  -- Play startup music
+  playStartupMusic()
+
   scheduleEvent(function()
     EnterGame.show()
   end, 100)
@@ -710,13 +773,21 @@ function EnterGame.show()
   enterGame:show()
   enterGame:raise()
   enterGame:focus()
-  local accField = enterGame:getChildById('accountNameTextEdit')
-  if accField then accField:focus() end
   if logpass then
     logpass:show()
     logpass:raise()
-    logpass:focus()
   end
+  -- Auto-focus on email field LAST so Enter key works immediately
+  scheduleEvent(function()
+    if enterGame and enterGameClip then
+      enterGameClip:raise()
+      enterGameClip:focus()
+      enterGame:raise()
+      enterGame:focus()
+      local accField = enterGame:getChildById('accountNameTextEdit')
+      if accField then accField:focus() end
+    end
+  end, 200)
 end
 
 function EnterGame.hide()

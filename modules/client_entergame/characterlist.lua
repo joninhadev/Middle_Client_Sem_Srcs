@@ -407,6 +407,38 @@ function CharacterList.create(characters, account, otui)
   previewEffect = charactersWindow:recursiveGetChildById('previewEffect')
   eventsContent = charactersWindow:recursiveGetChildById('eventsContent')
 
+  -- Intercept Enter, Escape, and Arrow keys on the character list window
+  charactersWindow.onKeyPress = function(self, keyCode, keyboardModifiers)
+    if keyCode == KeyEnter or keyCode == KeyReturn then
+      CharacterList.doLogin()
+      return true
+    elseif keyCode == KeyEscape then
+      CharacterList.hide(true)
+      return true
+    elseif keyCode == KeyUp or keyCode == KeyDown then
+      if characterList then
+        local focused = characterList:getFocusedChild()
+        local children = characterList:getChildren()
+        if not focused and #children > 0 then
+          characterList:focusChild(children[1], KeyboardFocusReason)
+          return true
+        end
+        if focused then
+          local idx = characterList:getChildIndex(focused)
+          if keyCode == KeyUp and idx > 1 then
+            characterList:focusChild(children[idx - 1], KeyboardFocusReason)
+            characterList:ensureChildVisible(children[idx - 1])
+          elseif keyCode == KeyDown and idx < #children then
+            characterList:focusChild(children[idx + 1], KeyboardFocusReason)
+            characterList:ensureChildVisible(children[idx + 1])
+          end
+        end
+      end
+      return true
+    end
+    return false
+  end
+
   -- characters
   G.characters = characters
   G.characterAccount = account
@@ -548,7 +580,6 @@ function CharacterList.create(characters, account, otui)
     end
     charactersWindow._focusHandlerSet = true
   end
-
   -- account
   CharacterList.updateAccountStatus(account)
   
@@ -577,78 +608,13 @@ function updateCharacterPreview(widget)
       mount = outfit.mount or 0
     }
     if previewAltar then previewAltar:setVisible(true) end
-    -- Hide creature, trigger effect, then reveal
-    previewCreature:setVisible(false)
-    triggerPreviewEffect(cleanOutfit)
+    previewCreature:setOutfit(cleanOutfit)
+    previewCreature:setVisible(true)
   else
     previewCreature:setVisible(false)
     if previewAltar then previewAltar:setVisible(false) end
     if previewEffect then previewEffect:setVisible(false) end
   end
-end
-
-function triggerPreviewEffect(outfit)
-  -- Debounce: wait for rapid switching to stop before playing effect
-  removeEvent(previewEffectDebounce)
-  removeEvent(previewEffectEvent)
-  removeEvent(previewCreatureRevealEvent)
-
-  -- If UIEffect is not available, just show the creature directly
-  if not previewEffect then
-    if previewCreature and outfit then
-      previewCreature:setOutfit(outfit)
-      previewCreature:setVisible(true)
-    end
-    return
-  end
-
-  -- Hide any in-progress effect immediately
-  previewEffect:setVisible(false)
-  if previewEffect.setEffect then
-    previewEffect:setEffect(nil)
-  elseif previewEffect.clearEffect then
-    previewEffect:clearEffect()
-  end
-
-  -- Delay the effect so rapid key presses don't spam it
-  previewEffectDebounce = scheduleEvent(function()
-    previewEffectDebounce = nil
-    if not previewEffect then return end
-
-    if previewEffect.setEffect then
-      local eff = Effect.create()
-      eff:setId(244)
-      previewEffect:setEffect(eff)
-    elseif previewEffect.setEffectId then
-      previewEffect:setEffectId(244)
-    end
-    if previewEffect.setEffectVisible then
-      previewEffect:setEffectVisible(true)
-    end
-    previewEffect:setVisible(true)
-
-    -- Reveal creature after effect has started playing
-    previewCreatureRevealEvent = scheduleEvent(function()
-      previewCreatureRevealEvent = nil
-      if previewCreature and outfit then
-        previewCreature:setOutfit(outfit)
-        previewCreature:setVisible(true)
-      end
-    end, 200)
-
-    -- Hide effect after animation completes
-    previewEffectEvent = scheduleEvent(function()
-      if previewEffect then
-        previewEffect:setVisible(false)
-        if previewEffect.setEffect then
-          previewEffect:setEffect(nil)
-        elseif previewEffect.clearEffect then
-          previewEffect:clearEffect()
-        end
-      end
-      previewEffectEvent = nil
-    end, 800)
-  end, 150)
 end
 
 function CharacterList.updateAccountStatus(account)
@@ -660,7 +626,7 @@ function CharacterList.updateAccountStatus(account)
   if not accountStatusLabel then
     return
   end
-  
+
   local status = ""
   if account.status == AccountStatus.Frozen then
     status = tr(" (Frozen)")
@@ -678,12 +644,12 @@ function CharacterList.updateAccountStatus(account)
     if account.premDays <= 0 or account.premDays == 65535 then
       accountStatusLabel:setText(("%s%s"):format(tr("Free Account"), status))
       local statusIcon = charactersWindow:recursiveGetChildById("accountStatusIcon")
-    if statusIcon then statusIcon:setImageSource("/images/game/entergame/nopremium") end
+      if statusIcon then statusIcon:setImageSource("/images/game/entergame/nopremium") end
       accountStatusLabel:setColor("#FFFFFF")
     else
       accountStatusLabel:setText(("%s%s"):format(tr("Premium Account (%s) days left", account.premDays), status))
       local statusIcon2 = charactersWindow:recursiveGetChildById("accountStatusIcon")
-    if statusIcon2 then statusIcon2:setImageSource("/images/game/entergame/premium") end
+      if statusIcon2 then statusIcon2:setImageSource("/images/game/entergame/premium") end
       accountStatusLabel:setColor("#00FF00")
     end
   end

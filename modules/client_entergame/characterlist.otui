@@ -92,6 +92,8 @@ UIWidget
   visible: false
   focusable: true
   phantom: true
+  @onEnter: CharacterList.doLogin()
+  @onEscape: CharacterList.hide(true)
 
   // ===== LEFT PANEL - Character List =====
   Panel

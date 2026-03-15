@@ -82,10 +82,10 @@ function terminate()
 end
 
 function online()
-  topMenu:show()
-  if not topMenu.hideIngame then
-    modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'topMenu', AnchorBottom)
-  end
+  -- Keep topMenu hidden (Middle Earth uses custom bottom bar instead)
+  topMenu:hide()
+  modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'parent', AnchorTop)
+
   if topMenu.onlineLabel then
     topMenu.onlineLabel:hide()
   end
