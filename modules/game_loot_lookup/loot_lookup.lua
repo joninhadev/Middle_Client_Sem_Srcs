@@ -6,7 +6,7 @@ local OPCODE_LOOT_LOOKUP = 51
 
 local currentMonsters = {}
 local currentPage = 1
-local ITEMS_PER_PAGE = 14
+local ITEMS_PER_PAGE = 12
 local isSearching = false
 
 local function normalizeOutfit(outfit)
@@ -29,17 +29,17 @@ local function showPage(page)
   currentPage = page
   local totalPages = math.max(1, math.ceil(#currentMonsters / ITEMS_PER_PAGE))
 
-  local pageLabel = lookupWindow:getChildById('pageLabel')
+  local pageLabel = lookupWindow:recursiveGetChildById('pageLabel')
   if pageLabel then
     pageLabel:setText(currentPage .. '/' .. totalPages)
   end
 
-  local prevButton = lookupWindow:getChildById('prevButton')
+  local prevButton = lookupWindow:recursiveGetChildById('prevButton')
   if prevButton then
     prevButton:setEnabled(currentPage > 1)
   end
 
-  local nextButton = lookupWindow:getChildById('nextButton')
+  local nextButton = lookupWindow:recursiveGetChildById('nextButton')
   if nextButton then
     nextButton:setEnabled(currentPage < totalPages)
   end
@@ -49,7 +49,9 @@ local function showPage(page)
 
   if #currentMonsters == 0 then
     local label = g_ui.createWidget('Label', resultList)
-    label:setText("No monsters found.")
+    label:setText("Nenhum monstro encontrado.")
+    label:setTextAlign(AlignCenter)
+    label:setColor('#AAAAAA')
     return
   end
 
@@ -154,16 +156,16 @@ function create()
   lookupWindow.onEscape = toggle
   lookupWindow:hide()
 
-  searchInput = lookupWindow:getChildById('searchInput')
-  resultList = lookupWindow:getChildById('resultList')
+  searchInput = lookupWindow:recursiveGetChildById('searchInput')
+  resultList = lookupWindow:recursiveGetChildById('resultList')
   
-  local searchButton = lookupWindow:getChildById('searchButton')
+  local searchButton = lookupWindow:recursiveGetChildById('searchButton')
   searchButton.onClick = sendSearch
 
-  local prevButton = lookupWindow:getChildById('prevButton')
+  local prevButton = lookupWindow:recursiveGetChildById('prevButton')
   prevButton.onClick = function() showPage(currentPage - 1) end
 
-  local nextButton = lookupWindow:getChildById('nextButton')
+  local nextButton = lookupWindow:recursiveGetChildById('nextButton')
   nextButton.onClick = function() showPage(currentPage + 1) end
 
   searchInput.onKeyPress = function(self, keyCode, keyboardModifiers)
@@ -174,7 +176,7 @@ function create()
     return false
   end
   
-  local closeButton = lookupWindow:getChildById('closeButton')
+  local closeButton = lookupWindow:recursiveGetChildById('closeButton')
   closeButton.onClick = toggle
 
   if modules.client_topmenu then

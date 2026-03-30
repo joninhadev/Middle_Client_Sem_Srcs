@@ -1,120 +1,207 @@
 LootCreatureBox < UIWidget
+  height: 130
+  width: 100
+  background-color: #2d2d2d
   border-width: 1
-  border-color: #000000
-  background-color: #222222
-  image-border: 1
+  border-color: #3d3d3d
+  $on:
+    border-color: #555555
+    background-color: #333333
 
   UICreature
     id: creature
     anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: name.top
-    margin: 5
-    
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: 64
+    height: 64
+    margin-top: 8
+    background-color: #1e1e1e
+    border-width: 1
+    border-color: #4a4a4a
+    animate: true
+
   Label
     id: name
-    anchors.bottom: parent.bottom
+    anchors.top: creature.bottom
     anchors.left: parent.left
     anchors.right: parent.right
+    anchors.bottom: parent.bottom
     text-align: center
-    font: verdana-9px
-    margin-bottom: 5
+    font: verdana-11px-rounded
+    color: #DDDDDD
+    margin-top: 4
+    margin-left: 3
+    margin-right: 3
+    margin-bottom: 4
+    text-wrap: true
 
 MainWindow
   id: lootLookupWindow
   !text: tr('Drop Loot Information')
-  size: 640 360
-
+  size: 585 480
 
   Label
-    id: searchLabel
-    !text: tr('Pesquisar:')
+    id: titleLabel
+    !text: tr('Pesquisa de Loot')
     anchors.top: parent.top
     anchors.left: parent.left
-    width: 80
-    margin-top: 5
+    anchors.right: parent.right
+    height: 18
+    text-align: center
+    font: verdana-11px-rounded
+    color: #FFDD44
+    background-color: alpha
 
-  TextEdit
-    id: searchInput
-    multiline: false
-    anchors.top: searchLabel.bottom
+  HorizontalSeparator
+    id: sepTitle
+    anchors.top: titleLabel.bottom
     anchors.left: parent.left
     anchors.right: parent.right
     margin-top: 5
 
-
-  Button
-    id: searchButton
-    !text: tr('Buscar')
-    anchors.top: searchInput.bottom
+  Panel
+    id: searchPanel
+    anchors.top: sepTitle.bottom
+    anchors.left: parent.left
     anchors.right: parent.right
-    anchors.horizontalCenter: parent.horizontalCenter
-    margin-top: 4
-    width: 60
+    height: 30
+    margin-top: 6
+    background-color: #2a2a2a
+    border-width: 1
+    border-color: #3d3d3d
 
+    Label
+      id: searchLabel
+      !text: tr('Pesquisar:')
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 8
+      width: 68
+      font: verdana-11px-rounded
+      color: #AAAAAA
+
+    TextEdit
+      id: searchInput
+      multiline: false
+      anchors.left: searchLabel.right
+      anchors.right: searchButton.left
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 4
+      margin-right: 4
+      height: 20
+
+    Button
+      id: searchButton
+      !text: tr('Buscar')
+      anchors.right: parent.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-right: 6
+      width: 60
+      height: 20
+      font: verdana-11px-rounded
+
+  HorizontalSeparator
+    id: sepSearch
+    anchors.top: searchPanel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 6
 
   Label
     id: resultLabel
     !text: tr('Criaturas:')
-    anchors.top: searchInput.bottom
+    anchors.top: sepSearch.bottom
     anchors.left: parent.left
-    margin-top: 10
+    margin-top: 6
+    font: verdana-11px-rounded
+    color: #AAAAAA
 
-  ScrollablePanel
-    id: resultList
+  Panel
+    id: resultContainer
     anchors.top: resultLabel.bottom
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.bottom: closeButton.top
+    anchors.bottom: sepBottom.top
     margin-top: 5
-    margin-bottom: 10
-    vertical-scrollbar: resultListScrollBar
-    layout:
-      type: grid
-      cell-size: 80 90
-      cell-spacing: 5
-      flow: true
+    margin-bottom: 6
+    background-color: #2a2a2a
+    border-width: 1
+    border-color: #3d3d3d
 
-  VerticalScrollBar
-    id: resultListScrollBar
-    anchors.top: resultList.top
-    anchors.bottom: resultList.bottom
-    anchors.right: resultList.right
-    step: 14
-    pixels-scroll: true
+    ScrollablePanel
+      id: resultList
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: resultListScrollBar.left
+      anchors.bottom: parent.bottom
+      margin: 6
+      vertical-scrollbar: resultListScrollBar
+      layout:
+        type: grid
+        cell-size: 100 130
+        cell-spacing: 6
+        flow: true
 
-  Button
-    id: prevButton
-    !text: '<<'
-    width: 20
-    anchors.right: pageLabel.left
-    anchors.bottom: parent.bottom
-    margin-right: 5
+    VerticalScrollBar
+      id: resultListScrollBar
+      anchors.top: parent.top
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-top: 4
+      margin-bottom: 4
+      margin-right: 2
+      step: 14
+      pixels-scroll: true
 
-  Label
-    id: pageLabel
-    !text: '1/1'
-    width: 40
-    text-align: center
-    anchors.right: nextButton.left
-    anchors.bottom: parent.bottom
-    margin-bottom: 3
-    margin-right: 5
-
-  Button
-    id: nextButton
-    !text: '>>'
-    width: 20
-    anchors.right: closeButton.left
-    anchors.bottom: parent.bottom
-    margin-right: 15
-
-  Button
-    id: closeButton
-    !text: tr('Fechar')
-    width: 45
-    anchors.bottom: parent.bottom
+  HorizontalSeparator
+    id: sepBottom
+    anchors.bottom: bottomPanel.top
+    anchors.left: parent.left
     anchors.right: parent.right
-    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 6
 
+  Panel
+    id: bottomPanel
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 24
+
+    Button
+      id: prevButton
+      !text: '<<'
+      width: 30
+      height: 20
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      font: verdana-11px-rounded
+
+    Label
+      id: pageLabel
+      !text: '1/1'
+      width: 50
+      text-align: center
+      anchors.left: prevButton.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 5
+      font: verdana-11px-rounded
+      color: #FFDD44
+
+    Button
+      id: nextButton
+      !text: '>>'
+      width: 30
+      height: 20
+      anchors.left: pageLabel.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 5
+      font: verdana-11px-rounded
+
+    Button
+      id: closeButton
+      !text: tr('Fechar')
+      width: 80
+      height: 20
+      anchors.right: parent.right
+      anchors.verticalCenter: parent.verticalCenter
+      font: verdana-11px-rounded
