@@ -28,7 +28,6 @@ Module
     - game_playermount
     - game_ruleviolation
     - game_market
-    - game_tasks
     - game_cooldown
     - game_modaldialog
     - game_unjustifiedpoints
@@ -45,6 +44,7 @@ Module
     - game_bot
     - game_reward
     - game_teleport
+    - game_linkedtasks
 
   @onLoad: init()
   @onUnload: terminate()

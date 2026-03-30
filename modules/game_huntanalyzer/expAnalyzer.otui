@@ -25,7 +25,7 @@ SkillValueLabel3 < GameLabel
 GoldIcon2 < UIWidget
   image-source: /modules/game_huntanalyzer/images/gold.png
   size: 9 9
-  anchors.left: parent.left
+  anchors.right: parent.right
   anchors.verticalCenter: parent.verticalCenter
 
 AnalyzerGraph < UIGraph
@@ -116,33 +116,33 @@ MiniWindow
     exphButton
       id: lootCtx
       height: 18
-      GoldIcon2
       SkillNameLabel
         !text: tr('Loot:')
-        anchors.left: prev.right
-        margin-left: 5
+      GoldIcon2
       SkillValueLabel3
         text: 0
+        anchors.right: prev.left
+        margin-right: 4
 
     exphButton
       id: supplyCtx
       height: 18
-      GoldIcon2
       SkillNameLabel
         !text: tr('Supplies:')
-        anchors.left: prev.right
-        margin-left: 5
+      GoldIcon2
       SkillValueLabel3
         text: 0
+        anchors.right: prev.left
+        margin-right: 4
 
     exphButton
       id: balanceCtx
       height: 18
-      GoldIcon2
       SkillNameLabel
         !text: tr('Balance:')
-        anchors.left: prev.right
-        margin-left: 5
+      GoldIcon2
       SkillValueLabel3
         text: 0
+        anchors.right: prev.left
+        margin-right: 4
 

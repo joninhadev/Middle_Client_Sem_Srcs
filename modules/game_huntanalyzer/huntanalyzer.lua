@@ -348,10 +348,17 @@ function startFreshanalyzerWindow()
 end
 
 function updateanalyzerWindow()
+	if expHUpdateEvent ~= 0 then
+		removeEvent(expHUpdateEvent)
+	end
 	expHUpdateEvent = scheduleEvent(updateanalyzerWindow, 5000)
 	local player = g_game.getLocalPlayer()
 	if not player then return end --Wont go future if there's no player
   
+	if expHVar.sessionStart == 0 then
+		expHVar.sessionStart = g_clock.seconds()
+	end
+
 	local currentExp = player:getExperience()
 	if expHVar.lastExpAmount == 0 then
 		expHVar.lastExpAmount = currentExp
@@ -365,16 +372,16 @@ function updateanalyzerWindow()
 	
 	local _expGained = math.floor(currentExp-expHVar.originalExpAmount)
 	
-	local _expHistory = getExpGained()
-	if _expHistory <= 0 and (expHVar.sessionStart > 0 or _expGained > 0) then --No Exp gained last 5 min, lets stop
-		resetExpH()
-		return false
-	end
-	
 	local _session = 0
 	local _start = expHVar.sessionStart
-	if _start > 0 and _expGained > 0 then
+	if _start > 0 then
 		_session = math.floor(g_clock.seconds()-_start)
+	end
+
+	local _expHistory = getExpGained()
+	if _expHistory <= 0 and _session >= 300 then --No Exp gained last 5 min, lets stop
+		resetExpH()
+		return false
 	end
 
 	local totalKills = 0
@@ -505,12 +512,6 @@ function getTimeFormat(_secs)
 end
 
 function updateExpHistory(dif)
-	if dif > 0 then
-		if expHVar.sessionStart == 0 then
-			expHVar.sessionStart = g_clock.seconds()
-		end
-	end
-	
 	local _index = expHVar.historyIndex
 	expHistory[_index] = dif
 	_index = _index+1

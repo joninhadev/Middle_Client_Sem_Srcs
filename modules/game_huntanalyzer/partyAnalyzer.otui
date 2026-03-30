@@ -12,7 +12,7 @@ PartyAnalyzerName < GameLabel
 GoldIcon < UIWidget
   image-source: /modules/game_huntanalyzer/images/gold.png
   size: 9 9
-  anchors.left: parent.left
+  anchors.right: parent.right
   anchors.verticalCenter: parent.verticalCenter
 
 PartyAnalyzerValue < GameLabel
@@ -102,30 +102,30 @@ MiniWindow
 
       PartyAnalyzerButton
         id: lootCtx
-        GoldIcon
         PartyAnalyzerName
           !text: tr('Loot:')
-          anchors.left: prev.right
-          margin-left: 5
+        GoldIcon
         PartyAnalyzerValue
           text: 0
+          anchors.right: prev.left
+          margin-right: 4
           
       PartyAnalyzerButton
         id: supplyCtx
-        GoldIcon
         PartyAnalyzerName
           !text: tr('Supplies:')
-          anchors.left: prev.right
-          margin-left: 5
+        GoldIcon
         PartyAnalyzerValue
           text: 0
+          anchors.right: prev.left
+          margin-right: 4
 
       PartyAnalyzerButton
         id: balanceCtx
-        GoldIcon
         PartyAnalyzerName
           !text: tr('Balance:')
-          anchors.left: prev.right
-          margin-left: 5
+        GoldIcon
         PartyAnalyzerValue
           text: 0
+          anchors.right: prev.left
+          margin-right: 4
