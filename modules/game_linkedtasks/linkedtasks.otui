@@ -1,0 +1,300 @@
+TaskCardWidget < Panel
+  height: 120
+  width: 100
+  margin-bottom: 5
+  background-color: #2d2d2d
+  border-width: 1
+  border-color: #3d3d3d
+  $on:
+    border-color: #555555
+    border-width: 1
+    background-color: #333333
+
+  UICreature
+    id: creatureBox
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: 64
+    height: 64
+    margin-top: 5
+    background-color: #1e1e1e
+    border-width: 1
+    border-color: #4a4a4a
+    animate: true
+
+  UIWidget
+    id: lockIcon
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 2
+    margin-right: 2
+    width: 11
+    height: 11
+    image-source: /modules/game_linkedtasks/images/locked
+    visible: false
+
+  Label
+    id: nameLabel
+    anchors.top: creatureBox.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 14
+    margin-top: 2
+    text-align: center
+    font: verdana-11px-rounded
+    background-color: alpha
+
+  Label
+    id: progressLabel
+    anchors.top: nameLabel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 12
+    margin-top: 1
+    text-align: center
+    font: verdana-11px-rounded
+    color: #AAAAAA
+    background-color: alpha
+
+  Panel
+    id: barBackground
+    anchors.top: progressLabel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 6
+    margin-top: 1
+    margin-left: 4
+    margin-right: 4
+    background-color: #222222
+    border-width: 1
+    border-color: #444444
+
+    Panel
+      id: barFill
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.bottom: parent.bottom
+      width: 1
+      background-color: #4488FF
+
+  Label
+    id: badgeLabel
+    anchors.top: barBackground.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 12
+    margin-top: 2
+    text-align: center
+    font: verdana-11px-rounded
+    background-color: alpha
+
+MainWindow
+  id: linkedTasksWindow
+  !text: tr('Linked Tasks')
+  size: 770 620
+  @onEscape: modules.game_linkedtasks.hide()
+
+  Label
+    id: rankLabel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 18
+    text-align: center
+    font: verdana-11px-rounded
+    color: #FFDD44
+    background-color: alpha
+
+  Panel
+    id: categoryPanel
+    anchors.top: rankLabel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 28
+    margin-top: 4
+
+    ComboBox
+      id: categoryCombo
+      anchors.fill: parent
+      text-offset: 0 0
+      text-align: center
+
+  HorizontalSeparator
+    id: sep1
+    anchors.top: categoryPanel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+
+  Label
+    id: rewardsTitle
+    !text: tr('Recompensa Aleatória:')
+    text-align: center
+    font: verdana-11px-rounded
+    anchors.top: sep1.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+
+  Panel
+    id: rewardsPanel
+    anchors.top: rewardsTitle.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: 170
+    height: 38
+    margin-top: 4
+    layout:
+      type: horizontalBox
+      spacing: 10
+      align-horizontal: center
+
+    Item
+      id: rewardSlot1
+      virtual: true
+
+    Item
+      id: rewardSlot2
+      virtual: true
+
+    Item
+      id: rewardSlot3
+      virtual: true
+
+    Item
+      id: rewardSlot4
+      virtual: true
+
+  HorizontalSeparator
+    id: sep2
+    anchors.top: rewardsPanel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+
+  Panel
+    id: taskListContainer
+    anchors.top: sep2.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 135
+    margin-top: 5
+    clipping: true
+    layout:
+      type: horizontalBox
+      spacing: 6
+
+  HorizontalScrollBar
+    id: taskScrollbar
+    anchors.top: taskListContainer.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    step: 10
+    pixels-scroll: true
+    margin-top: 3
+
+  HorizontalSeparator
+    id: sep3
+    anchors.top: taskScrollbar.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+
+  Panel
+    id: detailPanel
+    anchors.top: sep3.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: actionButton.top
+    margin-top: 5
+    margin-bottom: 8
+    background-color: #2a2a2a
+    border-width: 1
+    border-color: #3d3d3d
+
+    UIWidget
+      id: detailIconLeft
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-top: 1
+      margin-left: 5
+      width: 24
+      height: 24
+      image-source: /modules/game_linkedtasks/images/details
+
+    Label
+      id: detailTitle
+      !text: tr('Detalhes da Task')
+      text-align: center
+      font: verdana-11px-rounded
+      color: #CCCCCC
+      anchors.top: parent.top
+      anchors.left: detailIconLeft.right
+      anchors.right: detailIconRight.left
+      height: 16
+      margin-top: 5
+
+    UIWidget
+      id: detailIconRight
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 1
+      margin-right: 5
+      width: 24
+      height: 24
+      image-source: /modules/game_linkedtasks/images/details
+
+    HorizontalSeparator
+      id: detailSep
+      anchors.top: detailTitle.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 8
+      margin-left: 5
+      margin-right: 5
+
+    VerticalScrollBar
+      id: detailScrollbar
+      anchors.top: detailSep.bottom
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 3
+      margin-right: 2
+      margin-bottom: 5
+      step: 14
+      pixels-scroll: true
+
+    ScrollablePanel
+      id: detailContent
+      anchors.top: detailSep.bottom
+      anchors.left: parent.left
+      anchors.right: detailScrollbar.left
+      anchors.bottom: parent.bottom
+      margin-top: 3
+      margin-left: 5
+      margin-right: 2
+      margin-bottom: 5
+      vertical-scrollbar: detailScrollbar
+      layout:
+        type: verticalBox
+        spacing: 2
+
+  Button
+    id: actionButton
+    !text: tr('Loading...')
+    height: 20
+    anchors.bottom: closeButton.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 3
+    font: verdana-11px-rounded
+
+  Button
+    id: closeButton
+    !text: tr('Fechar')
+    height: 20
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 3
+    font: verdana-11px-rounded
+    @onClick: modules.game_linkedtasks.hide()

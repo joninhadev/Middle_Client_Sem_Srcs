@@ -1,0 +1,11 @@
+Module
+  name: game_linkedtasks
+  description: Sequential monster-hunting tasks with random rewards
+  author: Middle Earth
+  website: none
+  sandboxed: true
+  scripts: [ linkedtasks ]
+  @onLoad: init()
+  @onUnload: terminate()
+  dependencies:
+    - game_interface
