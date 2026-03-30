@@ -161,38 +161,6 @@ UIWidget
         image-source: /images/ui/entergame/login-button-pressed
       @onClick: EnterGame.doLogin()
 
-    Button
-      id: googleLoginButton
-      size: 32 29
-      anchors.top: prev.bottom
-      anchors.left: prev.left
-      image-source: /images/ui/entergame/gmail
-      image-clip: 0 0 32 29
-      margin-left: 42
-      cursor: pointer
-      $hover !pressed:
-        image-source: /images/ui/entergame/gmail-hover
-        image-clip: 0 0 32 29
-      $pressed:
-        image-clip: -1 -1 32 29
-      @onClick: EnterGame.onGoogleClick()
-
-    Button
-      id: discordLoginButton
-      size: 32 29
-      anchors.top: prev.top
-      anchors.left: prev.right
-      image-source: /images/ui/entergame/discord
-      image-clip: 0 0 32 29
-      margin-left: 5
-      cursor: pointer
-      $hover !pressed:
-        image-source: /images/ui/entergame/discord-hover
-        image-clip: 0 0 32 29
-      $pressed:
-        image-clip: -1 -1 32 29
-      @onClick: EnterGame.onDiscordClick()
-
     UIButton
       id: forgotPasswordBtn
       anchors.top: prev.bottom
@@ -204,7 +172,7 @@ UIWidget
       cursor: pointer
       $hover:
         opacity: 1.0
-      @onClick: g_platform.openUrl("https://YOUR_SERVER.com/account/lost")
+      @onClick: g_platform.openUrl("https://www.middleearth-server.com/?account/lost")
 
     // ===== Create Account =====
     UIButton
@@ -218,7 +186,7 @@ UIWidget
       cursor: pointer
       $hover:
         opacity: 1.0
-      @onClick: g_platform.openUrl("https://YOUR_SERVER.com/account/create")
+      @onClick: g_platform.openUrl("https://www.middleearth-server.com/?account/create")
 
     // ===== Saved Accounts Dropdown =====
     Panel

@@ -1,0 +1,9 @@
+Module
+  name: game_dailyreward
+  description: Game Daily Reward
+  author: ZLukSrT#8740
+  autoload: true
+  sandboxed: true
+  scripts: [ uiprogressbarsd, dailyreward, classes/DailyReward ]
+  @onLoad: init()
+  @onUnload: terminate()

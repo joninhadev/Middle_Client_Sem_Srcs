@@ -53,91 +53,91 @@ Bestiary.charmsInfo = {
 	["1"] = {
 		["name"] = "Adrenaline Burst",
 		["image"] = "Adrenaline_Burst",
-		["pointsPrice"] = 120,
+		["pointsPrice"] = 400,
 		["description"] = "Bursts of adrenaline enhance your reflexes with a 5% chance after getting hit and lets you move faster for 10 seconds."
 	},
 	["2"] = {
 		["name"] = "Zap",
 		["image"] = "Zap",
-		["pointsPrice"] = 160,
+		["pointsPrice"] = 600,
 		["description"] = "Each attack on a creature has a 5% chance to trigger and deal 5% of its maximum Hit Points as Energy Damage once."
 	},
 	["3"] = {
 		["name"] = "Wound",
 		["image"] = "Wound",
-		["pointsPrice"] = 140,
+		["pointsPrice"] = 600,
 		["description"] = "Each attack on a creature has a 5% chance to trigger and deal 5% of its maximum Hit Points as Physical Damage once."
 	},
 	["4"] = {
 		["name"] = "Void Inversion",
 		["image"] = "Void_Inversion",
-		["pointsPrice"] = 140,
+		["pointsPrice"] = 400,
 		["description"] = "20% chance to gain mana instead of losing it when taking Mana Drain damage."
 	},
 	["5"] = {
 		["name"] = "Poison",
 		["image"] = "Poison",
-		["pointsPrice"] = 160,
+		["pointsPrice"] = 600,
 		["description"] = "Each attack on a creature has a 5% chance to trigger and deal 5% of its maximum Hit Points as Earth Damage once."
 	},
 	["6"] = {
 		["name"] = "Parry",
 		["image"] = "Parry",
-		["pointsPrice"] = 180,
+		["pointsPrice"] = 800,
 		["description"] = "Any damage taken has a 5% chance to be reflected to the aggressor as Physical Damage."
 	},
 	["7"] = {
 		["name"] = "Overpower",
 		["image"] = "Overpower",
-		["pointsPrice"] = 300,
+		["pointsPrice"] = 800,
 		["description"] = "Each attack has a 5% chance to deal Physical Damage equal to 5% of your maximum health."
 	},
 	["8"] = {
 		["name"] = "Overflux",
 		["image"] = "Overflux",
-		["pointsPrice"] = 300,
+		["pointsPrice"] = 800,
 		["description"] = "Each attack has a 5% chance to deal Physical Damage equal to 2.5% of your maximum mana."
 	},
 	["9"] = {
 		["name"] = "Numb",
 		["image"] = "Numb",
-		["pointsPrice"] = 120,
+		["pointsPrice"] = 400,
 		["description"] = "Numbs the creature with a 3% chance after its attack and paralyses the creature for 6 seconds."
 	},
 	["10"] = {
 		["name"] = "Freeze",
 		["image"] = "Freeze",
-		["pointsPrice"] = 160,
+		["pointsPrice"] = 600,
 		["description"] = "Each attack on a creature has a 5% chance to trigger and deal 5% of its maximum Hit Points as Ice Damage once."
 	},
 	["11"] = {
 		["name"] = "Enflame",
 		["image"] = "Enflame",
-		["pointsPrice"] = 160,
+		["pointsPrice"] = 800,
 		["description"] = "Each attack on a creature has a 5% chance to trigger and deal 5% of its maximum Hit Points as Fire Damage once."
 	},
 	["12"] = {
 		["name"] = "Dodge",
 		["image"] = "Dodge",
-		["pointsPrice"] = 140,
+		["pointsPrice"] = 600,
 		["description"] = "Dodges an attack with a 5% chance, taking no damage at all."
 	},
 	["13"] = {
 		["name"] = "Cripple",
 		["image"] = "Cripple",
-		["pointsPrice"] = 140,
+		["pointsPrice"] = 400,
 		["description"] = "Cripples the creature with a 3% chance and paralyses it for 6 seconds."
 	},
 	["14"] = {
 		["name"] = "Carnage",
 		["image"] = "Carnage",
-		["pointsPrice"] = 200,
+		["pointsPrice"] = 800,
 		["description"] = "Killing a monster has 10% chance to deal Physical Damage equal to 15% of its maximum health to all monsters in a small radius."
 	},
 	["15"] = {
 		["name"] = "Low Blow",
 		["image"] = "Low_Blow",
-		["pointsPrice"] = 180,
+		["pointsPrice"] = 1500,
 		["description"] = "Adds 8% critical hit chance to attacks with critical hit weapons against the creature this charm is assigned to."
 	},
 }

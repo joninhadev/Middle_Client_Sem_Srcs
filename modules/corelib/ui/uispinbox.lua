@@ -81,18 +81,20 @@ function UISpinBox:onStyleApply(styleName, styleNode)
   for name, value in pairs(styleNode) do
     if name == 'maximum' then
       self.maximum = value
-      addEvent(function() self:setMaximum(value) end)
+      addEvent(function() if self.setMaximum then self:setMaximum(value) end end)
     elseif name == 'minimum' then
       self.minimum = value
-      addEvent(function() self:setMinimum(value) end)
+      addEvent(function() if self.setMinimum then self:setMinimum(value) end end)
     elseif name == 'mouse-scroll' then
-      addEvent(function() self:setMouseScroll(value) end)
+      addEvent(function() if self.setMouseScroll then self:setMouseScroll(value) end end)
     elseif name == 'buttons' then
       addEvent(function()
-        if value then
-          self:showButtons()
-        else
-          self:hideButtons()
+        if self.showButtons then
+          if value then
+            self:showButtons()
+          else
+            self:hideButtons()
+          end
         end
       end)
     end

@@ -79,10 +79,10 @@ function initBottomBar()
   bindBtn('exitBtn', function() g_app.exit() end)
 
   -- Social links (customize these URLs for your server)
-  bindBtn('discordBtn', function() g_platform.openUrl('https://discord.gg/YOUR_SERVER') end)
-  bindBtn('youtubeBtn', function() g_platform.openUrl('https://youtube.com/@YOUR_SERVER') end)
-  bindBtn('instagramBtn', function() g_platform.openUrl('https://instagram.com/YOUR_SERVER') end)
-  bindBtn('wikiBtn', function() g_platform.openUrl('https://wiki.YOUR_SERVER.com') end)
+  bindBtn('discordBtn', function() g_platform.openUrl('https://discord.gg/a3A6dPNq') end)
+  bindBtn('youtubeBtn', function() g_platform.openUrl('https://youtube.com/@') end)
+  bindBtn('instagramBtn', function() g_platform.openUrl('https://instagram.com/middle.earth.br/') end)
+  bindBtn('wikiBtn', function() g_platform.openUrl('https://www.middleearth-server.com/middlewiki/index.php?title=P%C3%A1gina_principal') end)
 end
 
 function terminate()

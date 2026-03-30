@@ -1,209 +1,583 @@
 dailyRewardWindow = nil
-freeRewardsPanel = nil
-premiumRewardsPanel = nil
-claimButton = nil
-statusLabel = nil
-timerLabel = nil
+confirmRewardWindow = nil
+selectRewardWindow = nil
 
-local OPCODE_DAILY_REWARD = 118
-local countdownEvent = nil
-local timeRemaining = 0
-local claimablePanels = {}
+local instantTokens
+local jokerTokens
+local rewardAmount = 0
+local totalOz = 0
+local freeCap = 0
+local globalMessage
+local gameFromShrine
 
 function init()
-  connect(g_game, { onGameEnd = hide })
-  connect(g_game, { onTextMessage = onTextMessage })
-  ProtocolGame.registerExtendedOpcode(OPCODE_DAILY_REWARD, onExtendedOpcode)
-
   dailyRewardWindow = g_ui.displayUI('dailyreward')
   dailyRewardWindow:hide()
-  
-  freeRewardsPanel = dailyRewardWindow:getChildById('freeRewardsPanel')
-  premiumRewardsPanel = dailyRewardWindow:getChildById('premiumRewardsPanel')
-  claimButton = dailyRewardWindow:getChildById('claimButton')
-  statusLabel = dailyRewardWindow:getChildById('statusLabel')
-  timerLabel = dailyRewardWindow:getChildById('timerLabel')
+
+  g_ui.importStyle('selectreward')
+
+  connect(g_game, {
+    onGameEnd = offline,
+    onDailyReward = onDailyReward,
+    onOpenRewardWall = onOpenRewardWall,
+    onDailyRewardHistory = onDailyRewardHistory,
+    onResourceBalance = onResourceBalance,
+  })
+
+  ProtocolGame.registerExtendedOpcode(118, onExtendedOpcode)
+
+  connect(LocalPlayer, {
+    onFreeCapacityChange = onFreeCapacityChange,
+  })
 end
 
 function terminate()
-  disconnect(g_game, { onGameEnd = hide })
-  disconnect(g_game, { onTextMessage = onTextMessage })
-  ProtocolGame.unregisterExtendedOpcode(OPCODE_DAILY_REWARD, onExtendedOpcode)
-  
-  if countdownEvent then
-    removeEvent(countdownEvent)
-    countdownEvent = nil
-  end
-  
+  disconnect(g_game, {
+    onGameEnd = offline,
+    onDailyReward = onDailyReward,
+    onOpenRewardWall = onOpenRewardWall,
+    onDailyRewardHistory = onDailyRewardHistory,
+    onResourceBalance = onResourceBalance,
+  })
+
+  disconnect(LocalPlayer, {
+    onFreeCapacityChange = onFreeCapacityChange,
+  })
+
+  ProtocolGame.unregisterExtendedOpcode(118, onExtendedOpcode)
+
   dailyRewardWindow:destroy()
+
+  if dailyRewardHistory then
+    dailyRewardHistory:destroy()
+    dailyRewardHistory = nil
+  end
+
+  if selectRewardWindow then
+    --g_client.setInputLockWidget(nil)
+    selectRewardWindow:destroy()
+    selectRewardWindow = nil
+  end
+  if confirmRewardWindow then
+    --g_client.setInputLockWidget(nil)
+    confirmRewardWindow:destroy()
+    confirmRewardWindow = nil
+  end
+end
+
+function closeSelectReward()
+  --g_client.setInputLockWidget(nil)
+  selectRewardWindow:destroy()
+  selectRewardWindow = nil
+  dailyRewardWindow:show(true)
+  --g_client.setInputLockWidget(dailyRewardWindow)
+end
+
+function closeDaily()
+  dailyRewardWindow:hide()
+  --g_client.setInputLockWidget(nil)
+  -- modules.game_sidebuttons.setButtonVisible("rewardWallDialog", false)
+  if selectRewardWindow then
+    selectRewardWindow:hide()
+    --g_client.setInputLockWidget(nil)
+  end
+  if confirmRewardWindow then
+    confirmRewardWindow:hide()
+  end
+  if dailyRewardHistory then
+    dailyRewardHistory:destroy()
+    dailyRewardHistory = nil
+  end
+
+  -- modules.game_console.getConsole():recursiveFocus(2)
 end
 
 function show()
-  dailyRewardWindow:show()
-  dailyRewardWindow:raise()
-  dailyRewardWindow:focus()
+  g_game.openDailyReward()
+  --g_client.setInputLockWidget(dailyRewardWindow)
 end
 
-function hide()
+function requestHistory()
+  local protocolGame = g_game.getProtocolGame()
+  if protocolGame then
+    protocolGame:sendExtendedOpcode(118, '{"action":"history"}')
+  end
+end
+
+function offline()
   dailyRewardWindow:hide()
-end
-
-function formatTime(seconds)
-  local h = math.floor(seconds / 3600)
-  local m = math.floor((seconds % 3600) / 60)
-  local s = seconds % 60
-  return string.format("%02d:%02d:%02d", h, m, s)
-end
-
-function updateTimer()
-  if timeRemaining > 0 then
-    timeRemaining = timeRemaining - 1
-    timerLabel:setText("Time left for next reward: " .. formatTime(timeRemaining))
-    countdownEvent = scheduleEvent(updateTimer, 1000)
-  else
-    timerLabel:setText("You can claim your reward now!")
-    countdownEvent = nil
-    -- Optional: If window is open and timer reaches 0, maybe enable button? 
-    -- But we need server states. Often it's enough to ask them to reopen.
+  --g_client.setInputLockWidget(nil)
+  if confirmRewardWindow then
+    confirmRewardWindow:destroy()
+    confirmRewardWindow = nil
+  end
+  if selectRewardWindow then
+    selectRewardWindow:destroy()
+    selectRewardWindow = nil
   end
 end
 
-function onExtendedOpcode(protocol, code, buffer)
-  if code ~= OPCODE_DAILY_REWARD then return end
+function onDailyReward( freeRewards, premiumRewards, descriptions )
+  DailyReward:onDailyReward( freeRewards, premiumRewards, descriptions )
+end
+
+function onOpenRewardWall(fromShrine, nextRewardTime, currentIndex, message, dailyState, jokerToken, serverSave, dayStreakLevel)
+  local player = g_game.getLocalPlayer()
+  if not player then
+    return
+  end
   
-  local status, data = pcall(function() return json.decode(buffer) end)
-  if not status or not data then return end
-  
-  if data.action == "open" or data.action == "update" then
-    updateUI(data.currentDay, data.canClaim, data.isPremium, data.rewards, data.timeRemaining)
-    if data.action == "open" then
-      show()
+  dailyRewardWindow:focus()
+  --g_client.setInputLockWidget(dailyRewardWindow)
+  dailyRewardWindow.miniWindowBonuses.jokerInfo.streakWidget:setText(dayStreakLevel)
+  dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakProgress:setVisible(false)
+  dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakLabel:setText("")
+  dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakCheck:setVisible(true)
+
+  local jokerBalance = 0 -- player:getResourceValue(ResourceJokerReward)
+  local text = jokerToken > 3 and ">3" or jokerToken
+  dailyRewardWindow.miniWindowBonuses.jokerInfo.jokers.jokerInfoLabel:setText(text)
+
+  local textColor = jokerToken > jokerBalance and "#d33c3c" or "#c0c0c0"
+  dailyRewardWindow.miniWindowBonuses.jokerInfo.jokers.jokerInfoLabel:setColor(textColor)
+
+  dailyRewardWindow.jokers.jokersLabel:setText(math.min(3, jokerBalance))
+
+  if dailyState == 0 then
+    dailyRewardWindow.miniWindowBonuses.bonusLabel:setText("You already claimed your daily reward.")
+  elseif dailyState == 1 then
+    dailyRewardWindow.miniWindowBonuses.bonusLabel:setText("You did not claim your daily reward in time.\nToo bad, you do not have enough Daily Reward Jokers.")
+  elseif dailyState == 2 then
+    dailyRewardWindow.miniWindowBonuses.bonusLabel:setText("Claim your daily reward before server save.\n If you don't claim your reward now, your streak will be reset.")
+  end
+
+  globalMessage = message
+  dailyRewardWindow.miniWindowBonuses.bonusLabel.onHoverChange = function(_, hovered) setupBonusLabelDesc(hovered, dailyState, jokerToken) end
+
+  for i = 0, 6 do
+    local widget = dailyRewardWindow.miniWindowDailyReward.dailyReward:recursiveGetChildById("dailyButton_".. i)
+    if widget and i ~= currentIndex then
+      widget:setImageSource("/images/dailyreward/nextbg")
+      widget.blocked:setImageSource("/images/ui/ditherpattern64")
+      widget.blocked:setMargin(1)
+      local style = {}
+      style["$pressed"] = {
+        ["image-clip"] = "0 0 66 66"
+      }
+      widget:mergeStyle(style)
+      widget.onClick = function() end
+    elseif widget and dailyState ~= 0 then
+      widget:setImageSource("/images/dailyreward/buttonbg")
+      local style = {}
+      style["$pressed"] = {
+        ["icon-offset"] = "1 1",
+        ["image-clip"] = "0 66 66 66"
+      }
+      widget:mergeStyle(style)
+      widget.onClick = onClaimReward
+      widget.blocked:setImageSource("")
+    elseif widget then
+      widget.blocked:setImageSource("")
+      widget:setImageSource("/images/dailyreward/nextbg")
+      local style = {}
+      style["$pressed"] = {
+        ["image-clip"] = "0 0 66 66"
+      }
+      widget:mergeStyle(style)
+      widget.onClick = function() end
+    end
+
+    gameFromShrine = fromShrine
+
+    local widget = dailyRewardWindow.miniWindowDailyReward.dailyReward:recursiveGetChildById("dailyPanel_".. i)
+    widget.dailyPanelProgress:setVisible(false)
+    if widget and i < currentIndex then
+      widget.dailyBlocked:setVisible(false)
+      widget.dailyPanelLabel:setVisible(true)
+      widget.dailyPanelLabel:setText(" ")
+      widget.dailyPanelLabel:setIcon("/images/dailyreward/icon-checkmark")
+      widget.dailyIconLabel:setVisible(false)
+    elseif widget and i > currentIndex then
+      widget.dailyBlocked:setVisible(true)
+      widget.dailyPanelLabel:setVisible(false)
+      widget.dailyIconLabel:setVisible(false)
+    elseif widget and dailyState == 0 then
+      widget.dailyBlocked:setVisible(false)
+      widget.dailyPanelLabel:setIcon("")
+      widget.dailyPanelLabel:setText("")
+      widget.dailyPanelLabel:setVisible(true)
+      widget.dailyIconLabel:setVisible(false)
+      widget.dailyPanelProgress:setVisible(true)
+
+      local time = nextRewardTime - os.time()
+      local hours = math.floor(time / 3600)
+      local minutes = math.floor((time % 3600) / 60)
+      local formattedTime = string.format("%02d:%02d", hours, minutes)
+
+      widget.dailyPanelProgress:setText(formattedTime)
+      local minimus = nextRewardTime - (24*60*60)
+      widget.dailyPanelProgress:setValue(os.time(), 0, nextRewardTime)
+      widget.dailyPanelProgress:setMinimum(minimus)
+      widget.dailyPanelProgress:updateBackground()
+
+    elseif widget and dailyState == 1 then
+      widget.dailyBlocked:setVisible(false)
+      widget.dailyPanelLabel:setIcon("")
+      widget.dailyPanelLabel:setText(gameFromShrine and "0" or "1")
+      widget.dailyIconLabel:setVisible(true)
+      widget.dailyPanelProgress:setVisible(false)
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakLabel:setText("expired")
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakCheck:setVisible(false)
+    elseif widget and dailyState == 2 then
+      widget.dailyBlocked:setVisible(false)
+      widget.dailyPanelLabel:setIcon("")
+      widget.dailyPanelLabel:setVisible(true)
+      widget.dailyPanelLabel:setText(gameFromShrine and "0" or "1")
+      widget.dailyIconLabel:setVisible(true)
+      widget.dailyPanelProgress:setVisible(false)
+
+      local time = serverSave - os.time()
+      local hours = math.floor(time / 3600)
+      local minutes = math.floor((time % 3600) / 60)
+      local formattedTime = string.format("%02d:%02d", hours, minutes)
+
+      widget.dailyPanelProgress:setText(formattedTime)
+      local minimus = serverSave - (24*60*60)
+      widget.dailyPanelProgress:setValue(os.time(), 0, serverSave)
+      widget.dailyPanelProgress:setMinimum(minimus)
+      widget.dailyPanelProgress:updateBackground()
+
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakProgress:setVisible(true)
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakProgress:setText(formattedTime)
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakProgress:setValue(os.time(), 0, serverSave)
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakProgress:setMinimum(minimus)
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakProgress:updateBackground()
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakLabel:setText("")
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakLabel:setVisible(false)
+      dailyRewardWindow.miniWindowBonuses.jokerInfo.timerStreakPanel.timerStreakCheck:setVisible(false)
+    end
+
+    local widget = dailyRewardWindow.miniWindowDailyReward.dailyReward:recursiveGetChildById("processArrow_".. i)
+    if widget and i < currentIndex then
+      widget:setText(" ")
+      widget:setIcon("/images/dailyreward/icon-rewardarrow-active")
     end
   end
+
+  dailyRewardWindow:show(true)
 end
 
-function updateUI(currentDay, canClaim, isPremium, rewardsData, remainingTime)
-  if not dailyRewardWindow then return end
-  
-  local accountStatus = isPremium and "Premium Account" or "Free Account"
-  statusLabel:setText("Account Status: " .. accountStatus .. " | Current Streak: Day " .. currentDay)
-  statusLabel:setColor(isPremium and '#00ff00' or '#cccccc')
-  
-  timeRemaining = remainingTime or 0
-  if countdownEvent then
-    removeEvent(countdownEvent)
-    countdownEvent = nil
-  end
-  
-  if canClaim then
-    timerLabel:setText("You can claim your reward now!")
-  else
-    updateTimer()
-  end
-  
-  claimablePanels = {}
-  claimButton:setEnabled(false)
-  
-  freeRewardsPanel:destroyChildren()
-  premiumRewardsPanel:destroyChildren()
-  
-  -- Create Free row
-  for day = 1, 7 do
-    local panel = g_ui.createWidget('DayPanel', freeRewardsPanel)
-    panel:getChildById('dayLabel'):setText(string.format("Dia %02d", day))
-    
-    local reward = rewardsData.free and rewardsData.free[day]
-    if reward then
-      panel:getChildById('rewardItem'):setItemId(reward.clientId)
-      panel:getChildById('rewardItem'):setItemCount(reward.count)
-      panel:getChildById('rewardItem'):setTooltip("Free Reward: " .. reward.count .. "x")
-    end
-    
-    setupPanelVisuals(panel, day, currentDay, canClaim, true)
-  end
-  
-  -- Create Premium row
-  for day = 1, 7 do
-    local panel = g_ui.createWidget('DayPanel', premiumRewardsPanel)
-    panel:getChildById('dayLabel'):setText(string.format("Dia %02d", day))
-    if not isPremium then
-      panel:getChildById('dayLabel'):setColor('#ff5555')
-    end
-    
-    local reward = rewardsData.premium and rewardsData.premium[day]
-    if reward then
-      panel:getChildById('rewardItem'):setItemId(reward.clientId)
-      panel:getChildById('rewardItem'):setItemCount(reward.count)
-      panel:getChildById('rewardItem'):setTooltip("Premium Reward: " .. reward.count .. "x")
-    end
-    
-    setupPanelVisuals(panel, day, currentDay, canClaim, isPremium)
-    
-  end
-end
-
-function setupPanelVisuals(panel, day, currentDay, canClaim, isActiveTree)
-  local checkLabel = panel:getChildById('checkLabel')
-  local rewardItem = panel:getChildById('rewardItem')
-  
-  panel:setBorderWidth(0)
-  panel:setOpacity(1.0)
-  checkLabel:setVisible(true)
-  panel.isClaimable = false
-
-  if not isActiveTree then
-    checkLabel:setImageSource('/game_dailyreward/images/icon-lock-red')
-    checkLabel:setWidth(12)
-    checkLabel:setHeight(12)
+function setupBonusLabelDesc(hovered, dailyState, jokerToken)
+  if not hovered then
+    dailyRewardWindow.Description.tooltipTodo:setText("")
     return
   end
 
-  if day < currentDay then
-    checkLabel:setImageSource('/game_dailyreward/images/icon-dailyrewarddone')
-    checkLabel:setWidth(12)
-    checkLabel:setHeight(12)
-    rewardItem:setTooltip("Já foi coletada")
-  elseif day == currentDay then
-    if canClaim then
-      checkLabel:setVisible(false)
-      if isActiveTree then
-        panel.isClaimable = true
-        table.insert(claimablePanels, panel)
-      end
+  local text = ""
+  if dailyState == 0 then
+    text = "Congratulations! You claimed your daily reward in time. Come back after\nthe next regular server save for more rewards.\nRaise your reward streak to benefit from bonuses in resting areas."
+  elseif dailyState == 1 then
+    text = string.format("Oh no! You are too late! You did not claim your daily reward before server\nsave. Your reward streak will be reset to 1 as you do not have at least %s\nDaily Reward Jokers to keep the streak going.\nRaise your reward streak to benefit from bonuses in resting areas.", jokerToken)
+  elseif dailyState == 2 then
+    if jokerToken > 0 then
+      text = string.format("Hurry! Claim your daily reward before the next regular server save to raise\nyour reward streak by one.\nTo prevent a reset of your reward streak, %d Daily Reward Jokers will be used.\nRaise your reward streak to benefit from bonuses in resting areas.", jokerToken)
     else
-      checkLabel:setImageSource('/game_dailyreward/images/icon-lock-red')
-      checkLabel:setWidth(12)
-      checkLabel:setHeight(12)
+      text = "Hurry! Claim your daily reward before the next regular server save to raise\nyour reward streak by one.\nTo prevent a reset of your reward streak.\nRaise your reward streak to benefit from bonuses in resting areas."
+    end
+  end
+  dailyRewardWindow.Description.tooltipTodo:setText(text)
+end
+
+function onClaimReward(widget)
+  local player = g_game.getLocalPlayer()
+  if not player then
+    return
+  end
+
+  if selectRewardWindow then
+    selectRewardWindow:destroy()
+    selectRewardWindow = nil
+  end
+
+  onClickConfirm(widget)
+end
+
+function onFreeCapacityChange(localPlayer, freeCapacity)
+  freeCap = freeCapacity
+end
+
+function onClickAmount(widget)
+  local id = widget:getId()
+
+  local value = widget.window.countEdit:getText()
+  if not tonumber(value) then
+    value = 0
+  end
+
+  if id == "leftSkipPlus" then
+    selectedAmount = math.max(0, selectedAmount - value)
+    widget.window.countEdit:setText('0')
+  elseif id == "leftSkip" then
+    selectedAmount = math.max(0, selectedAmount - value)
+    widget.window.countEdit:setText(tostring(math.max(0, value - 1)))
+  elseif id == "rightSkip" then
+    selectedAmount = selectedAmount + 1
+    if selectedAmount > rewardAmount then
+      selectedAmount = selectedAmount - 1
+    else
+      widget.window.countEdit:setText(value + 1)
+    end
+  elseif id == "rightSkipPlus" and selectedAmount < rewardAmount then
+    selectedAmount = rewardAmount - selectedAmount
+    if selectedAmount > rewardAmount then
+      selectedAmount = selectedAmount - 1
+    else
+      widget.window.countEdit:setText(selectedAmount)
+    end
+  end
+
+  local value = tonumber(widget.window.countEdit:getText()) or 0
+  totalOz = (value * widget.window.ozNumber)
+  widget.window.oz:setText(string.format("%.2f oz", (widget.window.ozNumber * value)/100))
+  selectRewardWindow.totalWeightLabel:setText(string.format('Total Weight:        %.2f oz', totalOz/100))
+
+  -- arrumando as coisas
+  if selectedAmount < rewardAmount then
+    for i, child in pairs(selectRewardWindow.itemPanel:getChildren()) do
+      child.rightSkipPlus:setIcon("/images/dailyreward/icon-arrowskipright")
+      child.rightSkip:setIcon("/images/dailyreward/icon-arrowright")
     end
   else
-    checkLabel:setImageSource('/game_dailyreward/images/icon-lock-red')
-    checkLabel:setWidth(12)
-    checkLabel:setHeight(12)
-  end
-end
-
-function claimReward()
-  if not g_game.isOnline() then return end
-  
-  local msg = {
-    action = "claim"
-  }
-  
-  g_game.getProtocolGame():sendExtendedOpcode(OPCODE_DAILY_REWARD, json.encode(msg))
-  claimButton:setEnabled(false)
-end
-
-function onTextMessage(mode, text)
-  if not dailyRewardWindow:isVisible() then return end
-  -- Any text message updates that might be relevant can be handled here.
-end
-
-function onDayPanelClick(panel)
-  if panel.isClaimable then
-    for _, p in ipairs(claimablePanels) do
-      p:setBorderWidth(1)
-      p:setBorderColor('#ffd700')
+    for i, child in pairs(selectRewardWindow.itemPanel:getChildren()) do
+      child.rightSkipPlus:setIcon("/images/dailyreward/icon-arrowskipright-disabled")
+      child.rightSkip:setIcon("/images/dailyreward/icon-arrowright-disabled")
     end
-    claimButton:setEnabled(true)
+  end
+
+  for i, child in pairs(selectRewardWindow.itemPanel:getChildren()) do
+    if tonumber(child.countEdit:getText()) > 0 then
+      child.leftSkipPlus:setIcon("/images/dailyreward/icon-arrowskip")
+      child.leftSkip:setIcon("/images/dailyreward/icon-arrow")
+    else
+      child.leftSkipPlus:setIcon("/images/dailyreward/icon-arrowskip-disabled")
+      child.leftSkip:setIcon("/images/dailyreward/icon-arrow-disabled")
+    end
+  end
+
+  local m = {}
+  setStringColor(m, "You have selected ", "#C0C0C0")
+  if selectedAmount < rewardAmount then
+    setStringColor(m, string.format("%d", selectedAmount), "#F75F5F")
+  else
+    setStringColor(m, string.format("%d", selectedAmount), "#0B8A0A")
+  end
+  setStringColor(m, string.format(" of %d reward items.", rewardAmount), "#C0C0C0")
+  selectRewardWindow.selectLabel:setColoredText(m)
+
+  if selectedAmount == rewardAmount then
+    selectRewardWindow.ok:setEnabled(true)
+    selectRewardWindow.ok.onClick = onClickConfirm
+  else
+    selectRewardWindow.ok:setEnabled(false)
+  end
+
+end
+
+function onClickConfirm(widget)
+  if confirmRewardWindow then
+    return
+  end
+
+  if selectRewardWindow then
+    selectRewardWindow:hide()
+    --g_client.setInputLockWidget(nil)
+  end
+
+  dailyRewardWindow:hide()
+  --g_client.setInputLockWidget(nil)
+
+  local yesCallback = function()
+    if confirmRewardWindow then
+      confirmRewardWindow:destroy()
+      confirmRewardWindow=nil
+      dailyRewardWindow:show()
+      --g_client.setInputLockWidget(dailyRewardWindow)
+    end
+
+    local items = {}
+    local totalOz = 0
+    if selectRewardWindow then
+      local childrens = selectRewardWindow.itemPanel:getChildren()
+      for i, child in pairs(childrens) do
+        if child and child.item and tonumber(child.countEdit:getText()) and tonumber(child.countEdit:getText()) > 0 then
+          local count = tonumber(child.countEdit:getText())
+          items[child.item:getItemId()] = count
+          totalOz = totalOz + (count * child.ozNumber)
+        end
+      end
+    end
+
+    -- if (totalOz / 100) > freeCap then
+    --   return
+    -- end
+    local protocolGame = g_game.getProtocolGame()
+    if protocolGame then
+      protocolGame:sendExtendedOpcode(118, '{"action":"claim"}')
+    end
+  end
+
+  local noCallback = function()
+    if selectRewardWindow then
+      selectRewardWindow:show(true)
+      --g_client.setInputLockWidget(selectRewardWindow)
+    end
+    confirmRewardWindow:destroy()
+    confirmRewardWindow=nil
+    dailyRewardWindow:show()
+    --g_client.setInputLockWidget(dailyRewardWindow)
+  end
+
+  if not globalMessage or globalMessage == "" then
+    globalMessage = "Are you sure you want to claim this reward?"
+  end
+
+  confirmRewardWindow = displayGeneralBox(tr('Warning'), tr(globalMessage), {
+      { text=tr('Yes'), callback=yesCallback },
+      { text=tr('No'), callback=noCallback },
+    }, yesCallback, noCallback)
+
+
+  g_keyboard.bindKeyPress("Y", yesCallback, confirmRewardWindow)
+  g_keyboard.bindKeyPress("N", noCallback, confirmRewardWindow)
+end
+
+function onTextChange(widget)
+  local text = widget:getText()
+  if not tonumber(text) then
+    widget:setText('0')
+    return false
+  end
+
+  return true
+end
+
+function onResourceBalance(type, value)
+  -- g_game.getLocalPlayer():setResourceInfo(type, value)
+  if type == 20 then
+    instantTokens = value
+    dailyRewardWindow.instantAcess.instantLabel:setText(value)
   end
 end
+
+function closeHistory()
+  closeDaily()
+end
+function backHistory()
+  closeDaily()
+  dailyRewardWindow:show(true)
+  --g_client.setInputLockWidget(dailyRewardWindow)
+end
+
+function onDailyRewardHistory(dailyRewardHistories)
+  dailyRewardHistory = g_ui.displayUI('history')
+  dailyRewardHistory:focus()
+  --g_client.setInputLockWidget(dailyRewardHistory)
+
+  dailyRewardHistory.instantAcess.instantLabel:setText(instantTokens)
+  dailyRewardHistory.jokers.jokersLabel:setText(jokerTokens)
+  for i, info in pairs(dailyRewardHistories) do
+    local widget = g_ui.createWidget('HistoryDescription', dailyRewardHistory.historyPanel.historyListPanel)
+    widget.date:setText(os.date("%Y.%m.%d, %X", info[1]))
+    widget.streak:setText(info[4])
+    widget.description:setText(info[3])
+    widget:setBackgroundColor(i % 2 == 0 and "#414141" or "#484848")
+  end
+end
+
+function onExtendedOpcode(protocol, opcode, buffer)
+  if opcode ~= 118 then return end
+
+  local status, data = pcall(function() return json.decode(buffer) end)
+  if not status or not data then return end
+
+  if data.action == "history" then
+      closeDaily()
+      onDailyRewardHistory(data.history or {})
+      return
+  end
+
+  if data.action == "open" or data.action == "update" then
+    local free = {}
+    local premium = {}
+    local isPlayerPremium = data.isPremium or false
+    
+    for i, r in ipairs(data.rewards.free) do
+        table.insert(free, { type = 2, preyCount = r.count, amount = r.count, isXpBoost = r.isXpBoost, name = r.name, items = { {id = r.clientId, name = r.name} } })
+    end
+    for i, r in ipairs(data.rewards.premium) do
+        table.insert(premium, { type = 2, preyCount = r.count, amount = r.count, isXpBoost = r.isXpBoost, name = r.name, items = { {id = r.clientId, name = r.name} } })
+    end
+
+    local texts = {
+        "Resting Area Bonus",
+        "HP/MP Regeneration",
+        "Soul Point Regeneration",
+        "+50% stamina regeneration",
+        "Double HP/MP Regeneration",
+        "Free Depot Box/Mail"
+    }
+
+    DailyReward:onDailyReward(free, premium, texts)
+    
+    -- Setup items since configureRewardDescriptions uses prey text!
+    for i = 0, 6 do
+        local widget = dailyRewardWindow.miniWindowDailyReward.dailyReward:recursiveGetChildById("dailyButton_".. i)
+        if widget then
+            widget:setIcon("/images/dailyreward/icon-reward-fixeditems")
+            
+            local function buildDesc(itemInfo, isPrem)
+                local t = isPrem and "Premium" or "Free"
+                if itemInfo.isXpBoost then
+                    return string.format("Rewards for %s Account:\n- %d Minutes XP Boost", t, itemInfo.amount)
+                else
+                    return string.format("Rewards for %s Account:\n- %dx %s", t, itemInfo.amount, itemInfo.name or "Item")
+                end
+            end
+
+            -- Override hover change so it uses our custom text instead of prey!
+            widget.onHoverChange = function(selfWidget, hovered)
+                dailyRewardWindow.Description.tooltipTodo:setText("")
+                dailyRewardWindow.Description.freeDesc.freeDescLabel:setText("")
+                dailyRewardWindow.Description.premDesc.premiumDescLabel:setText("")
+                if hovered then
+                    local fLabel = dailyRewardWindow.Description.freeDesc.freeDescLabel
+                    local pLabel = dailyRewardWindow.Description.premDesc.premiumDescLabel
+                    
+                    fLabel:setText(buildDesc(free[i+1], false))
+                    pLabel:setText(buildDesc(premium[i+1], true))
+                    
+                    if isPlayerPremium then
+                        fLabel:setColor('#888888')
+                        fLabel:setOpacity(0.5)
+                        pLabel:setColor('#FFFFFF')
+                        pLabel:setOpacity(1.0)
+                    else
+                        fLabel:setColor('#FFFFFF')
+                        fLabel:setOpacity(1.0)
+                        pLabel:setColor('#888888')
+                        pLabel:setOpacity(0.5)
+                    end
+                end
+            end
+        end
+    end
+
+    local dailyState = data.canClaim and 2 or 0
+    local nextRewardTime = os.time() + data.timeRemaining
+    local serverSave = os.time() + data.timeRemaining
+    local currentIndex = math.max(0, data.currentDay - 1)
+    
+    onOpenRewardWall(true, nextRewardTime, currentIndex, "Are you sure you want to claim this reward?", dailyState, 0, serverSave, currentIndex)
+  end
+end
+

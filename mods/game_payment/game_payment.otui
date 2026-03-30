@@ -99,24 +99,14 @@ DonaterInfo < Panel
     color: $var-text-cip-color
     @onSetup: |
       self:addOption("10 Coins (R$ 10,00)")
-      self:addOption("15 Coins (R$ 15,00)")
-      self:addOption("20 Coins (R$ 20,00)")
-      self:addOption("25 Coins (R$ 25,00)")
-      self:addOption("30 Coins (R$ 30,00)")
-      self:addOption("35 Coins (R$ 35,00)")
-      self:addOption("40 Coins (R$ 40,00)")
-      self:addOption("45 Coins (R$ 45,00)")
-      self:addOption("50 Coins (R$ 50,00)")
-      self:addOption("100 Coins (R$ 100,00)")
-      self:addOption("150 Coins (R$ 150,00)")
-      self:addOption("200 Coins (R$ 200,00)")
-      self:addOption("250 Coins (R$ 250,00)")
-      self:addOption("300 Coins (R$ 300,00)")
-      self:addOption("400 Coins (R$ 400,00)")
-      self:addOption("500 Coins (R$ 500,00)")
-      self:addOption("750 Coins (R$ 750,00)")
-      self:addOption("1000 Coins (R$ 1.000,00)")
-      self:addOption("2000 Coins (R$ 2.000,00)")
+      self:addOption("22 Coins (R$ 20,00)")
+      self:addOption("55 Coins (R$ 50,00)")
+      self:addOption("115 Coins (R$ 100,00)")
+      self:addOption("235 Coins (R$ 200,00)")
+      self:addOption("380 Coins (R$ 300,00)")
+      self:addOption("525 Coins (R$ 400,00)")
+      self:addOption("710 Coins (R$ 500,00)")
+      self:addOption("1550 Coins (R$ 1000,00)")
       self:setCurrentOption("10 Coins (R$ 10,00)")
   Label
     id: betaBonusLabel
@@ -124,7 +114,7 @@ DonaterInfo < Panel
     anchors.left: parent.left
     anchors.right: parent.right
     margin-top: 6
-    !text: 'Aqui qualquer mensagem.'
+    !text: 'Antes de fazer um donate, leia as regras no site.'
     size: 60 60
     font: $var-cip-font
     color: yellow
