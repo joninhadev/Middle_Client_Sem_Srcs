@@ -365,33 +365,6 @@ if true then
 end
 
 
-addCheckBox("bless", "Buy bless at login", true, rightPanel, "Say !bless at login.")
-if true then
-  local blessed = false
-  onTextMessage(function(mode,text) 
-    if not settings.bless then return end
-    
-    text = text:lower()
-
-    if text == "you already have all blessings." then
-      blessed = true
-    end
-  end)
-  if settings.bless then
-    if player:getBlessings() == 0 then
-      say("!bless")
-      schedule(2000, function() 
-          if g_game.getClientVersion() > 1000 then
-            if not blessed and player:getBlessings() == 0 then
-                warn("!! Blessings not bought !!")
-            end
-          end
-      end)
-    end
-  end
-end
-
-
 addCheckBox("reUse", "Keep Crosshair", false, rightPanel, "Keep crosshair after using with item")
 if true then
   local excluded = {268, 237, 238, 23373, 266, 236, 239, 7643, 23375, 7642, 23374, 5908, 5942} 
