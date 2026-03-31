@@ -121,17 +121,36 @@ addCheckBox("reachable", "Target only pathable mobs", false, leftPanel, "Ignore 
 
 addCheckBox("title", "Custom Window Title", true, rightPanel, "Personalize OTCv8 window name according to character specific.")
 if true then
-  local vocText = ""
+	local vocText = ""
 
-  if voc() == 1 or voc() == 11 then
-      vocText = "- EK"
-  elseif voc() == 2 or voc() == 12 then
-      vocText = "- RP"
-  elseif voc() == 3 or voc() == 13 then
-      vocText = "- MS"
-  elseif voc() == 4 or voc() == 14 then
-      vocText = "- ED"
-  end
+	-- Sorcerers
+	if voc() == 1 or voc() == 2 or voc() == 3 or voc() == 4 or voc() == 40 then
+		vocText = "- MS"
+
+	-- Druids
+	elseif voc() == 5 or voc() == 6 or voc() == 7 or voc() == 8 or voc() == 41 then
+		vocText = "- ED"
+
+	-- Archers
+	elseif voc() == 9 or voc() == 10 or voc() == 11 or voc() == 12 or voc() == 42 then
+		vocText = "- RP"
+
+	-- Knights
+	elseif voc() == 13 or voc() == 14 or voc() == 15 or voc() == 16 or voc() == 43 then
+		vocText = "- EK"
+
+	-- Dwarfs
+	elseif voc() == 17 or voc() == 18 or voc() == 19 or voc() == 20 then
+		vocText = "- DF"
+
+	-- Elves
+	elseif voc() == 35 or voc() == 36 or voc() == 37 or voc() == 38 or voc() == 39 or voc() == 46 then
+		vocText = "- ELF"
+
+	-- Orcs
+	elseif voc() == 21 or voc() == 22 or voc() == 23 or voc() == 24 or voc() == 25 or voc() == 26 or voc() == 45 then
+		vocText = "- ORC"
+	end
 
   macro(5000, function()
     if settings.title then
@@ -394,102 +413,6 @@ if true then
   end)
 end
 
-addCheckBox("holdMwall", "Hold MW/WG", true, rightPanel, "Mark tiles with below hotkeys to automatically use Magic Wall or Wild Growth")
-addTextEdit("holdMwHot", "Magic Wall Hotkey: ", "F5", rightPanel)
-addTextEdit("holdWgHot", "Wild Growth Hotkey: ", "F6", rightPanel)
-if true then
-
-  local hold = 0
-  local mwHot
-  local wgHot
-
-  local candidates = {}
-  local m = macro(20, function()
-    mwHot = settings.holdMwHot
-    wgHot = settings.holdWgHot
-    
-    if not settings.holdMwall then return end
-      if #candidates == 0 then return end
-
-      for i, pos in pairs(candidates) do
-        local tile = g_map.getTile(pos)
-        if tile then
-          if tile:getText():len() == 0 then 
-            table.remove(candidates, i)
-          end
-          local rune = tile:getText() == "HOLD MW" and 3180 or tile:getText() == "HOLD WG" and 3156
-          if tile:canShoot() and not isInPz() and tile:isWalkable() and tile:getTopUseThing():getId() ~= 2130 then
-            if math.abs(player:getPosition().x-tile:getPosition().x) < 8 and math.abs(player:getPosition().y-tile:getPosition().y) < 6 then
-              return useWith(rune, tile:getTopUseThing())
-            end
-          end
-        end
-      end
-  end)
-
-  onRemoveThing(function(tile, thing)
-    if not settings.holdMwall then return end
-      if thing:getId() ~= 2129 then return end
-      if tile:getText():find("HOLD") then
-          table.insert(candidates, tile:getPosition())
-          local rune = tile:getText() == "HOLD MW" and 3180 or tile:getText() == "HOLD WG" and 3156
-          if math.abs(player:getPosition().x-tile:getPosition().x) < 8 and math.abs(player:getPosition().y-tile:getPosition().y) < 6 then
-            return useWith(rune, tile:getTopUseThing())
-          end
-      end
-  end)
-
-  onAddThing(function(tile, thing)
-    if not settings.holdMwall then return end
-      if m.isOff() then return end
-      if thing:getId() ~= 2129 then return end
-      if tile:getText():len() > 0 then
-          table.remove(candidates, table.find(candidates,tile))
-      end
-  end)
-
-  onKeyDown(function(keys)
-    local wsadWalking = modules.game_walking.wsadWalking
-    if not wsadWalking then return end
-    if not settings.holdMwall then return end
-    if m.isOff() then return end
-    if keys ~= mwHot and keys ~= wgHot then return end
-    hold = now
-
-    local tile = getTileUnderCursor()
-    if not tile then return end
-
-    if tile:getText():len() > 0 then
-        tile:setText("")
-    else
-        if keys == mwHot then
-            tile:setText("HOLD MW")
-        else
-            tile:setText("HOLD WG")
-        end
-        table.insert(candidates, tile:getPosition())
-    end
-  end)
-
-  onKeyPress(function(keys)
-    local wsadWalking = modules.game_walking.wsadWalking
-    if not wsadWalking then return end
-    if not settings.holdMwall then return end
-    if m.isOff() then return end
-    if keys ~= mwHot and keys ~= wgHot then return end
-
-    if (hold - now) < -1000 then
-      candidates = {}
-      for i, tile in ipairs(g_map.getTiles(posz())) do
-        local text = tile:getText()
-        if text:find("HOLD") then
-          tile:setText("")
-        end
-      end
-    end
-  end)
-end
-
 addCheckBox("checkPlayer", "Check Players", true, rightPanel, "Auto look on players and mark level and vocation on character model")
 if true then
   local found
@@ -536,16 +459,68 @@ if true then
           guild = guild:sub(1,10) -- change to proper (last) values
           guild = guild.."..."
         end
-        local voc
-        if text:lower():find("sorcerer") then
-            voc = "MS"
-        elseif text:lower():find("druid") then
-            voc = "ED"
-        elseif text:lower():find("knight") then
-            voc = "EK"
-        elseif text:lower():find("paladin") then
-            voc = "RP"
-        end
+local voc
+local t = text:lower()
+
+-- Sorcerers
+if t:find("sorcerer") 
+    or t:find("master sorcerer") 
+    or t:find("archmage") 
+    or t:find("arcane wizard") 
+    or t:find("secret of flame") then
+    voc = "MS"
+
+-- Druids
+elseif t:find("druid") 
+    or t:find("elder druid") 
+    or t:find("celtic druid") 
+    or t:find("spirit healer") 
+    or t:find("forest of shepherd") then
+    voc = "ED"
+
+-- Archers / Paladins
+elseif t:find("archer") 
+    or t:find("royal archer") 
+    or t:find("medieval archer") 
+    or t:find("executioner") 
+    or t:find("scout of watcher") then
+    voc = "RP"
+
+-- Knights
+elseif t:find("knight") 
+    or t:find("elite knight") 
+    or t:find("templar knight") 
+    or t:find("chaos knight") 
+    or t:find("king of gondor") then
+    voc = "EK"
+
+-- Dwarfs
+elseif t:find("dwarf") 
+    or t:find("dwarf blacksmith") 
+    or t:find("dwarf weaponsmith") 
+    or t:find("dwarf artisan") 
+    or t:find("warden of the mountain") then
+    voc = "DF"
+
+-- Orcs
+elseif t:find("orc") 
+    or t:find("orc warrior") 
+    or t:find("orc berserker") 
+    or t:find("orc leader") 
+    or t:find("orc warlord") 
+    or t:find("orc general") 
+    or t:find("lord of gundabad") then
+    voc = "ORC"
+
+-- Elves
+elseif t:find("elf") 
+    or t:find("elf archer") 
+    or t:find("elf ranger") 
+    or t:find("silver elf") 
+    or t:find("high elf") 
+    or t:find("prince/princess of elven") then
+    voc = "ELF"
+end
         local creature = getCreatureByName(name)
         if creature then
             creature:setText("\n"..level..voc.."\n"..guild)
@@ -610,64 +585,6 @@ if true then
   end)
 end
 
-
-local utamoPercent = storage.utamoPercent or 65
-local exanaPercent = storage.exanaPercent or 75
-
-UI.Separator()
-
-UI.Label("Utamo Vita %")
-UI.TextEdit(utamoPercent, function(widget, text)
-  storage.utamoPercent = tonumber(text)
-end)
-
-UI.Label("Exana Vita %")
-UI.TextEdit(exanaPercent, function(widget, text)
-  storage.exanaPercent = tonumber(text)
-end)
-
-macro(100, "Utamo Vita", function()
-  local utamo = storage.utamoPercent or utamoPercent
-  local exana = storage.exanaPercent or exanaPercent
-
-  if not hasManaShield() and hppercent() <= utamo then
-    say('utamo vita')
-
-  elseif hasManaShield() and hppercent() >= exana then
-    say('exana vita')
-  end
-end)
-
-macro(100, "Friend Healer (SIO)", function()
-  local friendPercent = tonumber(storage.hpfriend)
-  local friends = string.split(storage.friendName, "\
-")
-  for i, spec in pairs(getSpectators()) do 
-    if table.contains(friends, spec:getName(), true) then 
-      if spec:getHealthPercent() <= friendPercent then
-        say('exura sio "' .. spec:getName())
-        delay(500)
-      end
-    end
-  end
-end)
-
-UI.Label("% de vida: ")
-
-UI.TextEdit(storage.hpfriend or "60", function(widget, text)
-  storage.hpfriend = text
-end)
-
-UI.Button("Lista de Jogadores ", function(newText) 
-  UI.MultilineEditorWindow(storage.friendName or "", {title="Lista de Amigos", description="Migus\
-Example:\
-Player1\
-Player2\
-Player3"}, function(text)
-    storage.friendName = text
-  end)
-end)
-
 -- CONFIGURAÇÃO
 local spell1 = storage.healSpell1 or "exura gran"
 local spell2 = storage.healSpell2 or "exura vita"
@@ -705,6 +622,37 @@ macro(50, "Ativar Healing", function()
 
   elseif hp <= (storage.healHp1 or hp1) then
     say(storage.healSpell1 or spell1)
+  end
+end)
+
+local arrowId = storage.arrowId or 25757
+local arrowSpell = storage.arrowSpell or "Exevo gran con hur"
+local arrowAmount = storage.arrowAmount or 200
+
+UI.Separator()
+
+UI.Label("Spell (words)")
+UI.TextEdit(arrowSpell, function(widget, text)
+  storage.arrowSpell = text
+end)
+
+UI.Label("Arrow Item ID")
+UI.TextEdit(arrowId, function(widget, text)
+  storage.arrowId = tonumber(text)
+end)
+
+UI.Label("Quantidade desejada")
+UI.TextEdit(arrowAmount, function(widget, text)
+  storage.arrowAmount = tonumber(text)
+end)
+
+macro(3600, "Conjurar Flechas", function()
+  local id = storage.arrowId or arrowId
+  local spell = storage.arrowSpell or arrowSpell
+  local amount = storage.arrowAmount or arrowAmount
+
+  if itemAmount(id) < amount then
+    say(spell)
   end
 end)
 
