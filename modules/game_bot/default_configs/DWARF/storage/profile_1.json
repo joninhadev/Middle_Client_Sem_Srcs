@@ -16,8 +16,7 @@
     "pushDelay": 1060
   },
   "_macros": {
-    "": false,
-    "Ultimate Healing Support": false
+    "": false
   },
   "newHealer": {
     "enabled": false,
@@ -226,15 +225,13 @@
     "looting": 40,
     "holdWgHot": "F6"
   },
-  "arrowId": 25757,
-  "arrowSpell": "Exevo gran con hur",
   "specialDeposit": {
     "height": 380,
     "items": [
 
     ]
   },
-  "ingame_hotkeys": "-- CONFIGURAÇÃO\nlocal spell1 = storage.healSpell1 or \"exura gran\"\nlocal spell2 = storage.healSpell2 or \"exura vita\"\n\nlocal hp1 = storage.healHp1 or 90\nlocal hp2 = storage.healHp2 or 60\n\nUI.Separator()\n\nUI.Label(\"Spell 01\")\nUI.TextEdit(spell1, function(widget, text)\n  storage.healSpell1 = text\nend)\n\nUI.Label(\"% Spell 01\")\nUI.TextEdit(hp1, function(widget, text)\n  storage.healHp1 = tonumber(text)\nend)\n\nUI.Label(\"Spell 02\")\nUI.TextEdit(spell2, function(widget, text)\n  storage.healSpell2 = text\nend)\n\nUI.Label(\"% Spell 02\")\nUI.TextEdit(hp2, function(widget, text)\n  storage.healHp2 = tonumber(text)\nend)\n\nmacro(50, \"Ativar Healing\", function()\n  local hp = hppercent()\n\n  if hp <= (storage.healHp2 or hp2) then\n    say(storage.healSpell2 or spell2)\n\n  elseif hp <= (storage.healHp1 or hp1) then\n    say(storage.healSpell1 or spell1)\n  end\nend)\n\nlocal friendName = storage.uhrFriend or \"PlayerName\"\nlocal hpPercent = storage.uhrHp or 60\nlocal runeId = storage.uhrRune or 2273\n\nUI.Separator()\n\nUI.Label(\"Nome do Player\")\nUI.TextEdit(friendName, function(widget, text)\n  storage.uhrFriend = text\nend)\n\nUI.Label(\"HP% para curar\")\nUI.TextEdit(hpPercent, function(widget, text)\n  storage.uhrHp = tonumber(text)\nend)\n\nUI.Label(\"Rune ID\")\nUI.TextEdit(runeId, function(widget, text)\n  storage.uhrRune = tonumber(text)\nend)\n\nmacro(200, \"Ativar Healing Runes\", function()\n  local name = storage.uhrFriend or friendName\n  local hp = storage.uhrHp or hpPercent\n  local rune = storage.uhrRune or runeId\n\n  local target = getCreatureByName(name)\n\n  if target and target:getHealthPercent() <= hp then\n    useWith(rune, target)\n  end\nend)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+  "ingame_hotkeys": "local utamoPercent = storage.utamoPercent or 65\nlocal exanaPercent = storage.exanaPercent or 75\n\nUI.Separator()\n\nUI.Label(\"Utamo Vita %\")\nUI.TextEdit(utamoPercent, function(widget, text)\n  storage.utamoPercent = tonumber(text)\nend)\n\nUI.Label(\"Exana Vita %\")\nUI.TextEdit(exanaPercent, function(widget, text)\n  storage.exanaPercent = tonumber(text)\nend)\n\nmacro(100, \"Utamo Vita\", function()\n  local utamo = storage.utamoPercent or utamoPercent\n  local exana = storage.exanaPercent or exanaPercent\n\n  if not hasManaShield() and hppercent() <= utamo then\n    say('utamo vita')\n\n  elseif hasManaShield() and hppercent() >= exana then\n    say('exana vita')\n  end\nend)\n\nmacro(100, \"Friend Healer (SIO)\", function()\n  local friendPercent = tonumber(storage.hpfriend)\n  local friends = string.split(storage.friendName, \"\\n\")\n  for i, spec in pairs(getSpectators()) do \n    if table.contains(friends, spec:getName(), true) then \n      if spec:getHealthPercent() <= friendPercent then\n        say('exura sio \"' .. spec:getName())\n        delay(500)\n      end\n    end\n  end\nend)\n\nUI.Label(\"% de vida: \")\n\nUI.TextEdit(storage.hpfriend or \"60\", function(widget, text)\n  storage.hpfriend = text\nend)\n\nUI.Button(\"Lista de Jogadores \", function(newText) \n  UI.MultilineEditorWindow(storage.friendName or \"\", {title=\"Lista de Amigos\", description=\"Migus\\nExample:\\nPlayer1\\nPlayer2\\nPlayer3\"}, function(text)\n    storage.friendName = text\n  end)\nend)\n\n-- CONFIGURAÇÃO\nlocal spell1 = storage.healSpell1 or \"exura gran\"\nlocal spell2 = storage.healSpell2 or \"exura vita\"\n\nlocal hp1 = storage.healHp1 or 90\nlocal hp2 = storage.healHp2 or 60\n\nUI.Separator()\n\nUI.Label(\"Spell 01\")\nUI.TextEdit(spell1, function(widget, text)\n  storage.healSpell1 = text\nend)\n\nUI.Label(\"% Spell 01\")\nUI.TextEdit(hp1, function(widget, text)\n  storage.healHp1 = tonumber(text)\nend)\n\nUI.Label(\"Spell 02\")\nUI.TextEdit(spell2, function(widget, text)\n  storage.healSpell2 = text\nend)\n\nUI.Label(\"% Spell 02\")\nUI.TextEdit(hp2, function(widget, text)\n  storage.healHp2 = tonumber(text)\nend)\n\nmacro(50, \"Ativar Healing\", function()\n  local hp = hppercent()\n\n  if hp <= (storage.healHp2 or hp2) then\n    say(storage.healSpell2 or spell2)\n\n  elseif hp <= (storage.healHp1 or hp1) then\n    say(storage.healSpell1 or spell1)\n  end\nend)\n\n\n\n\n\n\n\n\n\n\n\n\n",
   "analyzers": {
     "trackedBoss": [
 
@@ -251,7 +248,6 @@
 
     ]
   },
-  "uhrFriend": "Middle Earth Realms",
   "caveBotTasker": {
     "max": 0,
     "inProgress": false,
@@ -259,8 +255,7 @@
     "count": 0,
     "taskName": ""
   },
-  "uhrHp": 100,
-  "uhrRune": 3160,
+  "autoTradeMessage": "I'm using OTClientV8!",
   "dropper": {
     "enabled": false,
     "capItems": [
@@ -294,17 +289,22 @@
       }
     ]
   },
-  "arrowAmount": 200,
-  "cavebotSell": [
-    {
-      "count": 1,
-      "id": 23544
-    },
-    {
-      "count": 1,
-      "id": 3081
-    }
-  ],
+  "playerList": {
+    "enemyList": [
+
+    ],
+    "highlight": false,
+    "marks": false,
+    "groupMembers": true,
+    "outfits": false,
+    "friendList": [
+
+    ],
+    "blackList": [
+
+    ]
+  },
+  "BotServerChannel": "4510404509454",
   "EquipperPanel": {
     "enabled": false,
     "bosses": [
@@ -314,16 +314,6 @@
 
     ]
   },
-  "autoTradeMessage": "I'm using OTClientV8!",
-  "_configs": {
-    "cavebot_configs": {
-      "enabled": false
-    },
-    "targetbot_configs": {
-      "enabled": false,
-      "selected": "Attacker"
-    }
-  },
   "renameContainers": {
     "enabled": false,
     "purse": true,
@@ -331,48 +321,48 @@
       {
         "value": "Main Backpack",
         "min": false,
+        "item": 9601,
         "items": [
           3081,
           3048
         ],
-        "item": 9601,
         "enabled": true
       },
       {
         "value": "Runes",
         "min": true,
+        "item": 2866,
         "items": [
           3161,
           3180
         ],
-        "item": 2866,
         "enabled": true
       },
       {
         "value": "Money",
         "min": true,
+        "item": 2871,
         "items": [
           3031,
           3035,
           3043
         ],
-        "item": 2871,
         "enabled": true
       },
       {
         "value": "Purse",
         "min": true,
+        "item": 23396,
         "items": [
 
         ],
-        "item": 23396,
         "enabled": true
       }
     ],
     "height": 170
   },
   "checkVersion": 1772995144,
-  "BotServerChannel": "4510404509454",
+  "utamoPercent": 65,
   "combobot": {
     "enabled": false,
     "shootLeader": "",
@@ -396,22 +386,25 @@
     "castLeader": "",
     "sayPhrase": ""
   },
-  "playerList": {
-    "enemyList": [
-
-    ],
-    "highlight": false,
-    "marks": false,
-    "groupMembers": true,
-    "outfits": false,
-    "friendList": [
-
-    ],
-    "blackList": [
-
-    ]
+  "cavebotSell": [
+    {
+      "count": 1,
+      "id": 23544
+    },
+    {
+      "count": 1,
+      "id": 3081
+    }
+  ],
+  "_configs": {
+    "cavebot_configs": {
+      "enabled": false
+    },
+    "targetbot_configs": {
+      "enabled": false,
+      "selected": "Attacker"
+    }
   },
-  "healHp1": 90,
   "foodItems": [
     {
       "count": 1,
@@ -442,5 +435,5 @@
       "id": 3601
     }
   ],
-  "utamoPercent": 65
+  "healHp1": 90
 }

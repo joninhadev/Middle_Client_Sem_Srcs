@@ -313,6 +313,16 @@ UIWidget
       @onClick: CharacterList.doLogin()
 
     EntergameButton
+      id: autoReconnect
+      size: 155 36
+      $!on:
+        !text: tr('Auto Reconnect: OFF')
+        image-color: #c04040
+      $on:
+        !text: tr('Auto Reconnect: ON')
+        image-color: #40a040
+
+    EntergameButton
       id: buttonCancel
       !text: tr('EXIT')
       size: 120 36

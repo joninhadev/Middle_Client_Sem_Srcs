@@ -1284,9 +1284,9 @@ end
 function showGift()
   giftWindow.giftable:setText(comma_value(GameStore.points))
   giftWindow.amountBar.onValueChange = updateGiftValue
-  giftWindow.amountBar:setMinimum(100)
+  giftWindow.amountBar:setMinimum(1)
   giftWindow.amountBar:setMaximum(GameStore.points)
-  giftWindow.amountBar:setValue(100)
+  giftWindow.amountBar:setValue(1)
   giftWindow:show()
 end
 

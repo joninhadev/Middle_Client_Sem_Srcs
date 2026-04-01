@@ -384,6 +384,7 @@ if true then
 end
 
 
+
 addCheckBox("reUse", "Keep Crosshair", false, rightPanel, "Keep crosshair after using with item")
 if true then
   local excluded = {268, 237, 238, 23373, 266, 236, 239, 7643, 23375, 7642, 23374, 5908, 5942} 
@@ -412,6 +413,7 @@ if true then
     end
   end)
 end
+
 
 addCheckBox("checkPlayer", "Check Players", true, rightPanel, "Auto look on players and mark level and vocation on character model")
 if true then
@@ -459,68 +461,68 @@ if true then
           guild = guild:sub(1,10) -- change to proper (last) values
           guild = guild.."..."
         end
-local voc
-local t = text:lower()
+		local voc
+		local t = text:lower()
 
--- Sorcerers
-if t:find("sorcerer") 
-    or t:find("master sorcerer") 
-    or t:find("archmage") 
-    or t:find("arcane wizard") 
-    or t:find("secret of flame") then
-    voc = "MS"
+		-- Sorcerers
+		if t:find("sorcerer") 
+			or t:find("master sorcerer") 
+			or t:find("archmage") 
+			or t:find("arcane wizard") 
+			or t:find("secret of flame") then
+			voc = "MS"
 
--- Druids
-elseif t:find("druid") 
-    or t:find("elder druid") 
-    or t:find("celtic druid") 
-    or t:find("spirit healer") 
-    or t:find("forest of shepherd") then
-    voc = "ED"
+		-- Druids
+		elseif t:find("druid") 
+			or t:find("elder druid") 
+			or t:find("celtic druid") 
+			or t:find("spirit healer") 
+			or t:find("forest of shepherd") then
+			voc = "ED"
 
--- Archers / Paladins
-elseif t:find("archer") 
-    or t:find("royal archer") 
-    or t:find("medieval archer") 
-    or t:find("executioner") 
-    or t:find("scout of watcher") then
-    voc = "RP"
+		-- Archers / Paladins
+		elseif t:find("archer") 
+			or t:find("royal archer") 
+			or t:find("medieval archer") 
+			or t:find("executioner") 
+			or t:find("scout of watcher") then
+			voc = "RP"
 
--- Knights
-elseif t:find("knight") 
-    or t:find("elite knight") 
-    or t:find("templar knight") 
-    or t:find("chaos knight") 
-    or t:find("king of gondor") then
-    voc = "EK"
+		-- Knights
+		elseif t:find("knight") 
+			or t:find("elite knight") 
+			or t:find("templar knight") 
+			or t:find("chaos knight") 
+			or t:find("king of gondor") then
+			voc = "EK"
 
--- Dwarfs
-elseif t:find("dwarf") 
-    or t:find("dwarf blacksmith") 
-    or t:find("dwarf weaponsmith") 
-    or t:find("dwarf artisan") 
-    or t:find("warden of the mountain") then
-    voc = "DF"
+		-- Dwarfs
+		elseif t:find("dwarf") 
+			or t:find("dwarf blacksmith") 
+			or t:find("dwarf weaponsmith") 
+			or t:find("dwarf artisan") 
+			or t:find("warden of the mountain") then
+			voc = "DF"
 
--- Orcs
-elseif t:find("orc") 
-    or t:find("orc warrior") 
-    or t:find("orc berserker") 
-    or t:find("orc leader") 
-    or t:find("orc warlord") 
-    or t:find("orc general") 
-    or t:find("lord of gundabad") then
-    voc = "ORC"
+		-- Orcs
+		elseif t:find("orc") 
+			or t:find("orc warrior") 
+			or t:find("orc berserker") 
+			or t:find("orc leader") 
+			or t:find("orc warlord") 
+			or t:find("orc general") 
+			or t:find("lord of gundabad") then
+			voc = "ORC"
 
--- Elves
-elseif t:find("elf") 
-    or t:find("elf archer") 
-    or t:find("elf ranger") 
-    or t:find("silver elf") 
-    or t:find("high elf") 
-    or t:find("prince/princess of elven") then
-    voc = "ELF"
-end
+		-- Elves
+		elseif t:find("elf") 
+			or t:find("elf ranger") 
+			or t:find("elf sentinel") 
+			or t:find("high elf") 
+			or t:find("elven elite") 
+			or t:find("keeper of galadhrim") then
+			voc = "ELF"
+		end
         local creature = getCreatureByName(name)
         if creature then
             creature:setText("\n"..level..voc.."\n"..guild)
@@ -585,6 +587,66 @@ if true then
   end)
 end
 
+setDefaultTab("Macro")
+local utamoPercent = storage.utamoPercent or 65
+local exanaPercent = storage.exanaPercent or 75
+
+UI.Separator()
+
+UI.Label("Utamo Vita %")
+UI.TextEdit(utamoPercent, function(widget, text)
+  storage.utamoPercent = tonumber(text)
+end)
+
+UI.Label("Exana Vita %")
+UI.TextEdit(exanaPercent, function(widget, text)
+  storage.exanaPercent = tonumber(text)
+end)
+
+macro(100, "Utamo Vita", function()
+  local utamo = storage.utamoPercent or utamoPercent
+  local exana = storage.exanaPercent or exanaPercent
+
+  if not hasManaShield() and hppercent() <= utamo then
+    say('utamo vita')
+
+  elseif hasManaShield() and hppercent() >= exana then
+    say('exana vita')
+  end
+end)
+
+UI.Separator()
+
+macro(100, "Friend Healer (SIO)", function()
+  local friendPercent = tonumber(storage.hpfriend)
+  local friends = string.split(storage.friendName, "\
+")
+  for i, spec in pairs(getSpectators()) do 
+    if table.contains(friends, spec:getName(), true) then 
+      if spec:getHealthPercent() <= friendPercent then
+        say('exura sio "' .. spec:getName())
+        delay(500)
+      end
+    end
+  end
+end)
+
+UI.Label("% de vida: ")
+
+UI.TextEdit(storage.hpfriend or "60", function(widget, text)
+  storage.hpfriend = text
+end)
+
+UI.Button("Lista de Jogadores ", function(newText) 
+  UI.MultilineEditorWindow(storage.friendName or "", {title="Lista de Amigos", description="Migus\
+Example:\
+Player1\
+Player2\
+Player3"}, function(text)
+    storage.friendName = text
+  end)
+end)
+
 -- CONFIGURAÇÃO
 local spell1 = storage.healSpell1 or "exura gran"
 local spell2 = storage.healSpell2 or "exura vita"
@@ -625,38 +687,45 @@ macro(50, "Ativar Healing", function()
   end
 end)
 
-local arrowId = storage.arrowId or 25757
-local arrowSpell = storage.arrowSpell or "Exevo gran con hur"
-local arrowAmount = storage.arrowAmount or 200
-
-UI.Separator()
-
-UI.Label("Spell (words)")
-UI.TextEdit(arrowSpell, function(widget, text)
-  storage.arrowSpell = text
-end)
-
-UI.Label("Arrow Item ID")
-UI.TextEdit(arrowId, function(widget, text)
-  storage.arrowId = tonumber(text)
-end)
-
-UI.Label("Quantidade desejada")
-UI.TextEdit(arrowAmount, function(widget, text)
-  storage.arrowAmount = tonumber(text)
-end)
-
-macro(3600, "Conjurar Flechas", function()
-  local id = storage.arrowId or arrowId
-  local spell = storage.arrowSpell or arrowSpell
-  local amount = storage.arrowAmount or arrowAmount
-
-  if itemAmount(id) < amount then
-    say(spell)
+macro(10000, "Auto Mount", function()
+   local player = g_game.getLocalPlayer()
+  if player then
+    player:mount()
   end
 end)
 
+UI.Separator()
 
+macro(2000, "ML Training", function()
+if manapercent() > 99 then   
+    say(storage.autoSpellTrain)
+  end
+end)
+UI.TextEdit(storage.autoSpellTrain or "exura", function(widget, text)
+  storage.autoSpellTrain = text
+end)
+
+UI.Separator()
+UI.Label("Spells")
+UI.TextEdit(storage.UeSpell or "DIGITE AQUI A MAGIA",
+            function(widget, newText) storage.UeSpell = newText end)
+
+local distance = 4
+local amountOfMonsters = 3
+
+macro(200, "UE",  function()
+    local specAmount = 0
+
+    for i,mob in ipairs(getSpectators()) do
+        if (getDistanceBetween(player:getPosition(), mob:getPosition())  <= distance and mob:isMonster())  then
+            specAmount = specAmount + 1
+        end
+    end
+    if (specAmount >= amountOfMonsters) then 
+  say(storage.UeSpell)
+  say(storage.UeSpell2) 
+    end
+end)
 
 
 

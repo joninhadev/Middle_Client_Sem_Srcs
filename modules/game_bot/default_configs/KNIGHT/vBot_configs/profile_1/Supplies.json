@@ -1,10 +1,10 @@
 {
   "supplies": {
+    "currentProfile": "Default",
     "Default": {
       "items": [
 
       ]
-    },
-    "currentProfile": "Default"
+    }
   }
 }

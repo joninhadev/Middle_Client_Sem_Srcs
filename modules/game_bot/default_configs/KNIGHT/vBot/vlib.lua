@@ -9,6 +9,17 @@ vBot.isUsingPotion = false
 vBot.isUsing = false
 vBot.customCooldowns = {}
 
+-- initialize playerList storage if not already set by the UI
+if type(storage.playerList) ~= "table" then
+    storage.playerList = {
+        friendList   = {},
+        enemyList    = {},
+        blackList    = {},
+        groupMembers = false,
+        marks        = false,
+    }
+end
+
 function logInfo(text)
     local timestamp = os.date("%H:%M:%S")
     text = tostring(text)

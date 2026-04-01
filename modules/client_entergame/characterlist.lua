@@ -407,6 +407,18 @@ function CharacterList.create(characters, account, otui)
   previewEffect = charactersWindow:recursiveGetChildById('previewEffect')
   eventsContent = charactersWindow:recursiveGetChildById('eventsContent')
 
+  -- setup auto reconnect button
+  autoReconnectButton = charactersWindow:recursiveGetChildById('autoReconnect')
+  if autoReconnectButton then
+    local autoReconnect = g_settings.getBoolean('autoReconnect', false)
+    autoReconnectButton:setOn(autoReconnect)
+    autoReconnectButton.onClick = function(widget)
+      local newState = not g_settings.getBoolean('autoReconnect', false)
+      autoReconnectButton:setOn(newState)
+      g_settings.set('autoReconnect', newState)
+    end
+  end
+
   -- Intercept Enter, Escape, and Arrow keys on the character list window
   charactersWindow.onKeyPress = function(self, keyCode, keyboardModifiers)
     if keyCode == KeyEnter or keyCode == KeyReturn then
@@ -688,6 +700,11 @@ function CharacterList.show()
   -- Esconder a janela de login quando mostrar a lista de personagens
   if EnterGame then
     EnterGame.hide()
+  end
+
+  -- Sincronizar estado visual do botão de reconect
+  if autoReconnectButton then
+    autoReconnectButton:setOn(g_settings.getBoolean('autoReconnect', false))
   end
 
   if g_game.isOnline() then

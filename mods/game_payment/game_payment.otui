@@ -101,12 +101,13 @@ DonaterInfo < Panel
       self:addOption("10 Coins (R$ 10,00)")
       self:addOption("22 Coins (R$ 20,00)")
       self:addOption("55 Coins (R$ 50,00)")
-      self:addOption("115 Coins (R$ 100,00)")
-      self:addOption("235 Coins (R$ 200,00)")
-      self:addOption("380 Coins (R$ 300,00)")
+      self:addOption("130 Coins (R$ 100,00)")
+      self:addOption("260 Coins (R$ 200,00)")
+      self:addOption("390 Coins (R$ 300,00)")
       self:addOption("525 Coins (R$ 400,00)")
       self:addOption("710 Coins (R$ 500,00)")
       self:addOption("1550 Coins (R$ 1000,00)")
+      self:addOption("6000 Coins (R$ 3000,00)")
       self:setCurrentOption("10 Coins (R$ 10,00)")
   Label
     id: betaBonusLabel
