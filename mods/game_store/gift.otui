@@ -81,7 +81,7 @@ StaticMainWindow
     anchors.left: parent.left
     anchors.right: parent.right
     margin-top: 10
-    step: 100
+    step: 1
     focusable: false
   
   HorizontalSeparator
