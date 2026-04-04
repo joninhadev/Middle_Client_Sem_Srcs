@@ -110,10 +110,12 @@ end
 
 function show()
   if g_game.isOnline() then
-    if #tradeItems[BUY] > 0 then
-      radioTabs:selectWidget(buyTab)
-    else
-      radioTabs:selectWidget(sellTab)
+    if not npcWindow:isVisible() then
+      if #tradeItems[BUY] > 0 then
+        radioTabs:selectWidget(buyTab)
+      else
+        radioTabs:selectWidget(sellTab)
+      end
     end
 
     npcWindow:show()
@@ -150,7 +152,6 @@ function onItemBoxChecked(widget)
     local item = widget.item
     selectedItem = item
     refreshItem(item)
-    tradeButton:enable()
 
     if getCurrentTradeType() == SELL then
       quantityScroll:setValue(quantityScroll:getMaximum())
@@ -335,11 +336,21 @@ function refreshItem(item)
   end
 
   setupPanel:enable()
+  if canTradeItem(item) then
+    tradeButton:enable()
+  else
+    tradeButton:disable()
+  end
 end
 
 function refreshTradeItems()
   local layout = itemsPanel:getLayout()
   layout:disableUpdates()
+
+  local lastSelectedId = nil
+  if selectedItem then
+    lastSelectedId = selectedItem.ptr:getId()
+  end
 
   clearSelectedItem()
 
@@ -373,6 +384,10 @@ function refreshTradeItems()
     itemWidget.onMouseRelease = itemPopup
 
     radioItems:addWidget(itemBox)
+    
+    if lastSelectedId and item.ptr:getId() == lastSelectedId then
+      radioItems:selectWidget(itemBox)
+    end
   end
 
   layout:enableUpdates()
@@ -398,13 +413,12 @@ function refreshPlayerGoods()
 
     local canTrade = canTradeItem(item)
     itemWidget:setOn(canTrade)
-    itemWidget:setEnabled(canTrade)
 
     local searchCondition = (searchFilter == '') or (searchFilter ~= '' and string.find(item.name:lower(), searchFilter) ~= nil)
     local showAllItemsCondition = (currentTradeType == BUY) or (showAllItems:isChecked()) or (currentTradeType == SELL and not showAllItems:isChecked() and canTrade)
     itemWidget:setVisible(searchCondition and showAllItemsCondition)
 
-    if selectedItem == item and itemWidget:isEnabled() and itemWidget:isVisible() then
+    if selectedItem == item and itemWidget:isVisible() then
       foundSelectedItem = true
     end
   end
