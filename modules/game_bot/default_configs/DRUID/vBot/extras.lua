@@ -625,7 +625,23 @@ macro(100, "Friend Healer (SIO)", function()
     if table.contains(friends, spec:getName(), true) then 
       if spec:getHealthPercent() <= friendPercent then
         say('exura sio "' .. spec:getName())
-        delay(500)
+        delay(1000)
+      end
+    end
+  end
+end)
+
+UI.Separator()
+
+macro(100, "Friend Healer (Gran SIO)", function()
+  local friendPercent = tonumber(storage.hpfriend)
+  local friends = string.split(storage.friendName, "\
+")
+  for i, spec in pairs(getSpectators()) do 
+    if table.contains(friends, spec:getName(), true) then 
+      if spec:getHealthPercent() <= friendPercent then
+        say('exura gran sio "' .. spec:getName())
+        delay(1500)
       end
     end
   end
