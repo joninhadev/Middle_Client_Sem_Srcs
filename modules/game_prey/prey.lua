@@ -9,6 +9,8 @@ local bankGold = 0
 local inventoryGold = 0
 local rerollPrice = 0
 local bonusRerolls = 0
+local lockIconRefs = {}  -- {icon=widget, btn=widget} per slot
+local lastTimeLeft = {} -- track timer per slot to detect renewal
 
 local PREY_BONUS_DAMAGE_BOOST = 0
 local PREY_BONUS_DAMAGE_REDUCTION = 1
@@ -66,6 +68,8 @@ function init()
     onPreyActive = onPreyActive,
     onPreySelection = onPreySelection
   })
+
+  ProtocolGame.registerExtendedOpcode(132, onExtendedOpcodePreyWildcards)
 
   preyWindow = g_ui.displayUI('prey')
   preyWindow:hide()
@@ -125,6 +129,8 @@ function terminate()
     onPreySelection = onPreySelection
   })
   
+  ProtocolGame.unregisterExtendedOpcode(132, onExtendedOpcodePreyWildcards)
+
   if preyButton then
     preyButton:destroy()
   end
@@ -148,10 +154,9 @@ function setUnsupportedSettings()
       state.select.price.text:setText("-------")
     end
     panel.active.autoRerollPrice.text:setText("-")
-    panel.active.lockPreyPrice.text:setText("-")
+    panel.active.lockPreyPrice.text:setText("4")
     panel.active.choose.price.text:setText(1)
     panel.active.autoReroll.autoRerollCheck:disable()
-    panel.active.lockPrey.lockPreyCheck:disable()
   end
 end
 
@@ -202,6 +207,47 @@ function toggle()
   show()
 end
 
+function clearPreyLock(slot)
+  if lockIconRefs[slot] then
+    if lockIconRefs[slot].icon then
+      lockIconRefs[slot].icon:setImageSource('')
+    end
+    if lockIconRefs[slot].btn then
+      lockIconRefs[slot].btn:enable()
+    end
+    lockIconRefs[slot] = nil
+  end
+end
+
+function onLockBonusClick(button)
+  if bonusRerolls < 4 then
+    return showMessage(tr("Error"), tr("You don't have enough Prey Wildcards."))
+  end
+
+  if button then
+    button:disable()
+    local activePanel = button:getParent():getParent()
+    if activePanel then
+      local slotPanel = activePanel:getParent()
+      if slotPanel then
+        local slotId = slotPanel:getId()
+        local slotIndex = tonumber(slotId:sub(5)) - 1
+        -- Store direct widget references for clearing later
+        local lockIconWidget = activePanel:getChildById('lockIcon')
+        if lockIconWidget then
+          lockIconWidget:setImageSource('/modules/game_prey/locked')
+          lockIconRefs[slotIndex] = {icon = lockIconWidget, btn = button}
+        end
+      end
+    end
+  end
+
+  local protocolGame = g_game.getProtocolGame()
+  if protocolGame then
+    protocolGame:sendExtendedOpcode(131, "")
+  end
+end
+
 function onPreyFreeRolls(slot, timeleft)
   local prey = preyWindow["slot" .. (slot + 1)]
   local percent = (timeleft / (20 * 60)) * 100
@@ -219,6 +265,14 @@ function onPreyFreeRolls(slot, timeleft)
 end
 
 function onPreyTimeLeft(slot, timeLeft)
+  -- Detect prey renewal: if timer jumped UP, the prey renewed
+  if lockIconRefs[slot] and lastTimeLeft[slot] then
+    if timeLeft > lastTimeLeft[slot] + 60 then
+      -- Timer increased significantly = prey renewed
+      clearPreyLock(slot)
+    end
+  end
+  lastTimeLeft[slot] = timeLeft
   -- description
   preyDescription[slot] = preyDescription[slot] or {one = "", two = ""}
   local text = preyDescription[slot].one .. timeleftTranslation(timeLeft, true) .. preyDescription[slot].two
@@ -319,6 +373,8 @@ function onPreyInactive(slot, timeUntilFreeReroll)
   prey.active:hide()
   prey.locked:hide()
   prey.inactive:show()
+  -- Reset lock state when prey expires (bonus was consumed)
+  clearPreyLock(slot)
   local rerollButton = prey.inactive.reroll.button.rerollButton
   rerollButton:setImageSource("/images/game/prey/prey_reroll_blocked")
   rerollButton:disable()
@@ -448,6 +504,10 @@ function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, b
   prey.locked:hide()
   prey.active:show()
   prey.title:setText(currentHolderName)
+  -- Re-apply lock icon if slot is locked (stored reference survives panel hide/show)
+  if lockIconRefs[slot] and lockIconRefs[slot].icon then
+    lockIconRefs[slot].icon:setImageSource('/modules/game_prey/locked')
+  end
   local creatureAndBonus = prey.active.creatureAndBonus
   creatureAndBonus.creature:setOutfit(currentHolderOutfit)
   setTimeUntilFreeReroll(slot, timeUntilFreeReroll)
@@ -538,4 +598,13 @@ function showMessage(title, message)
   msgWindow:show()
   msgWindow:raise()
   msgWindow:focus()
+end
+
+function onExtendedOpcodePreyWildcards(protocol, opcode, buffer)
+  if opcode == 132 then
+    local newCount = tonumber(buffer)
+    if newCount then
+      onResourceBalance(10, newCount)
+    end
+  end
 end

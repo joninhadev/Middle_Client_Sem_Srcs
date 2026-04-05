@@ -226,17 +226,16 @@ ActivePreyPanel < Panel
     margin-top: 5
     anchors.left: parent.left 
 
-    CheckBox
-      id: lockPreyCheck
+    Button
+      id: lockBonusButton
       margin-top: 2
       anchors.verticalCenter: parent.verticalCenter
       anchors.left: parent.left
-      image-source: /images/ui/panel_flat
-      image-border: 1
       size: 155 15
       font: verdana-11px-rounded
-      text: Lock Prey
+      text: Lock Bonus
       margin-left: 5
+      @onClick: modules.game_prey.onLockBonusClick(self)
 
   CardLabel
     id: lockPreyPrice
@@ -245,6 +244,13 @@ ActivePreyPanel < Panel
     margin-left: 2
     anchors.bottom: prev.bottom
     anchors.right: parent.right
+
+  UIWidget
+    id: lockIcon
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 25
+    margin-left: 5
 
 CreatureAndBonus < Panel
   size: 195 152
