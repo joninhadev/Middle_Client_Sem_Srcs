@@ -70,6 +70,7 @@ function init()
   })
 
   ProtocolGame.registerExtendedOpcode(132, onExtendedOpcodePreyWildcards)
+  ProtocolGame.registerExtendedOpcode(133, onExtendedOpcodePreySelectResult)
 
   preyWindow = g_ui.displayUI('prey')
   preyWindow:hide()
@@ -90,7 +91,7 @@ local descriptionTable = {
   ["preyWindow"] = "",
   ["noBonusIcon"] = "This prey is not available for your character yet.\nCheck the large blue button(s) to learn how to unlock this prey slot",
   ["selectPrey"] = "Click here to get a bonus with a higher value. The bonus for your prey will be selected randomly from one of the following: damage boost, damage reduction, bonus XP, improved loot. Your prey will be active for 2 hours hunting time again. Your prey creature will stay the same.",
-  ["pickSpecificPrey"] = "Available only for protocols 12+",
+  ["pickSpecificPrey"] = "Click here to consume 5 Prey Wildcards and get a new list of prey creatures to choose from.",
   ["rerollButton"] = "If you like to select another prey crature, click here to get a new list with 9 creatures to choose from.\nThe newly selected prey will be active for 2 hours hunting time again.",
   ["preyCandidate"] = "Select a new prey creature for the next 2 hours hunting time.",
   ["choosePreyButton"] = "Click on this button to confirm selected monsters as your prey creature for the next 2 hours hunting time."
@@ -130,6 +131,7 @@ function terminate()
   })
   
   ProtocolGame.unregisterExtendedOpcode(132, onExtendedOpcodePreyWildcards)
+  ProtocolGame.unregisterExtendedOpcode(133, onExtendedOpcodePreySelectResult)
 
   if preyButton then
     preyButton:destroy()
@@ -151,7 +153,7 @@ function setUnsupportedSettings()
   for i, slot in pairs(t) do
     local panel = preyWindow[slot]
     for j, state in pairs({panel.active, panel.inactive}) do
-      state.select.price.text:setText("-------")
+      state.select.price.text:setText("5")
     end
     panel.active.autoRerollPrice.text:setText("-")
     panel.active.lockPreyPrice.text:setText("4")
@@ -246,6 +248,113 @@ function onLockBonusClick(button)
   if protocolGame then
     protocolGame:sendExtendedOpcode(131, "")
   end
+end
+
+function onPickSpecificPrey(button, panelType)
+  if bonusRerolls < 5 then
+    return showMessage(tr("Error"), tr("You don't have enough Prey Wildcards (5 required)."))
+  end
+
+  -- Find which slot this button belongs to
+  local slotIndex = nil
+  if button then
+    local selectPanel = button:getParent()
+    if selectPanel then
+      local statePanel = selectPanel:getParent()
+      if statePanel then
+        local slotPanel = statePanel:getParent()
+        if slotPanel then
+          local slotId = slotPanel:getId()
+          slotIndex = tonumber(slotId:sub(5)) - 1
+        end
+      end
+    end
+  end
+
+  if slotIndex == nil then return end
+
+  -- Destroy existing dialog if any
+  if msgWindow then
+    msgWindow:destroy()
+    msgWindow = nil
+  end
+
+  -- Create a modal dialog with text input for monster name
+  msgWindow = g_ui.createWidget('MainWindow', rootWidget)
+  msgWindow:setId('preySelectMonster')
+  msgWindow:setText(tr('Select Prey Monster'))
+  msgWindow:setSize({width = 340, height = 150})
+
+  local label = g_ui.createWidget('Label', msgWindow)
+  label:setText(tr('Enter the monster name (costs 5 Wildcards):'))
+  label:setTextAlign(AlignTopLeft)
+  label:addAnchor(AnchorTop, 'parent', AnchorTop)
+  label:addAnchor(AnchorLeft, 'parent', AnchorLeft)
+  label:addAnchor(AnchorRight, 'parent', AnchorRight)
+  label:setMarginTop(5)
+
+  local textEdit = g_ui.createWidget('TextEdit', msgWindow)
+  textEdit:setId('monsterNameInput')
+  textEdit:addAnchor(AnchorTop, label:getId(), AnchorBottom)
+  textEdit:addAnchor(AnchorLeft, 'parent', AnchorLeft)
+  textEdit:addAnchor(AnchorRight, 'parent', AnchorRight)
+  textEdit:setMarginTop(10)
+  textEdit:setHeight(22)
+  textEdit:focus()
+
+  local confirmButton = g_ui.createWidget('Button', msgWindow)
+  confirmButton:setText(tr('Confirm'))
+  confirmButton:setSize({width = 80, height = 21})
+  confirmButton:addAnchor(AnchorBottom, 'parent', AnchorBottom)
+  confirmButton:addAnchor(AnchorRight, 'parent', AnchorRight)
+  confirmButton.onClick = function()
+    local monsterName = textEdit:getText():trim()
+    if monsterName == "" then
+      return
+    end
+    -- Send extended opcode 133 with "slotId:monsterName"
+    local protocolGame = g_game.getProtocolGame()
+    if protocolGame then
+      protocolGame:sendExtendedOpcode(133, tostring(slotIndex) .. ":" .. monsterName)
+    end
+    if msgWindow then
+      msgWindow:destroy()
+      msgWindow = nil
+    end
+  end
+
+  local cancelButton = g_ui.createWidget('Button', msgWindow)
+  cancelButton:setText(tr('Cancel'))
+  cancelButton:setSize({width = 80, height = 21})
+  cancelButton:addAnchor(AnchorBottom, 'parent', AnchorBottom)
+  cancelButton:addAnchor(AnchorRight, confirmButton:getId(), AnchorLeft)
+  cancelButton:setMarginRight(10)
+  cancelButton.onClick = function()
+    if msgWindow then
+      msgWindow:destroy()
+      msgWindow = nil
+    end
+  end
+
+  -- Allow Enter key to confirm
+  textEdit.onKeyPress = function(self, keyCode, keyboardModifiers)
+    if keyCode == KeyEnter or keyCode == KeyNumpadEnter then
+      confirmButton.onClick()
+      return true
+    end
+    return false
+  end
+
+  msgWindow.onEscape = function()
+    if msgWindow then
+      msgWindow:destroy()
+      msgWindow = nil
+    end
+  end
+end
+
+function onExtendedOpcodePreySelectResult(protocol, opcode, buffer)
+  -- Reserved for future server responses
 end
 
 function onPreyFreeRolls(slot, timeleft)
@@ -381,6 +490,12 @@ function onPreyInactive(slot, timeUntilFreeReroll)
   rerollButton.onClick = function()
     g_game.preyAction(slot, PREY_ACTION_LISTREROLL, 0)
   end
+  -- wildcard monster select (inactive state)
+  prey.inactive.select.pickSpecificPrey.onClick = function(self)
+    onPickSpecificPrey(self, 'inactive')
+  end
+  prey.inactive.select.pickSpecificPrey:setImageSource("/images/game/prey/prey_select")
+  prey.inactive.select.pickSpecificPrey:enable()
 end
 
 function setBonusGradeStars(slot, grade)
@@ -526,6 +641,12 @@ function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, b
   prey.active.reroll.button.rerollButton.onClick = function()
     g_game.preyAction(slot, PREY_ACTION_LISTREROLL, 0)
   end
+  -- wildcard monster select (active panel)
+  prey.active.select.pickSpecificPrey.onClick = function(self)
+    onPickSpecificPrey(self, 'active')
+  end
+  prey.active.select.pickSpecificPrey:setImageSource("/images/game/prey/prey_select")
+  prey.active.select.pickSpecificPrey:enable()
 end
 
 function onPreySelection(slot, bonusType, bonusValue, bonusGrade, names, outfits, timeUntilFreeReroll)
@@ -556,6 +677,12 @@ function onPreySelection(slot, bonusType, bonusValue, bonusGrade, names, outfits
   rerollButton.onClick = function()
     g_game.preyAction(slot, PREY_ACTION_LISTREROLL, 0)
   end
+  -- wildcard monster select (inactive/selection panel)
+  prey.inactive.select.pickSpecificPrey.onClick = function(self)
+    onPickSpecificPrey(self, 'inactive')
+  end
+  prey.inactive.select.pickSpecificPrey:setImageSource("/images/game/prey/prey_select")
+  prey.inactive.select.pickSpecificPrey:enable()
   local list = prey.inactive.list
   list:destroyChildren()
   for i, name in ipairs(names) do

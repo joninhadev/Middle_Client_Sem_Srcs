@@ -398,7 +398,8 @@ SelectPreyCreature < FlatPanel
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
     size: 66 66
-    image-source: /images/game/prey/prey_select_blocked
+    image-source: /images/game/prey/prey_select
+    @onClick: modules.game_prey.onPickSpecificPrey(self, 'ui')
     @onHoverChange: modules.game_prey.onHover(self)
 
   CardLabel
