@@ -33,12 +33,10 @@ function init()
     mapPanel = root:recursiveGetChildById('gameMapPanel')
   end
   
-  local rootPanel = modules.game_interface.getRootPanel()
-  if not rootPanel then rootPanel = g_ui.getRootWidget() end
-  cooldownWindow = g_ui.loadUI('cooldown', rootPanel)
+  cooldownWindow = g_ui.loadUI('cooldown', mapPanel)
   
-  -- no need to move child index as we use anchors on the root panel
-  -- rootPanel:moveChildToIndex(cooldownWindow, 1)
+  -- no need to move child index as we use anchors on the map panel overlay
+  -- mapPanel:moveChildToIndex(cooldownWindow, 1)
 
   contentsPanel = cooldownWindow -- no longer separate contents panel
   cooldownPanel = cooldownWindow:getChildById('cooldownPanel')
