@@ -4,7 +4,36 @@ local clientVersionLabel
 local muteButton
 local isMuted = false
 
+local updateOnlineEvent = nil
+
 -- public functions
+function updateOnlinePlayers()
+  if updateOnlineEvent then
+    removeEvent(updateOnlineEvent)
+    updateOnlineEvent = nil
+  end
+
+  if HTTP and HTTP.getJSON then
+    HTTP.getJSON("https://www.middleearth-server.com/count_online.php", function(data, err)
+      if err then return end
+      if data and data.online then
+        local countVal = tostring(data.online)
+        local bar = background and background:getChildById('bottomBar')
+        if bar then
+          local panel = bar:getChildById('onlinePlayersPanel')
+          if panel then
+            panel:setVisible(true)
+            local count = panel:getChildById('onlinePlayersCount')
+            if count then count:setText(countVal) end
+          end
+        end
+      end
+    end)
+  end
+  
+  updateOnlineEvent = scheduleEvent(updateOnlinePlayers, 60000)
+end
+
 function init()
   background = g_ui.displayUI('background')
   background:lower()
@@ -15,6 +44,7 @@ function init()
   end
 
   initBottomBar()
+  updateOnlinePlayers()
 
   connect(g_game, { onGameStart = onGameStart })
   connect(g_game, { onGameEnd = onGameEnd })
