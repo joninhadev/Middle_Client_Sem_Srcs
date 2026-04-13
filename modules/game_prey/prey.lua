@@ -226,6 +226,7 @@ function onLockBonusClick(button)
     return showMessage(tr("Error"), tr("You don't have enough Prey Wildcards."))
   end
 
+  local slotIndex = nil
   if button then
     button:disable()
     local activePanel = button:getParent():getParent()
@@ -233,7 +234,7 @@ function onLockBonusClick(button)
       local slotPanel = activePanel:getParent()
       if slotPanel then
         local slotId = slotPanel:getId()
-        local slotIndex = tonumber(slotId:sub(5)) - 1
+        slotIndex = tonumber(slotId:sub(5)) - 1
         -- Store direct widget references for clearing later
         local lockIconWidget = activePanel:getChildById('lockIcon')
         if lockIconWidget then
@@ -244,9 +245,11 @@ function onLockBonusClick(button)
     end
   end
 
+  if slotIndex == nil then return end
+
   local protocolGame = g_game.getProtocolGame()
   if protocolGame then
-    protocolGame:sendExtendedOpcode(131, "")
+    protocolGame:sendExtendedOpcode(131, tostring(slotIndex))
   end
 end
 
@@ -593,6 +596,14 @@ function onItemBoxChecked(widget)
 end
 
 function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, bonusValue, bonusGrade, timeLeft, timeUntilFreeReroll, lockType) -- locktype always 0 for protocols <12
+  -- Detect lock consumption: if timer jumped UP significantly, the lock was consumed
+  if lockIconRefs[slot] and lastTimeLeft[slot] then
+    if timeLeft > lastTimeLeft[slot] + 60 then
+      clearPreyLock(slot)
+    end
+  end
+  lastTimeLeft[slot] = timeLeft
+
   local tracker = preyTracker.contentsPanel["slot"..(slot + 1)]
   currentHolderName = capitalFormatStr(currentHolderName)
   local percent = (timeLeft / (2 * 60 * 60)) * 100
@@ -619,7 +630,7 @@ function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, b
   prey.locked:hide()
   prey.active:show()
   prey.title:setText(currentHolderName)
-  -- Re-apply lock icon if slot is locked (stored reference survives panel hide/show)
+  -- Re-apply lock icon only if lock reference still exists (wasn't cleared by renewal detection)
   if lockIconRefs[slot] and lockIconRefs[slot].icon then
     lockIconRefs[slot].icon:setImageSource('/modules/game_prey/locked')
   end
@@ -632,7 +643,7 @@ function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, b
   end
   setBonusGradeStars(slot, bonusGrade)
   creatureAndBonus.timeLeft:setPercent(percent)
-  creatureAndBonus.timeLeft:setText(timeleftTranslation(timeLeft))
+  creatureAndBonus.timeLeft:setText(timeleftTranslation(timeLeft, true))
   -- bonus reroll
   prey.active.choose.selectPrey.onClick = function()
     g_game.preyAction(slot, PREY_ACTION_BONUSREROLL, 0)
