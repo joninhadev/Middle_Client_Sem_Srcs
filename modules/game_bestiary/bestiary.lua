@@ -1353,6 +1353,9 @@ function Bestiary.setupCharmsPanel()
 
 	local actionButton = Bestiary.UI.charmsPanel.leftPanel.actionButton
 	actionButton.onClick = Bestiary.onCharmActionButtonClick
+	
+	local resetButton = Bestiary.UI.charmsPanel.leftPanel.resetButton
+	resetButton.onClick = Bestiary.onResetCharmButtonClick
 end
 
 function Bestiary.onCharmActionButtonClick(button)
@@ -1441,6 +1444,44 @@ function Bestiary.removeCharmMonsterAction(charmName, charmData, charmId)
 	)
 end
 
+function Bestiary.onResetCharmButtonClick(button)
+	local charms = Bestiary.UI.charmsPanel.rightPanel.charms
+	local focusedCharm = charms:getFocusedChild()
+	if not focusedCharm then
+		return
+	end
+
+	local charmIdStr = focusedCharm:getId()
+	local charmId = charmIdStr:match("%d+")
+	local charmData = Bestiary.charmsInfo[charmId]
+	
+	Bestiary.resetCharmAction(charmData.name, charmData, charmId)
+end
+
+function Bestiary.resetCharmAction(charmName, charmData, charmId)
+	local window
+	local yes = function()
+		Bestiary.sendOpcode({topic = "reset-charm", charmId = charmId})
+		window:destroy()
+	end
+	local no = function()
+		window:destroy()
+	end
+
+	local resetFee = g_game.getLocalPlayer():getLevel() * 5000
+	window =
+		displayGeneralBox(
+		tr("Reset Charm"),
+		string.format("Are you sure you want to reset your %s charm?\nThis will cost %d gold coins.\nYour charm points will be refunded.", charmName, resetFee),
+		{
+			{text = tr("Yes"), callback = yes},
+			{text = tr("No"), callback = no}
+		},
+		yes,
+		no
+	)
+end
+
 function Bestiary.setupCharmData()
 	local charmsPanel = Bestiary.UI.charmsPanel.rightPanel.charms
 
@@ -1519,13 +1560,17 @@ function Bestiary.updateLeftCharmPanel(charmData, charmId)
 	end
 
 	local actionButton = leftPanel.actionButton
+	local resetButton = leftPanel.resetButton
 	if actionButton then
 		if not unlocked then
 			actionButton:setText(tr("Unlock"))
+			if resetButton then resetButton:setVisible(false) end
 		elseif assigned then
 			actionButton:setText(tr("Remove"))
+			if resetButton then resetButton:setVisible(true) end
 		else
 			actionButton:setText(tr("Select"))
+			if resetButton then resetButton:setVisible(true) end
 		end
 	end
 

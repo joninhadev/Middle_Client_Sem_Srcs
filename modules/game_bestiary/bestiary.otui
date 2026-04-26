@@ -1049,6 +1049,16 @@ MainWindow
         margin-bottom: 4
         text: Unlock
         
+      Button
+        id: resetButton
+        height: 18
+        anchors.top: costPanel.bottom
+        anchors.left: costPanel.left
+        anchors.right: costPanel.right
+        margin-top: 4
+        text: Reset Charm
+        visible: false
+        
       FlatPanel
         id: charmPanel
         anchors.bottom: actionButton.top
@@ -1063,7 +1073,7 @@ MainWindow
 
       FlatPanel
         id: creaturePanel
-        anchors.top: costPanel.bottom
+        anchors.top: resetButton.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         margin-top: 20
         size: 100 100
