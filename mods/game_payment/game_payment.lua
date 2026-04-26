@@ -9,7 +9,7 @@ local successScreen
 
 local urlPixInit = "https://www.middleearth-server.com/payment/init.php"
 local urlPixVerify = "https://www.middleearth-server.com/payment/init.php"
-local apiPassword = "@jona052911"
+local apiPassword = "@Deusefiel01"
 local BETA_COIN_MULTIPLIER = 0
 
 local successAnimationFrame = 0

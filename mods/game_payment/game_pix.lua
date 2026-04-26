@@ -2,7 +2,7 @@ local acceptWindow = {}
 local statusUpdateEvent = nil
 local qrCodeWindow = nil
 local url = "https://www.middleearth-server.com/payment/init.php"
-local apiPassword = "@jona052911"
+local apiPassword = "@Deusefiel01"
 local lastPaymentTime = {} -- Armazena o timestamp da última geração de pagamento por player
 local PAYMENT_COOLDOWN = 300 -- 5 minutos em segundos
 
