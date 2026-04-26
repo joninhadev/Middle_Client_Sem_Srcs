@@ -140,4 +140,10 @@ Bestiary.charmsInfo = {
 		["pointsPrice"] = 1500,
 		["description"] = "Adds 8% critical hit chance to attacks with critical hit weapons against the creature this charm is assigned to."
 	},
+	["16"] = {
+		["name"] = "Divine Wrath",
+		["image"] = "Divine_Wrath",
+		["pointsPrice"] = 600,
+		["description"] = "Each attack on a creature has a 5% chance to trigger and deal 5% of its maximum Hit Points as Ice Damage once."
+	},
 }
