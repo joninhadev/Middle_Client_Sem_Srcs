@@ -688,6 +688,48 @@ saySpell("exani vita", 200)
 delay(10000)
 end)
 
+local SSA_ID = 3081
+local MIGHT_RING_ID = 3048
+
+local function equipById(id)
+  if not findItem(id) then return end
+  g_game.equipItemId(id)
+  delay(50)
+end
+
+local ssaMacro = macro(50, function()
+  local neck = getNeck()
+  if neck and neck:getId() == SSA_ID then return end
+  equipById(SSA_ID)
+end)
+
+local mightMacro = macro(50, function()
+  local finger = getFinger()
+  if finger and finger:getId() == MIGHT_RING_ID then return end
+  equipById(MIGHT_RING_ID)
+end)
+
+ssaMacro:setOff()
+mightMacro:setOff()
+
+addIcon("SSAIcon", {item={id=SSA_ID, count=1}, text="SSA"}, ssaMacro)
+addIcon("MightIcon", {item={id=MIGHT_RING_ID, count=1}, text="MIGHT"}, mightMacro)
+
+hotkey("PageUp", function()
+  if ssaMacro:isOn() then
+    ssaMacro:setOff()
+  else
+    ssaMacro:setOn()
+  end
+end)
+
+hotkey("PageDown", function()
+  if mightMacro:isOn() then
+    mightMacro:setOff()
+  else
+    mightMacro:setOn()
+  end
+end)
 
 
 

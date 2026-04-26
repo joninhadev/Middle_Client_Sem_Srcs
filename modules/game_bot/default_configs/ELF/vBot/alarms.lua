@@ -1,3 +1,4 @@
+if true then return end
 local panelName = "alarms"
 local ui = setupUI([[
 Panel
