@@ -1,0 +1,11 @@
+Module
+  name: client_processos
+  description: Visualizador de Processos e Memoria dos Modulos
+  author: Thogo
+  website: None
+  sandboxed: true
+  scripts: [ processos ]
+  autoload: true
+  autoload-priority: 1000
+  @onLoad: init()
+  @onUnload: terminate()
