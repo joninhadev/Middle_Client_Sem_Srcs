@@ -6,7 +6,7 @@ local focusedMob = 0
 bossBarEnabled = true
 
 local bossNames = {
-  "Baalrog",
+  "Emperium",
 }
 
 local function checkBossName(name)
