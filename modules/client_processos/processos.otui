@@ -1,0 +1,112 @@
+TaskRow < UIWidget
+  height: 20
+  layout:
+    type: horizontalBox
+
+  Label
+    id: nome
+    width: 200
+    margin-top: 2
+    color: #dfdfdf
+
+  Label
+    id: status
+    width: 60
+    margin-top: 2
+    color: #dfdfdf
+
+  Label
+    id: memoria
+    width: 120
+    margin-top: 2
+    color: #dfdfdf
+    text-align: right
+
+MainWindow
+  id: processWindow
+  !text: 'OTCv8 Task Manager'
+  size: 450 400
+  @onEscape: modules.client_processos.toggle()
+
+  Label
+    id: headerNome
+    !text: 'Module Name'
+    anchors.top: parent.top
+    anchors.left: parent.left
+    width: 200
+    color: #aaaaaa
+
+  Label
+    id: headerStatus
+    !text: 'Status'
+    anchors.top: parent.top
+    anchors.left: prev.right
+    width: 60
+    color: #aaaaaa
+
+  Label
+    id: headerMemoria
+    !text: 'Mem. (Lua)'
+    anchors.top: parent.top
+    anchors.left: prev.right
+    width: 120
+    text-align: right
+    color: #aaaaaa
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+
+  ScrollablePanel
+    id: processList
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: bottomPanel.top
+    margin-top: 5
+    margin-bottom: 10
+    layout:
+      type: verticalBox
+    vertical-scrollbar: processListScrollBar
+
+  VerticalScrollBar
+    id: processListScrollBar
+    anchors.top: processList.top
+    anchors.bottom: processList.bottom
+    anchors.right: parent.right
+    step: 20
+    pixels-scroll: true
+
+  Panel
+    id: bottomPanel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    height: 30
+
+    Label
+      id: globalRamLabel
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: parent.left
+      !text: 'RAM Global: 0 MB'
+      color: #88ff88
+      width: 250
+
+    Button
+      id: refreshButton
+      !text: 'Refresh'
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: closeButton.left
+      margin-right: 10
+      width: 60
+      @onClick: modules.client_processos.refresh()
+
+    Button
+      id: closeButton
+      !text: 'Close'
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: parent.right
+      width: 45
+      @onClick: modules.client_processos.toggle()
