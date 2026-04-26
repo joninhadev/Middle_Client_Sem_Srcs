@@ -178,8 +178,8 @@ SpellInfo = {
     ["Nature's Embrace"] =         {id = 101, words = 'exura gran sio',        exhaustion = 3000, premium = true,  type = 'Instant', icon = 'naturesembrace',         mana = 400,    level = 200,soul = 0, group = {[2] = 1000},               vocations = {5, 6, 7, 8, 41}, parameter = "\"Player Name\""},
 --  ['Divine Dazzle'] =            {id = 101, words = 'exana amp res',         exhaustion = 16000, premium = true,  type = 'Instant', icon = 'divinedazzle',           mana = 80,     level = 250,soul = 0, group = {[3] = 2000},               vocations = {3, 7}},
     ['Ultimate Rager'] =            {id = 134, words = 'uteta res eq',         exhaustion = 900000, premium = true,  type = '', icon = 'ultimaterager',           mana = 800,     level = 500,soul = 0, group = {[3] = 2000},               vocations = {43, 44, 45}},
-    ['Ultimate Precision'] =            {id = 134, words = 'uteta res sac',         exhaustion = 900000, premium = true,  type = '', icon = 'ultimateprecision',           mana = 800,     level = 500,soul = 0, group = {[3] = 2000},               vocations = {42, 46}},
-    ['Ultimate Power'] =            {id = 134, words = 'uteta res ven',         exhaustion = 900000, premium = true,  type = '', icon = 'ultimatepower',           mana = 800,     level = 500,soul = 0, group = {[3] = 2000},               vocations = {40}},
+    ['Ultimate Precision'] =            {id = 144, words = 'uteta res sac',         exhaustion = 900000, premium = true,  type = '', icon = 'ultimateprecision',           mana = 800,     level = 500,soul = 0, group = {[3] = 2000},               vocations = {42, 46}},
+    ['Ultimate Power'] =            {id = 136, words = 'uteta res ven',         exhaustion = 900000, premium = true,  type = '', icon = 'ultimatepower',           mana = 800,     level = 500,soul = 0, group = {[3] = 2000},               vocations = {40}},
     ['Ultimate Embrace'] =            {id = 135, words = 'uteta res dru',         exhaustion = 900000, premium = true,  type = '', icon = 'ultimateembrace',           mana = 800,     level = 500,soul = 0, group = {[3] = 2000},               vocations = {41}},
 
   }--[[,
