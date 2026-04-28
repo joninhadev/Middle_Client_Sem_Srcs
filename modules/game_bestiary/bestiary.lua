@@ -451,6 +451,76 @@ function Bestiary.updateCategoryKills(data)
 	end
 end
 
+Bestiary.progressChunkBuffer = Bestiary.progressChunkBuffer or {}
+function Bestiary.updateCategoryProgressChunk(data)
+	local categoryId = data.categoryId
+	local chunkIndex = data.chunkIndex
+	local totalChunks = data.totalChunks
+	local progress = data.progress
+
+	if not Bestiary.progressChunkBuffer[categoryId] then
+		Bestiary.progressChunkBuffer[categoryId] = {
+			totalChunks = totalChunks,
+			receivedChunks = 0,
+			chunks = {}
+		}
+	end
+
+	local buffer = Bestiary.progressChunkBuffer[categoryId]
+	buffer.receivedChunks = buffer.receivedChunks + 1
+	buffer.chunks[chunkIndex] = progress
+
+	if buffer.receivedChunks >= totalChunks then
+		local fullProgressList = {}
+		for i = 1, totalChunks do
+			for _, p in ipairs(buffer.chunks[i] or {}) do
+				table.insert(fullProgressList, p)
+			end
+		end
+
+		Bestiary.progressChunkBuffer[categoryId] = nil
+
+		local finalData = {
+			categoryId = categoryId,
+			progress = fullProgressList
+		}
+
+		Bestiary.updateCategoryKills(finalData)
+	end
+end
+
+Bestiary.unlockedChunkBuffer = Bestiary.unlockedChunkBuffer or {}
+function Bestiary.updateUnlockedCreaturesChunk(data)
+	local chunkIndex = data.chunkIndex
+	local totalChunks = data.totalChunks
+	local creatures = data.unlockedCreatures
+
+	if not Bestiary.unlockedChunkBuffer.chunks then
+		Bestiary.unlockedChunkBuffer = {
+			totalChunks = totalChunks,
+			receivedChunks = 0,
+			chunks = {}
+		}
+	end
+
+	local buffer = Bestiary.unlockedChunkBuffer
+	buffer.receivedChunks = buffer.receivedChunks + 1
+	buffer.chunks[chunkIndex] = creatures
+
+	if buffer.receivedChunks >= totalChunks then
+		local fullUnlockedMap = {}
+		for i = 1, totalChunks do
+			for name, outfit in pairs(buffer.chunks[i] or {}) do
+				fullUnlockedMap[name] = outfit
+			end
+		end
+
+		Bestiary.unlockedChunkBuffer = {}
+		Bestiary.unlockedCreatures = fullUnlockedMap
+	end
+end
+
+
 ------ Creature List Functions
 
 function Bestiary.clearCreatureList()
@@ -1753,14 +1823,22 @@ function Bestiary.onExtendedOpcode(protocol, opcode, buffer)
 	elseif topic == "creature-info-response" then
 		Bestiary.updateCreatureInfo(data)
 	elseif topic == "category-progress-response" then
-		Bestiary.updateCategoryKills(data)
+		if data.totalChunks then
+			Bestiary.updateCategoryProgressChunk(data)
+		else
+			Bestiary.updateCategoryKills(data)
+		end
 	elseif topic == "total-bonuses-response" then
 		Bestiary.setupMessage("Total Bonuses", data.bonuses)
 	elseif topic == "charmData-reply" then
 		Bestiary.charmData = data.charmData
 		Bestiary.setupCharmData()
 	elseif topic == "unlocked-creatures-list" then
-		Bestiary.unlockedCreatures = data.unlockedCreatures
+		if data.totalChunks then
+			Bestiary.updateUnlockedCreaturesChunk(data)
+		else
+			Bestiary.unlockedCreatures = data.unlockedCreatures
+		end
 	elseif topic == "tracked-creatures-list" then
 		Bestiary.updateTrackedCreatures(data)
 	elseif topic == "tracked-creature-added" then
